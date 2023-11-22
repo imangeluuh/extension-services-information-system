@@ -1,0 +1,157 @@
+<!-- Multiple Select -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/multiple-select.css')}}">
+<div class="modal modal-blur" id="add-project" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('programs.insertProject') }}" enctype="multipart/form-data" method="post">
+                {{ form.csrf_token() }}
+                {{ form.extension_program(value=ext_program.ExtensionProgramId)}}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <!-- name -->
+                            {{ form.title.label(class="form-label") }}
+                            {{ form.title(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-6">
+                        <div class="mb-3">
+                            <!-- implementer -->
+                            {{ form.implementer.label(class="form-label") }}
+                            {{ form.implementer(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-6">
+                        <div class="mb-3">
+                            <!-- collaborator -->
+                            {{ form.collaborator.label(class="form-label") }}
+                            {{ form.collaborator(class="form-select")}}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <!-- target_group -->
+                            {{ form.target_group.label(class="form-label") }}
+                            {{ form.target_group(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-6">
+                        <div class="mb-3">
+                            <!-- project team -->
+                            <div class="form-group">
+                                {{ form.project_team.label(class="form-label")}}
+                                <select id="select-multiple-faculty" multiple="" hidden>
+                                    {% for option in form.project_team %}
+                                        {{ option }}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-6">
+                        <div class="mb-3">
+                            <!-- project type -->
+                            {{ form.project_type.label(class="form-label") }}
+                            {{ form.project_type(class="form-select")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- start date -->
+                            {{ form.start_date.label(class="form-label") }}
+                            {{ form.start_date(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- end date -->
+                            {{ form.end_date.label(class="form-label") }}
+                            {{ form.end_date(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- status -->
+                            {{ form.status.label(class="form-label") }}
+                            {{ form.status(class="form-select")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- proposed_budget -->
+                            {{ form.proposed_budget.label(class="form-label") }}
+                            {{ form.proposed_budget(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- approved_budget -->
+                            {{ form.approved_budget.label(class="form-label") }}
+                            {{ form.approved_budget(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- fund_type -->
+                            {{ form.fund_type.label(class="form-label") }}
+                            {{ form.fund_type(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <!-- impact_statement -->
+                            {{ form.impact_statement.label(class="form-label") }}
+                            {{ form.impact_statement(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <!-- objectives -->
+                            {{ form.objectives.label(class="form-label") }}
+                            {{ form.objectives(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-6">
+                        <div class="mb-3">
+                            <!-- image -->
+                            {{ form.image.label(class="form-label") }}
+                            {{ form.image(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-6">
+                        <div class="mb-3">
+                            <!-- project_proposal -->
+                            {{ form.project_proposal.label(class="form-label") }}
+                            {{ form.project_proposal(class="form-control")}}
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </a>
+                <a href="#" class="btn btn-primary ms-auto" data-bs-dismiss="modal">
+                    <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                    Create new project
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Multiple Select -->
+<script src="{{ url_for('static', filename='js/multiple-select.js')}}"></script>
+<script>
+    new MultipleSelect('#select-multiple-faculty', {
+            placeholder: 'Select Faculty'
+        })
+</script>
+
