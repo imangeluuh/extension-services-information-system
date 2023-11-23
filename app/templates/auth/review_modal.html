@@ -1,0 +1,80 @@
+<div class="modal modal-blur" id="reviewModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Review your Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Kindly review all the information you have provided.</p>
+                <div class="row">
+                    <div class=" col-auto col-md-4">
+                        <div class="mb-3">
+                            {{ form.first_name.label(class="font-medium") }}
+                            <p id="reviewFirstName"></p>
+                        </div>
+                    </div>
+                    <div class=" col-auto col-md-4">
+                        <div class="mb-3">
+                            {{ form.middle_name.label(class="font-medium") }}
+                            <p id="reviewMiddleName"></p>
+                        </div>
+                    </div>
+                    <div class=" col-auto col-md-4">
+                        <div class="mb-3">
+                            {{ form.last_name.label(class="font-medium") }}
+                            <p id="reviewLastName"></p>
+                        </div>
+                    </div>
+                    <div class=" col-auto col-md-4">
+                        <div class="mb-3">
+                            {{ form.contact_details.label(class="font-medium") }}
+                            <p id="reviewContact"></p>
+                        </div>
+                    </div>
+                    <div class=" col-auto col-md-4">
+                        <div class="mb-3">
+                            {{ form.birthdate.label(class="font-medium") }}
+                            <p id="reviewBirthdate"></p>
+                        </div>
+                    </div>
+                    <div class=" col-auto col-md-4">
+                        <div class="mb-3">
+                            {{ form.gender.label(class="font-medium") }}
+                            <p id="reviewGender"></p>
+                        </div>
+                    </div>
+                    <div class="col-auto col-12">
+                        <div class="mb-3">
+                            {{ form.address.label(class="font-medium") }}
+                            <p id="reviewAddress"></p>
+                        </div>
+                    </div>
+                    {% if current_url_path == url_for('auth.studentSignup') %}
+                    <div class="col-auto col-12">
+                        <div class="mb-3">
+                            {{ form.skills_interest.label(class="font-medium") }}
+                            <p id="reviewSkills"></p>>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-auto col-12">
+                        <div class="mb-3">
+                            {{ form.email.label(class="font-medium") }}
+                            <p id="reviewEmail"></p>
+                        </div>
+                    </div>
+                </div>
+                <p class="fst-italic mb-0 mt-2" style="font-size: 14px;">I hereby certify that all the information provided in this registration form is correct and true.</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="cancelButton" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </a>
+                <a href="#" id="saveButton" class="btn btn-primary ms-auto" data-bs-dismiss="modal">
+                    Signup
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

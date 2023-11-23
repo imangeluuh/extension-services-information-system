@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/signup_style.css') }}">
+    <title>PUP-ESIS Student Signup</title>
+    <script src="{{ url_for('static', filename='js/index.js')}}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-main min-vh-100 d-flex align-items-center">
+    <div class="container mx-auto my-auto">
+        <div class="right mx-auto mh-100 overflow-x-hidden">
+            <header class="m-0 mb-2 mt-md-3 fs-2 text-center">Create account</header>
+            <form id="signupForm" action="" method="post" class="row px-md-3 mt-2 mh-100">
+                {{ form.hidden_tag() }}
+                <div class="input-field mt-2 col-auto col-md-4">
+                    {{ form.first_name(id="f-name", class="input bg-transparent p-0 mb-2") }}
+                    {{ form.first_name.label(class="label") }}
+                    <ul>
+                        {% for error in form.first_name.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field mt-2 col-auto col-md-4">
+                    {{ form.middle_name(id="md-name", class="md-name-input bg-transparent p-0 mb-2", placeholder=" ") }}
+                    {{ form.middle_name.label(class="md-name-label") }}
+                    <ul>
+                        {% for error in form.middle_name.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field mt-2 col-auto col-md-4">
+                    {{ form.last_name(id="l-name", class="input bg-transparent p-0 mb-2") }}
+                    {{ form.last_name.label(class="label") }}
+                    <ul>
+                        {% for error in form.last_name.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field mt-2 col-auto col-md-4">
+                    {{ form.contact_details(id="contact", class="input bg-transparent p-0 mb-2") }}
+                    {{ form.contact_details.label(class="label") }}
+                    <ul>
+                        {% for error in form.contact_details.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field mt-2 col-auto col-md-4">
+                    {{ form.birthdate(id="birthdate", class="input bg-transparent p-0 mb-2") }}
+                    {{ form.birthdate.label(class="label") }}
+                    <ul>
+                        {% for error in form.birthdate.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field mt-2 col-auto col-md-4">
+                    <select name="gender" id="gender" class="form-select shadow-none bg-transparent p-0 mb-2">
+                    {% for option in form.gender %}
+                        {% if loop.first %}
+                            <option value="" disabled selected>Gender</option>
+                        {% endif %}
+                        {{ option }}
+                    {% endfor %}
+                    </select>
+                    {{ form.gender.label(class="gender-label") }}
+                    <ul>
+                        {% for error in form.gender.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field mt-2 col-12">
+                    {{ form.address(id="address", class="input bg-transparent p-0 mb-2") }}
+                    {{ form.address.label(class="label") }}
+                    <ul>
+                        {% for error in form.address.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field col-12 mt-5">
+                    {{ form.skills_interest.label(id="skills-label") }}
+                    {{ form.skills_interest(id="skills", class="input bg-transparent p-0 mb-2") }}
+                    <ul>
+                        {% for error in form.skills_interest.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field mt-2 col-12">
+                    {{ form.email(id="email", class="input bg-transparent p-0 mb-2") }}
+                    {{ form.email.label(class="label") }}
+                    <ul>
+                        {% for error in form.email.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field mt-2 col-auto col-md-6">
+                    {{ form.password1(class="input bg-transparent p-0 mb-2") }}
+                    {{ form.password1.label(class="label") }}
+                    <ul>
+                        {% for error in form.password1.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field mt-2 col-auto col-md-6">
+                    {{ form.password2(class="input  bg-transparent p-0 mb-2") }}
+                    {{ form.password2.label(class="label") }}
+                    <ul>
+                        {% for error in form.password2.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="input-field mt-2 col-12">
+                    {{ form.signup(class="submit")}}
+                </div>
+            </form>
+            <div class="signin pb-4">
+                <span>Already have an account? <a href="{{ url_for('auth.studentLogin') }}">Log in here</a></span>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'auth/review_modal.html' %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // Initialize  Modal object and set options
+    const $targetEl = document.getElementById('reviewModal'); 
+    const options = {
+        placement: 'center', 
+        backdrop: 'dynamic', 
+        backdropClasses: 'bg-gray-900 bg-opacity-50 fixed inset-0 z-40',
+        closable: true, 
+    };
+    const modal = new Modal($targetEl, options);
+    // Get a reference to the signup form
+    const signupForm = document.getElementById('signupForm');
+
+    // Define the handleSubmit function
+    function handleSubmit(e) {
+        e.preventDefault(); // Prevent default form submission
+        
+        // Get form input values
+        const first_name = document.getElementById('f-name').value;
+        const middle_name = document.getElementById('md-name').value;
+        const last_name = document.getElementById('l-name').value;
+        const contact_details = document.getElementById('contact').value;
+        const birthdate = document.getElementById('birthdate').value;
+        const gender = document.getElementById('gender').value;
+        const address = document.getElementById('address').value;
+        const skills = document.getElementById('skills').value;
+        const email = document.getElementById('email').value;
+
+        // Display the inputted values in the modal
+        document.getElementById('reviewFirstName').textContent = first_name;
+        document.getElementById('reviewMiddleName').textContent = middle_name;
+        document.getElementById('reviewLastName').textContent = last_name;
+        document.getElementById('reviewContact').textContent = contact_details;
+        document.getElementById('reviewBirthdate').textContent = birthdate;
+        document.getElementById('reviewGender').textContent = gender;
+        document.getElementById('reviewAddress').textContent = address;
+        document.getElementById('reviewSkills').textContent = skills;
+        document.getElementById('reviewEmail').textContent = email;
+
+        // Show the review modal
+        modal.show()
+    }
+    
+   // Add the form submit event listener
+    signupForm.addEventListener('submit', handleSubmit);
+
+    // Handle the click event of the Save button in the modal
+    document.getElementById('saveButton').addEventListener('click', function () {
+        // Hide the review modal
+        modal.hide()
+        
+        // Remove the form submit event listener and submit the form
+        signupForm.removeEventListener('submit', handleSubmit);
+        signupForm.submit();
+    });
+
+    document.getElementById('cancelButton').addEventListener('click', function () {
+        // Hide the review modal
+        modal.hide()
+    });
+});
+</script>
+{% endblock %}

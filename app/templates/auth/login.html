@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/signin_style.css') }}">
+    <title>PUPQC-ESIS Login</title>
+{% endblock %}
+
+{% block content %}
+<div class="overflow-hidden container-main">
+    <div class="row vh-100">
+        <div class="col-auto col-sm-7 col-md-8 side-image d-block d-md-hidden p-0">
+            <!------------- empty ------------->
+        </div>
+        <div class="col-auto col-sm-5 col-md-4 right d-flex align-items-center">
+            <div class="input-box">
+                <div class="d-flex justify-content-center">
+                    <img src="{{ url_for('static', filename='images/PUPLogo.png')}}" alt="" class="mb-4" width="100rem">
+                </div>
+                {% if current_url_path == url_for('auth.login') %}
+                <h1 class="mb-2 fw-semibold d-flex justify-content-center">Hi, PUPian!</h1>
+                <small class="mb-2 d-flex justify-content-center">Please click or tap your destination</small>
+                <a href="{{ url_for('auth.beneficiaryLogin') }}">
+                    <div class="d-flex justify-content-center mb-2 p-2 bg-primary text-white">Beneficiary</div>
+                </a>
+                <a href="{{ url_for('auth.studentLogin') }}">
+                    <div class="d-flex justify-content-center mb-2 p-2 bg-yellow text-white">Student</div>
+                </a>
+                <a href="{{ url_for('auth.facultyLogin') }}">
+                    <div class="d-flex justify-content-center mb-2 p-2 bg-danger text-white">Faculty</div>
+                </a>
+                {% else %}
+                <header><strong>PUPQC-ESIS</strong> {{ current_url_path.split('/')[2] | capitalize }} Module</header>
+                <form id="loginForm" method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="input-field">
+                        {{ form.email(id="email", class="input focus:ring-0 focus:ring-offset-0 bg-transparent p-0") }}
+                        {{ form.email.label(class="label") }}
+                    </div> 
+                    <div class="input-field">
+                        {{ form.password(id="password", class="input focus:ring-0 focus:ring-offset-0 bg-transparent p-0") }}
+                        {{ form.password.label(class="label") }}
+                    </div> 
+                    <div class="input-field">
+                        {{ form.submit(class="submit") }}
+                    </div> 
+                </form>
+                <div class="my-3 d-flex justify-content-center">
+                    <a href="{{ url_for('auth.resetPasswordRequest') }}" class="text-black ">Forgot password?</a>
+                </div>
+                {% if current_url_path != url_for('auth.facultyLogin') %}
+                    <div class="signin pb-3">
+                        <span>Don't have an account yet? <a href="{{ url_for('auth.beneficiarySignup') if current_url_path == url_for('auth.beneficiaryLogin') else url_for('auth.studentSignup') }}">Register here</a></span>
+                    </div>
+                {% endif %}
+                {% endif %}
+            </div>  
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

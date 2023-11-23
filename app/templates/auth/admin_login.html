@@ -1,0 +1,38 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style.css') }}">
+    <title>PUPQC-ESIS Login</title>
+{% endblock %}
+
+{% block content %}
+<div class="overflow-hidden container-main">
+    <div class="row">
+        <div class="col-auto col-sm-7 col-md-8 side-image d-block d-md-hidden p-0">
+            <!------------- empty ------------->
+        </div>
+        <div class="col-auto col-sm-5 col-md-4 right d-flex align-items-center">
+            <div class="input-box">
+                <div class="d-flex justify-content-center">
+                    <img src="{{ url_for('static', filename='images/PUPLogo.png')}}" alt="" class="mb-4" width="100rem">
+                </div>
+                <header><strong>PUPQC-ESIS</strong> Admin Module</header>
+                <form action="" method="post" class="mt-6">
+                    {{ form.hidden_tag() }}
+                    <div class="input-field">
+                        {{ form.email(class="input bg-transparent p-0") }}
+                        {{ form.email.label(class="label fw-normal") }}
+                    </div> 
+                    <div class="input-field">
+                        {{ form.password(class="input bg-transparent p-0") }}
+                        {{ form.password.label(class="label fw-normal") }}
+                    </div> 
+                    <div class="input-field">
+                        {{ form.submit(class="submit") }}
+                    </div> 
+                </form>
+            </div>  
+        </div>
+    </div>
+</div>
+{% endblock %}
