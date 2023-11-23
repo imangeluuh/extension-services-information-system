@@ -1,0 +1,66 @@
+<div class="modal modal-blur" id="edit-ext-program" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Extension Program</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('programs.updateExtensionProgram', id=ext_program.ExtensionProgramId) }}" enctype="multipart/form-data" method="post">
+            {{ ext_program_form.csrf_token() }}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <!-- name -->
+                            {{ ext_program_form.program_name.label(class="d-block mb-2") }}
+                            {{ ext_program_form.program_name(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <!-- name -->
+                            {{ ext_program_form.rationale.label(class="d-block mb-2") }}
+                            {{ ext_program_form.rationale(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- agenda -->
+                            {{ ext_program_form.agenda.label(class="block mb-2 text-sm font-medium text-gray-900") }}
+                            <select name="{{ ext_program_form.agenda.name }}" class="form-select">
+                                {% for option in ext_program_form.agenda.choices %}
+                                    <option value="{{ option[0] }}" {{ 'selected' if option[0] == ext_program.Agenda.AgendaId }}>{{ option[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- image -->
+                            {{ ext_program_form.image.label(class="form-label") }}
+                            {{ ext_program_form.image(class="form-control")}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- program -->
+                            {{ ext_program_form.program.label(class="d-block mb-2") }}
+                            <select name="{{ ext_program_form.program.name }}" class="form-select">
+                                {% for option in ext_program_form.program.choices %}
+                                    <option value="{{ option[0] }}" {{ 'selected' if option[0] == ext_program.Program.ProgramId }}>{{ option[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </a>
+                {{ ext_program_form.submit(class="btn btn-primary ms-auto")}}
+            </div>
+            </form>    
+        </div>
+    </div>
+</div>
