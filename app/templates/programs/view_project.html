@@ -1,0 +1,231 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>{{ project.Title }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" rel="stylesheet">
+    <!--Regular Datatables CSS-->
+    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+    <!--Responsive Extension Datatables CSS-->
+    <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/table_style.css') }}">  
+{% endblock %}
+
+{% block content %}
+
+<!-- Background image -->
+<div class="text-center bg-image" style="
+background-image: url('{{project.ImageUrl if project.ImageUrl else 'https://mdbcdn.b-cdn.net/img/new/slides/041.webp' }}');
+height: 200px;
+object-fit: cover;">
+    <div class="mask" style="background-color: rgba(0, 0, 0, 0.6); height:inherit">
+        <div class="ms-4 d-flex flex-column justify-content-between align-items-start  h-100">
+            <ol class="breadcrumb bg-transparent px-0" aria-label="breadcrumbs">
+                <li class="breadcrumb-item"><a href="{{url_for('programs.programs')}}" class="text-primary">Extension Programs</a></li>
+                <li class="breadcrumb-item"><a href="{{url_for('programs.viewExtensionProgram', id=project.ExtensionProgram.ExtensionProgramId)}}" class="text-primary">{{ project.ExtensionProgram.Name }}</a></li>
+                <li class="breadcrumb-item text-white active text-truncate" style="max-width: 800px;" aria-current="page"><a href="#" class="">{{project.Title}}</a></li>
+            </ol>
+            <div class="text-white">
+                <h2 class="mb-3 ">{{project.Title}}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Background image -->
+
+<!-- Tabs -->
+<div class="mx-5 mb-5 mt-4 shadow-sm">
+    <div class="card bg-light bg-gradient shadow-none">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                <a href="#tabs-details" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.999 3l.001 17" /><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z" /></svg>
+                    Details</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#tabs-activity" class="nav-link" data-bs-toggle="tab">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 12h4l3 8l4 -16l3 8h4"></path></svg>
+                        Activity</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                <a href="#tabs-registered" class="nav-link" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/user -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path></svg>
+                    Registered</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body bg-white shadow-sm">
+            <div class="tab-content">
+                <div class="tab-pane active show" id="tabs-details" role="tabpanel">
+                    <div class="row g-2">
+                        <div class="col-auto col-md-2">
+                            <div class="datagrid-title">Extension Project ID</div>
+                            <div class="datagrid-content">{{project.ProjectId}}</div>
+                        </div>
+                        <div class="col-auto col-md-2">
+                            <div class="datagrid-title">Project Type</div>
+                            <div class="datagrid-content">{{project.ProjectType}}</div>
+                        </div>
+                        <div class="col-auto col-md-4">
+                            <div class="datagrid-title">Implementer</div>
+                            <div class="datagrid-content">{{project.Implementer}}</div>
+                        </div>
+                        <div class="col-auto col-md-4">
+                            <div class="datagrid-title">Lead Proponent</div>
+                            <div class="datagrid-content">{{project.LeadProponent.FirstName}} {{project.LeadProponent.LastName}}</div>
+                        </div>
+                        <div class="col-auto col-md-4">
+                            <div class="datagrid-title">Collaborator</div>
+                            <div class="datagrid-content">{{project.Collaborator.Organization}}</div>
+                        </div>
+                        <div class="col-auto col-md-8">
+                            <div class="datagrid-title">Project Team</div>
+                            <div class="datagrid-content row">
+                                {% for faculty in project.ProjectTeam.split(",") %}
+                                    <span class="col-auto col-md-4">{{faculty.replace("{", "").replace("}", "").replace("\"", "")}}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-auto col-md-2">
+                            <div class="datagrid-title">Start Date</div>
+                            <div class="datagrid-content">{{project.StartDate}}</div>
+                        </div>
+                        <div class="col-auto col-md-2">
+                            <div class="datagrid-title">End Date</div>
+                            <div class="datagrid-content">{{project.EndDate}}</div>
+                        </div>
+                        <div class="col-auto col-md-2">
+                            <div class="datagrid-title">Status</div>
+                            <div class="datagrid-content">{{project.Status}}</div>
+                        </div>
+                        <div class="col-auto col-md-2">
+                            <div class="datagrid-title">Proposed Budget</div>
+                            <div class="datagrid-content">{{project.ProposedBudget}}</div>
+                        </div>
+                        <div class="col-auto col-md-2">
+                            <div class="datagrid-title">Approved Budget</div>
+                            <div class="datagrid-content">{{project.ApprovedBudget}}</div>
+                        </div>
+                        <div class="col-auto col-md-2">
+                            <div class="datagrid-title">Fund Type</div>
+                            <div class="datagrid-content">{{project.FundType}}</div>
+                        </div>
+                        <div class="col-7">
+                            <div class="datagrid-title">Target Group</div>
+                            <div class="datagrid-content">{{project.TargetGroup}}</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="datagrid-title">Impact Statement</div>
+                            <div class="datagrid-content">{{project.ImpactStatement|safe}}</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="datagrid-title">Objectives</div>
+                            <div class="datagrid-content">{{project.Objectives|safe}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tabs-activity">
+                    <h4>Activity tab</h4>
+                    <div>Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan nibh habitant senectus</div>
+                </div>
+                <div class="tab-pane" id="tabs-registered" role="tabpanel">
+                    <h4>Profile tab</h4>
+                    <div>Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc amet, pellentesque id egestas velit sed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Tabs -->
+
+{% endblock %}
+
+{% block script %}
+<!--Datatables -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var table = $('#users').DataTable({
+                responsive: true
+        })
+        .columns.adjust()
+        .responsive.recalc()
+
+        const editButton = document.getElementById('edit-project');
+        const cancelButton = document.getElementById('cancel-project');
+        const imageDiv= document.getElementById('image-div')
+        const submitProjectDiv= document.getElementById('submit-project')
+        const form = document.getElementById('projectForm');
+
+        // Add a click event listener to the "Edit" button
+        editButton.addEventListener('click', function () {
+            // Get all input, textarea, and select elements within the form
+            const formElements = form.querySelectorAll('input.input, textarea.input, select.input');
+
+            // Loop through the elements and remove the "disabled" attribute
+            formElements.forEach(function (element) {
+                element.removeAttribute('disabled');
+                element.classList.remove('border-0', 'bg-transparent');
+                element.classList.add('bg-gray-50', 'border', 'border-gray-300');
+            });
+            submitProjectDiv.classList.remove('hidden');
+            submitProjectDiv.classList.add('flex');
+            imageDiv.classList.remove('hidden');
+            imageDiv.classList.add('flex');
+        });
+        cancelButton.addEventListener('click', function () {
+            // Get all input, textarea, and select elements within the form
+            const formElements = form.querySelectorAll('input.input, textarea.input, select.input');
+
+            // Loop through the elements and remove the "disabled" attribute
+            formElements.forEach(function (element) {
+                element.setAttribute('disabled', 'true');
+                element.classList.remove('bg-gray-50', 'border', 'border-gray-300');
+                element.classList.add('border-0', 'bg-transparent');
+            });
+            submitProjectDiv.classList.remove('flex');
+            submitProjectDiv.classList.add('hidden');
+            imageDiv.classList.remove('flex');
+            imageDiv.classList.add('hidden');
+        });
+
+        
+        const activityOutlineTab = document.getElementById('activity-outline-tab')
+        const detailsTab = document.getElementById('details-tab')
+        const registeredTab = document.getElementById('registered-tab')
+        const calendarTab = document.getElementById('activity-calendar-tab');
+        const activityButton = document.getElementById('activity-button');
+        const detailsButton = document.getElementById('details-buttons');
+        
+        activityOutlineTab.addEventListener('click', function () {
+            detailsButton.classList.remove('inline-flex');
+            detailsButton.classList.add('hidden');
+            activityButton.classList.remove('hidden');
+            activityButton.classList.add('inline-flex');
+        });
+        detailsTab.addEventListener('click', function () {
+            activityButton.classList.remove('inline-flex');
+            activityButton.classList.add('hidden');
+            detailsButton.classList.remove('hidden');
+            detailsButton.classList.add('inline-flex');
+        });
+        registeredTab.addEventListener('click', function () {
+            activityButton.classList.remove('inline-flex');
+            activityButton.classList.add('hidden');
+            detailsButton.classList.remove('inline-flex');
+            detailsButton.classList.add('hidden');
+        });
+        calendarTab.addEventListener('click', function () {
+            activityButton.classList.remove('inline-flex');
+            activityButton.classList.add('hidden');
+            detailsButton.classList.remove('inline-flex');
+            detailsButton.classList.add('hidden');
+            // Add a delay before re-rendering calendar
+            setTimeout(function() {
+                calendar.render();
+            }, 10); // Adjust the delay as needed
+        });
+    });
+</script>
+{% endblock %}

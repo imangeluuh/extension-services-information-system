@@ -139,6 +139,8 @@
                 {{ form.submit(class="btn btn-primary ms-auto")}}
             </div>
             </form>    
+            {{ ckeditor.load(pkg_type="basic") }}
+            {{ ckeditor.config() }}
         </div>
     </div>
 </div>

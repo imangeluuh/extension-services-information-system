@@ -412,7 +412,11 @@ input[type="file"]::-webkit-file-upload-button,
                         </div>
                         <input type="button" name="previous" class="previous action-button" value="Previous" />
                         <input type="button" name="next" class="next action-button" value="Next" />
+                        {{ ckeditor.load(pkg_type="basic") }}
+                        {{ ckeditor.config() }}
                     </fieldset>
+
+                <!-- Activity Form -->
                 <fieldset>
                 <h2 class="text-uppercase fs-3">Activity</h2>
                 <div class="row g-2">
