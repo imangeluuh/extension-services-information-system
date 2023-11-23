@@ -7,10 +7,10 @@
                 <h5 class="modal-title">New project</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form action="{{ url_for('programs.insertProject') }}" enctype="multipart/form-data" method="post">
+            {{ form.csrf_token() }}
+            {{ form.extension_program(value=ext_program.ExtensionProgramId)}}
             <div class="modal-body">
-                <form action="{{ url_for('programs.insertProject') }}" enctype="multipart/form-data" method="post">
-                {{ form.csrf_token() }}
-                {{ form.extension_program(value=ext_program.ExtensionProgramId)}}
                 <div class="row">
                     <div class="col-12">
                         <div class="mb-3">
@@ -45,7 +45,7 @@
                             <!-- project team -->
                             <div class="form-group">
                                 {{ form.project_team.label(class="form-label")}}
-                                <select id="select-multiple-faculty" multiple="" hidden>
+                                <select id="{{form.project_team.id}}" name="{{form.project_team.name}}" multiple="" hidden>
                                     {% for option in form.project_team %}
                                         {{ option }}
                                     {% endfor %}
@@ -131,18 +131,14 @@
                         </div>
                     </div>
                 </div>
-                </form>
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
                     Cancel
                 </a>
-                <a href="#" class="btn btn-primary ms-auto" data-bs-dismiss="modal">
-                    <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                    Create new project
-                </a>
+                {{ form.submit(class="btn btn-primary ms-auto")}}
             </div>
+            </form>    
         </div>
     </div>
 </div>
@@ -150,7 +146,7 @@
 <!-- Multiple Select -->
 <script src="{{ url_for('static', filename='js/multiple-select.js')}}"></script>
 <script>
-    new MultipleSelect('#select-multiple-faculty', {
+    new MultipleSelect('#project_team', {
             placeholder: 'Select Faculty'
         })
 </script>

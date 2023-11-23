@@ -2,12 +2,8 @@
 
 {% block head %}
     <title>PUPQC Extension Services</title>
-    <!--Regular Datatables CSS-->
-	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
-	<!--Responsive Extension Datatables CSS-->
-	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/table_style.css') }}">  
-    
+    <!-- Multiple Select -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/multiple-select.css')}}">
     <style>
         @import url(https://fonts.googleapis.com/css?family=Montserrat);
 
@@ -44,7 +40,8 @@ body {
 
 #multistepsform input.input,
 #multistepsform select,
-#multistepsform textarea {
+#multistepsform textarea,
+#multiple-select-container-1 button {
   padding: 15px;
   border: 1px solid #ccc;
   border-radius: 3px;
@@ -162,13 +159,13 @@ body {
 }
 
 input[type="file"],
-input[type="file"]::-webkit-file-upload-button {
-    height:55.5px!important;
+input[type="file"]::-webkit-file-upload-button,
+#multiple-select-container-1 button {
+    height:51.1px!important;
 }
 
 
-
-    </style>
+</style>
 {% endblock %}
 
 {% block content %}
@@ -190,53 +187,53 @@ input[type="file"]::-webkit-file-upload-button {
                         <div class="row g-2">
                             <div class="col-12 text-start d-flex flex-column">
                                 <!-- name -->
-                                <label for="{{ form.extension_program.program_name.id }}">{{ form.extension_program.program_name.label }}</label>
+                                {{ form.extension_program.program_name.label }}
                                 {{ form.extension_program.program_name(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.extension_program.program_name.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-12 text-start d-flex flex-column">
                                 <!-- rationale -->
-                                <label for="{{ form.extension_program.rationale.id }}">{{ form.extension_program.rationale.label }}</label>
-                                {{ form.extension_program.rationale(class="input")}}
-                                <ol>
+                                {{ form.extension_program.rationale.label }}
+                                {{ form.extension_program.rationale(class="form-control") }}
+                                <ul>
                                     {% for error in form.extension_program.rationale.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-4 text-start d-flex flex-column">
                                 <!-- image -->
-                                <label for="{{ form.extension_program.image.id }}">{{ form.extension_program.image.label }}</label>
-                                {{ form.extension_program.image(class="form-control")}}
-                                <ol>
+                                {{ form.extension_program.image.label }}
+                                {{ form.extension_program.image(class="form-control mt-1")}}
+                                <ul>
                                     {% for error in form.extension_program.image.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-4 text-start d-flex flex-column">
                                 <!-- agenda -->
-                                <label for="{{ form.extension_program.agenda.id }}">{{ form.extension_program.agenda.label }}</label>
+                                {{ form.extension_program.agenda.label }}
                                 {{ form.extension_program.agenda(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.extension_program.agenda.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-4 text-start d-flex flex-column">
                                 <!-- program -->
-                                <label for="{{ form.extension_program.program.id }}">{{ form.extension_program.program.label }}</label>
+                                {{ form.extension_program.program.label }}
                                 {{ form.extension_program.program(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.extension_program.program.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                         </div>
                         <input type="button" name="next" class="next action-button" value="Next" />
@@ -248,153 +245,169 @@ input[type="file"]::-webkit-file-upload-button {
                         <div class="row g-2">
                             <div class="col-12 text-start">
                                 <!-- project title -->
-                                <label for="{{ form.project.title.id }}">{{ form.project.title.label }}</label>
+                                {{ form.project.title.label }}
                                 {{ form.project.title(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.title.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-6 text-start d-flex flex-column">
                                 <!-- implementer -->
-                                <label for="{{ form.project.implementer.id }}">{{ form.project.implementer.label }}</label>
+                                {{ form.project.implementer.label }}
                                 {{ form.project.implementer(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.implementer.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
-                            <div class="col-auto col-md-6 text-start d-flex flex-column">
+                            <div class="col-auto col-md-3 text-start d-flex flex-column">
                                 <!-- collaborator -->
-                                <label for="{{ form.project.collaborator.id }}">{{ form.project.collaborator.label }}</label>
+                                {{ form.project.collaborator.label }}
                                 {{ form.project.collaborator(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.collaborator.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
+                            </div>
+                            <div class="col-auto col-md-3 text-start">
+                                <!-- project type -->
+                                {{ form.project.project_type.label }}
+                                {{ form.project.project_type(class="input")}}
+                                <ul>
+                                    {% for error in form.project.project_type.errors %}
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
                             <div class="col-auto col-md-7 text-start">
                                 <!-- target group -->
-                                <label for="{{ form.project.target_group.id }}">{{ form.project.target_group.label }}</label>
+                                {{ form.project.target_group.label }}
                                 {{ form.project.target_group(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.target_group.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-5 text-start">
-                                <!-- project type -->
-                                <label for="{{ form.project.project_type.id }}">{{ form.project.project_type.label }}</label>
-                                {{ form.project.project_type(class="input")}}
-                                <ol>
-                                    {% for error in form.project.project_type.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                <!-- project team -->
+                                <div class="form-group m-0">
+                                    {{ form.project.project_team.label }}
+                                    <select id="{{form.project.project_team.id}}" name="{{form.project.project_team.name}}" class="input" multiple="" hidden>
+                                        {% for option in form.project.project_team %}
+                                            {{ option }}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <ul>
+                                    {% for error in form.project.project_team.errors %}
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-4 text-start">
                                 <!-- start date -->
-                                <label for="{{ form.project.start_date.id }}">{{ form.project.start_date.label }}</label>
+                                {{ form.project.start_date.label }}
                                 {{ form.project.start_date(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.start_date.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-4 text-start">
                                 <!-- end date -->
-                                <label for="{{ form.project.end_date.id }}">{{ form.project.end_date.label }}</label>
+                                {{ form.project.end_date.label }}
                                 {{ form.project.end_date(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.end_date.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-4 text-start">
                                 <!-- status -->
-                                <label for="{{ form.project.status.id }}">{{ form.project.status.label }}</label>
+                                {{ form.project.status.label }}
                                 {{ form.project.status(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.status.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-4 text-start">
                                 <!-- proposed_budget -->
-                                <label for="{{ form.project.proposed_budget.id }}">{{ form.project.proposed_budget.label }}</label>
+                                {{ form.project.proposed_budget.label }}
                                 {{ form.project.proposed_budget(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.proposed_budget.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-4 text-start">
                                 <!-- approved_budget -->
-                                <label for="{{ form.project.approved_budget.id }}">{{ form.project.approved_budget.label }}</label>
+                                {{ form.project.approved_budget.label }}
                                 {{ form.project.approved_budget(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.approved_budget.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-4 text-start">
                                 <!-- fund_type -->
-                                <label for="{{ form.project.fund_type.id }}">{{ form.project.fund_type.label }}</label>
+                                {{ form.project.fund_type.label }}
                                 {{ form.project.fund_type(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.fund_type.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-12 text-start">
                                 <!-- impact statement -->
-                                <label for="{{ form.project.impact_statement.id }}">{{ form.project.impact_statement.label }}</label>
+                                {{ form.project.impact_statement.label }}
                                 {{ form.project.impact_statement(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.impact_statement.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-12 text-start">
                                 <!-- objectives -->
-                                <label for="{{ form.project.objectives.id }}">{{ form.project.objectives.label }}</label>
+                                {{ form.project.objectives.label }}
                                 {{ form.project.objectives(class="input")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.objectives.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-6 text-start d-flex flex-column">
                                 <!-- image -->
-                                <label for="{{ form.project.image.id }}">{{ form.project.image.label }}</label>
+                                {{ form.project.image.label }}
                                 {{ form.project.image(class="form-control")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.image.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                             <div class="col-auto col-md-6 text-start d-flex flex-column">
                                 <!-- project proposal -->
-                                <label for="{{ form.project.project_proposal.id }}">{{ form.project.project_proposal.label }}</label>
+                                {{ form.project.project_proposal.label }}
                                 {{ form.project.project_proposal(class="form-control")}}
-                                <ol>
+                                <ul>
                                     {% for error in form.project.project_proposal.errors %}
-                                    <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
-                                </ol>
+                                </ul>
                             </div>
                         </div>
                         <input type="button" name="previous" class="previous action-button" value="Previous" />
@@ -405,43 +418,43 @@ input[type="file"]::-webkit-file-upload-button {
                 <div class="row g-2">
                     <div class="col-12 text-start">
                         <!-- name -->
-                        <label for="{{ form.activity.activity_name.id }}">{{ form.activity.activity_name.label }}</label>
+                        {{ form.activity.activity_name.label }}
                         {{ form.activity.activity_name(class="input")}}
-                        <ol>
+                        <ul>
                             {% for error in form.activity.activity_name.errors %}
-                            <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                            <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                             {% endfor %}
-                        </ol>
+                        </ul>
                     </div>
                     <div class="col-12 text-start d-flex flex-column">
                         <!-- description -->
-                        <label for="{{ form.activity.activity_description.id }}">{{ form.activity.activity_description.label }}</label>
+                        {{ form.activity.activity_description.label }}
                         {{ form.activity.activity_description(class="input") }}
-                        <ol>
+                        <ul>
                             {% for error in form.activity.activity_description.errors %}
-                            <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                            <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                             {% endfor %}
-                        </ol>
+                        </ul>
                     </div>
                     <div class="col-auto col-md-6 text-start d-flex flex-column">
                         <!-- image -->
-                        <label for="{{ form.activity.image.id }}">{{ form.activity.image.label }}</label>
-                        {{ form.activity.image(class="form-control ")}}
-                        <ol>
+                        {{ form.activity.image.label }}
+                        {{ form.activity.image(class="form-control mt-1")}}
+                        <ul>
                             {% for error in form.activity.image.errors %}
-                            <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                            <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                             {% endfor %}
-                        </ol>
+                        </ul>
                     </div>
                     <div class="col-auto col-md-6 text-start d-flex flex-column">
                         <!--date -->
-                        <label for="{{ form.activity.date.id }}">{{ form.activity.date.label }}</label>
+                        {{ form.activity.date.label }}
                         {{ form.activity.date(class="input")}}
-                        <ol>
+                        <ul>
                             {% for error in form.activity.date.errors %}
-                            <li class="text-red-500 text-sm mb-4 mt-0 p-0">{{ error }}</li>
+                            <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                             {% endfor %}
-                        </ol>
+                        </ul>
                     </div>
                 </div>
                 <input type="button" name="previous" class="previous action-button" value="Previous" />
@@ -454,8 +467,18 @@ input[type="file"]::-webkit-file-upload-button {
 {% endblock %}
 
 {% block script %}
-<script>
+<!-- Multiple Select -->
+<script src="{{ url_for('static', filename='js/multiple-select.js')}}"></script>
 
+<script>
+    new MultipleSelect('#project-project_team', {
+        placeholder: 'Select Faculty'
+    })
+    document.getElementById("multiple-select-container-1").classList.add("input");
+    
+</script>
+
+<script>
 var current_fs, next_fs, previous_fs;
 var left, opacity, scale;
 var animating;
@@ -467,17 +490,18 @@ $(".next").click(function () {
     current_fs = $(this).parent();
     next_fs = $(this).parent().next();
     $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-    var requiredFields = $(this).parent().find("input[required]", "textarea[required]");
-
+    var requiredInput = $(this).parent().find("input[required]");
+    var requiredTextarea = $(this).parent().find("textarea[required]");
+    var requiredFields = $.merge(requiredTextarea, requiredInput);
     // Check if all required fields in the current form are filled out
     var filledOut = true;
     
-    requiredFields.each(function() {
-        if ($(this).val() === "") {
-            filledOut = false;
-            return false; // exit the loop early if a required field is empty
-        }
-    });
+    // requiredFields.each(function() {
+    //     if ($(this).val() === "") {
+    //         filledOut = false;
+    //         return false; // exit the loop early if a required field is empty
+    //     }
+    // });
     if (!filledOut) {
         toastr.error("Please fill out all the fields.");
         animating = false;
@@ -545,9 +569,10 @@ $(".previous").click(function () {
 
 
 $("form").on("submit", function (e) {
-    var requiredFields = $(this).parent().find("input[required]", "textarea[required]");
+    var requiredInput = $(this).parent().find("input[required]");
+    var requiredTextarea = $(this).parent().find("textarea[required]");
+    var requiredFields = $.merge(requiredTextarea, requiredInput);
     var filledOut = true;
-
     // Check if all required fields in the current form are filled out
     requiredFields.each(function() {
     if ($(this).val() === "") {
@@ -564,5 +589,6 @@ $("form").on("submit", function (e) {
     }
 });
 </script>
+
     
 {% endblock %}

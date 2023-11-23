@@ -1,0 +1,134 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>PUPQC Extension Services</title> 
+{% endblock %}
+
+{% block content %}
+        <!--Container-->
+        <div class="p-3 mx-md-5">
+            <!-- Page header -->
+            <div class="page-header d-print-none">
+                <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                    <h2 class="page-title">
+                        Extension Programs
+                    </h2>
+                    <div class="text-secondary mt-1">1-18 of 413 extension programs</div>
+                    </div>
+                    <!-- Page title actions -->
+                    <div class="col-auto ms-auto d-print-none">
+                    <div class="d-flex">
+                        <input type="search" class="form-control d-inline-block w-9 me-3" placeholder="Search"/>
+                        <a href="{{ url_for('programs.insertExtensionProgram')}}" class="btn btn-primary">
+                        <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                        Add extension program
+                        </a>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            {% if programs %}                
+                <div class="row mt-4">
+                    {% for program in programs %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card">
+                            <!-- Photo -->
+                            <img src="{{ program['ImageUrl'] if program['ImageUrl'] }}" height="200px" class="card-img-top object-fit-cover"></img>
+                            <div class="card-body">
+                                <h3 class="card-title">{{ program.Name }}</h3><br>
+                                <div class="tags-list">
+                                    <button type="button" class="btn btn-xs border-secondary text-dark" disabled>{{ program.Agenda.AgendaName }}</button>
+                                    <button type="button" class="btn btn-xs border-secondary text-dark" disabled>{{ program.Program.Abbreviation }}</button>
+                                </div>
+                            </div>
+                            <!-- Card footer -->
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between ">
+                                    <button  data-bs-toggle="modal" data-bs-target="#deleteModal{{ program['ExtensionProgramId'] }}"class="fw-semibold fs-2 text-danger bg-transparent border-0">
+                                        <iconify-icon icon="ion:trash-outline"></iconify-icon>
+                                    </button>
+                                    <a href="{{url_for('programs.viewExtensionProgram', id=program['ExtensionProgramId'])}}" class="btn btn-primary fs-4">View Extension Program</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% include 'programs/delete_program.html' %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="w-full d-flex justify-content-center align-items-center p-5">
+                    No extension programs found.
+                </div>
+            {% endif %}
+            </div>
+        </div>
+        <!--/container-->
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function() {
+        var table = $('#projects').DataTable({
+                responsive: true,
+                columnDefs: [
+                    { width: 100, targets: 2 },
+                    { width: 150, targets: 3 }
+                ],
+                fixedColumns: true,
+            })
+            .responsive.recalc()
+    });
+</script>
+<script>
+    // JavaScript function to handle form submission
+    // set the modal menu element
+    const $targetEl = document.getElementById('addProgramModel');
+    const modal = new Modal($targetEl);
+
+    document.getElementById("program-form").addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent the default form submission
+      const formData = new FormData(this); // Create a FormData object
+      modal.hide();
+      // Display a loading message
+      flashMessage("Inserting extension program...", "info");
+        
+      // Make an AJAX request to insert the program
+      fetch(this.action, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            // Display a success message
+            flashMessage(data.msg, "success");
+            // Append the newly added program HTML to the program list
+            appendProgramToProgramList(data.program_html);
+          } else {
+            // Display an error message
+            flashMessage(data.msg, "error");
+          }
+        })
+        .catch((error) => {
+          // Display an error message
+          flashMessage(error.message, "error");
+        });
+    });
+  
+    function flashMessage(message, category) {
+      // Display the message using your preferred method (e.g., Bootstrap alert)
+      // Replace this with your own code to display the message to the user
+    }
+
+    function appendProgramToProgramList(programHtml) {
+        const programList = document.getElementById("program-list");
+        const programElement = document.createElement("div");
+        programElement.innerHTML = programHtml;
+        programList.appendChild(programElement);
+    }
+  </script>
+{% endblock %}
