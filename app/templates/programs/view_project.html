@@ -43,9 +43,9 @@ object-fit: cover;">
                     Details</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#tabs-activity" class="nav-link" data-bs-toggle="tab">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 12h4l3 8l4 -16l3 8h4"></path></svg>
-                        Activity</a>
+                <a href="#tabs-activity" class="nav-link" data-bs-toggle="tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 12h4l3 8l4 -16l3 8h4"></path></svg>
+                    Activity</a>
                 </li>
                 <li class="nav-item" role="presentation">
                 <a href="#tabs-registered" class="nav-link" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/user -->
@@ -53,6 +53,26 @@ object-fit: cover;">
                     Registered</a>
                 </li>
             </ul>
+            <div class="d-flex justify-content-end">
+                <div class="d-flex" id="details-buttons">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#edit-project" class="btn btn-primary rounded-3 d-flex align-items-center me-2">
+                        <iconify-icon class="me-2" icon="bx:edit"></iconify-icon>
+                        Edit
+                    </button>
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#delete-project" class="btn btn-danger rounded-3 d-flex align-items-center ">
+                        <iconify-icon class="me-2" icon="ion:trash-outline"></iconify-icon>
+                        Delete
+                    </button>
+                    {% include 'programs/edit_project_modal.html' %}
+                    {% include 'programs/delete_project.html' %}
+                </div>  
+                <!-- <div class="hidden rounded-md shadow-sm" id="activity-button" role="group">
+                    <button type="button"  data-modal-target="addActivityModal" data-modal-show="addActivityModal" class="inline-flex items-center text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2 mr-2 mb-2 focus:outline-none">
+                        <iconify-icon class="w-3 h-3 mr-2" icon="ic:baseline-plus"></iconify-icon>
+                        Add Activity
+                    </button>
+                </div>   -->
+            </div>
         </div>
         <div class="card-body bg-white shadow-sm">
             <div class="tab-content">
@@ -151,45 +171,9 @@ object-fit: cover;">
         })
         .columns.adjust()
         .responsive.recalc()
-
-        const editButton = document.getElementById('edit-project');
-        const cancelButton = document.getElementById('cancel-project');
+        
         const imageDiv= document.getElementById('image-div')
         const submitProjectDiv= document.getElementById('submit-project')
-        const form = document.getElementById('projectForm');
-
-        // Add a click event listener to the "Edit" button
-        editButton.addEventListener('click', function () {
-            // Get all input, textarea, and select elements within the form
-            const formElements = form.querySelectorAll('input.input, textarea.input, select.input');
-
-            // Loop through the elements and remove the "disabled" attribute
-            formElements.forEach(function (element) {
-                element.removeAttribute('disabled');
-                element.classList.remove('border-0', 'bg-transparent');
-                element.classList.add('bg-gray-50', 'border', 'border-gray-300');
-            });
-            submitProjectDiv.classList.remove('hidden');
-            submitProjectDiv.classList.add('flex');
-            imageDiv.classList.remove('hidden');
-            imageDiv.classList.add('flex');
-        });
-        cancelButton.addEventListener('click', function () {
-            // Get all input, textarea, and select elements within the form
-            const formElements = form.querySelectorAll('input.input, textarea.input, select.input');
-
-            // Loop through the elements and remove the "disabled" attribute
-            formElements.forEach(function (element) {
-                element.setAttribute('disabled', 'true');
-                element.classList.remove('bg-gray-50', 'border', 'border-gray-300');
-                element.classList.add('border-0', 'bg-transparent');
-            });
-            submitProjectDiv.classList.remove('flex');
-            submitProjectDiv.classList.add('hidden');
-            imageDiv.classList.remove('flex');
-            imageDiv.classList.add('hidden');
-        });
-
         
         const activityOutlineTab = document.getElementById('activity-outline-tab')
         const detailsTab = document.getElementById('details-tab')
