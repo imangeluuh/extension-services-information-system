@@ -2,12 +2,11 @@
 
 {% block head %}
     <title>{{ project.Title }}</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" rel="stylesheet">
     <!--Regular Datatables CSS-->
     <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
     <!--Responsive Extension Datatables CSS-->
     <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/table_style.css') }}">  
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
 {% endblock %}
 
 {% block content %}
@@ -22,7 +21,7 @@ object-fit: cover;">
             <ol class="breadcrumb bg-transparent px-0" aria-label="breadcrumbs">
                 <li class="breadcrumb-item"><a href="{{url_for('programs.programs')}}" class="text-primary">Extension Programs</a></li>
                 <li class="breadcrumb-item"><a href="{{url_for('programs.viewExtensionProgram', id=project.ExtensionProgram.ExtensionProgramId)}}" class="text-primary">{{ project.ExtensionProgram.Name }}</a></li>
-                <li class="breadcrumb-item text-white active text-truncate" style="max-width: 800px;" aria-current="page"><a href="#" class="">{{project.Title}}</a></li>
+                <li class="breadcrumb-item text-white active text-truncate" style="max-width: 400px;" aria-current="page"><a href="#" class="">{{project.Title}}</a></li>
             </ol>
             <div class="text-white">
                 <h2 class="mb-3 ">{{project.Title}}</h2>
@@ -53,31 +52,26 @@ object-fit: cover;">
                     Registered</a>
                 </li>
             </ul>
-            <div class="d-flex justify-content-end">
-                <div class="d-flex" id="details-buttons">
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#edit-project" class="btn btn-primary rounded-3 d-flex align-items-center me-2">
-                        <iconify-icon class="me-2" icon="bx:edit"></iconify-icon>
-                        Edit
-                    </button>
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#delete-project" class="btn btn-danger rounded-3 d-flex align-items-center ">
-                        <iconify-icon class="me-2" icon="ion:trash-outline"></iconify-icon>
-                        Delete
-                    </button>
-                    {% include 'programs/edit_project_modal.html' %}
-                    {% include 'programs/delete_project.html' %}
-                </div>  
-                <!-- <div class="hidden rounded-md shadow-sm" id="activity-button" role="group">
-                    <button type="button"  data-modal-target="addActivityModal" data-modal-show="addActivityModal" class="inline-flex items-center text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2 mr-2 mb-2 focus:outline-none">
-                        <iconify-icon class="w-3 h-3 mr-2" icon="ic:baseline-plus"></iconify-icon>
-                        Add Activity
-                    </button>
-                </div>   -->
-            </div>
         </div>
         <div class="card-body bg-white shadow-sm">
             <div class="tab-content">
                 <div class="tab-pane active show" id="tabs-details" role="tabpanel">
                     <div class="row g-2">
+                        <div class="col-auto col-md-8">
+                            <h4 class="pb-2">Details</h4>
+                        </div>
+                        <div class="col-auto col-md-4 d-flex justify-content-md-end " id="details-buttons">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#edit-project" class="btn btn-primary rounded-2 d-flex align-items-center me-2 py-1 px-2">
+                                <iconify-icon class="me-2" icon="bx:edit"></iconify-icon>
+                                Edit
+                            </button>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#delete-project" class="btn btn-danger rounded-2 d-flex align-items-center  py-1 px-2">
+                                <iconify-icon class="me-2" icon="ion:trash-outline"></iconify-icon>
+                                Delete
+                            </button>
+                            {% include 'programs/edit_project_modal.html' %}
+                            {% include 'programs/delete_project.html' %}
+                        </div>  
                         <div class="col-auto col-md-2">
                             <div class="datagrid-title">Extension Project ID</div>
                             <div class="datagrid-content">{{project.ProjectId}}</div>
@@ -145,12 +139,61 @@ object-fit: cover;">
                     </div>
                 </div>
                 <div class="tab-pane" id="tabs-activity">
+                    <div class="d-none rounded-2" id="activity-button" role="group">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#add-activity" class="btn btn-primary rounded-3 d-flex align-items-center me-2 py-1 px-2">
+                            <iconify-icon class="w-3 h-3 mr-2" icon="ic:baseline-plus"></iconify-icon>
+                            Add Activity
+                        </button>
+                    </div>  
                     <h4>Activity tab</h4>
-                    <div>Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan nibh habitant senectus</div>
+                    {% for project in ext_program.Projects %}
+                    <div class="list-group-item">
+                        <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <span class="avatar" style="background-image: url('{{project.ImageUrl if project.ImageUrl}}'); height: 75px; width: 75px"></span>
+                                </div>
+                                <div class="col text-truncate">
+                                    <span class="text-body d-block">{{project.Title}}</span>
+                                    <div class="text-secondary text-truncate mt-n1">{{project.LeadProponent.FirstName}} {{project.LeadProponent.LastName}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
                 </div>
                 <div class="tab-pane" id="tabs-registered" role="tabpanel">
-                    <h4>Profile tab</h4>
-                    <div>Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc amet, pellentesque id egestas velit sed</div>
+                    <h4 class="pb-2">Registered Beneficiaries and Volunteers</h4>
+                    <!-- registered users table-->
+                    <div class="container w-100 mx-auto px-2">
+                        <table id="users" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                            <thead>
+                                <tr>
+                                    <th data-priority="1">First Name</th>
+                                    <th data-priority="2">Middle Name</th>
+                                    <th data-priority="3">Last Name</th>
+                                    <th data-priority="4">Role</th>
+                                    {% if current_user.Role.RoleName == 'Admin' %}
+                                    <th data-priority="5">Action</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in registered %}
+                                <tr>
+                                    <td>{{ user.User.FirstName }}</td>
+                                    <td>{{ user.User.MiddleName if user.User.MiddleName else 'N/A' }}</td>
+                                    <td>{{ user.User.LastName }}</td>
+                                    <td>{{ user.User.Login.Role.RoleName }}</td>
+                                    {% if current_user.Role.RoleName == 'Admin' %}
+                                    <td class="d-flex justify-content-center"><a href="{{ url_for('admin.viewUser', id=user.User.UserId) }}" class="bg-success-subtle text-success me-2 px-2 py-1 rounded-2">View</a></td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>   
+                    </div>
+                    <!--/registered users table--->
                 </div>
             </div>
         </div>
@@ -172,44 +215,34 @@ object-fit: cover;">
         .columns.adjust()
         .responsive.recalc()
         
-        const imageDiv= document.getElementById('image-div')
-        const submitProjectDiv= document.getElementById('submit-project')
-        
-        const activityOutlineTab = document.getElementById('activity-outline-tab')
-        const detailsTab = document.getElementById('details-tab')
-        const registeredTab = document.getElementById('registered-tab')
-        const calendarTab = document.getElementById('activity-calendar-tab');
+        const activityOutlineTab = document.getElementById('tabs-activity')
+        const detailsTab = document.getElementById('tabs-details')
+        const registeredTab = document.getElementById('tabs-registered')
         const activityButton = document.getElementById('activity-button');
         const detailsButton = document.getElementById('details-buttons');
         
         activityOutlineTab.addEventListener('click', function () {
-            detailsButton.classList.remove('inline-flex');
-            detailsButton.classList.add('hidden');
-            activityButton.classList.remove('hidden');
-            activityButton.classList.add('inline-flex');
+            detailsButton.classList.remove('d-inline-flex');
+            detailsButton.classList.add('d-none');
+            activityButton.classList.remove('d-none');
+            activityButton.classList.add('d-inline-flex');
         });
         detailsTab.addEventListener('click', function () {
-            activityButton.classList.remove('inline-flex');
-            activityButton.classList.add('hidden');
-            detailsButton.classList.remove('hidden');
-            detailsButton.classList.add('inline-flex');
+            activityButton.classList.remove('d-inline-flex');
+            activityButton.classList.add('d-none');
+            detailsButton.classList.remove('d-none');
+            detailsButton.classList.add('d-inline-flex');
         });
         registeredTab.addEventListener('click', function () {
-            activityButton.classList.remove('inline-flex');
-            activityButton.classList.add('hidden');
-            detailsButton.classList.remove('inline-flex');
-            detailsButton.classList.add('hidden');
+            activityButton.classList.remove('d-inline-flex');
+            activityButton.classList.add('d-none');
+            detailsButton.classList.remove('d-inline-flex');
+            detailsButton.classList.add('d-none');
         });
-        calendarTab.addEventListener('click', function () {
-            activityButton.classList.remove('inline-flex');
-            activityButton.classList.add('hidden');
-            detailsButton.classList.remove('inline-flex');
-            detailsButton.classList.add('hidden');
-            // Add a delay before re-rendering calendar
-            setTimeout(function() {
-                calendar.render();
-            }, 10); // Adjust the delay as needed
-        });
+        // Add a delay before re-rendering calendar
+        // setTimeout(function() {
+        //     calendar.render();
+        // }, 10); // Adjust the delay as needed
     });
 </script>
 {% endblock %}
