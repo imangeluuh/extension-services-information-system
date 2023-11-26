@@ -6,7 +6,7 @@
     <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
     <!--Responsive Extension Datatables CSS-->
     <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -42,7 +42,7 @@ object-fit: cover;">
                     Details</a>
                 </li>
                 <li class="nav-item">
-                <a href="#tabs-activity" class="nav-link" data-bs-toggle="tab">
+                <a href="#tabs-activity" id="activity-tab" class="nav-link" data-bs-toggle="tab">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 12h4l3 8l4 -16l3 8h4"></path></svg>
                     Activity</a>
                 </li>
@@ -71,7 +71,7 @@ object-fit: cover;">
                             </button>
                             {% include 'programs/edit_project_modal.html' %}
                             {% include 'programs/delete_project.html' %}
-                        </div>  
+                        </div>
                         <div class="col-auto col-md-2">
                             <div class="datagrid-title">Extension Project ID</div>
                             <div class="datagrid-content">{{project.ProjectId}}</div>
@@ -138,34 +138,10 @@ object-fit: cover;">
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="tabs-activity">
-                    <div class="d-none rounded-2" id="activity-button" role="group">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#add-activity" class="btn btn-primary rounded-3 d-flex align-items-center me-2 py-1 px-2">
-                            <iconify-icon class="w-3 h-3 mr-2" icon="ic:baseline-plus"></iconify-icon>
-                            Add Activity
-                        </button>
-                    </div>  
-                    <h4>Activity tab</h4>
-                    {% for project in ext_program.Projects %}
-                    <div class="list-group-item">
-                        <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}">
-                            <div class="row">
-                                <div class="col-auto">
-                                    <span class="avatar" style="background-image: url('{{project.ImageUrl if project.ImageUrl}}'); height: 75px; width: 75px"></span>
-                                </div>
-                                <div class="col text-truncate">
-                                    <span class="text-body d-block">{{project.Title}}</span>
-                                    <div class="text-secondary text-truncate mt-n1">{{project.LeadProponent.FirstName}} {{project.LeadProponent.LastName}}</div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    {% endfor %}
-                </div>
                 <div class="tab-pane" id="tabs-registered" role="tabpanel">
                     <h4 class="pb-2">Registered Beneficiaries and Volunteers</h4>
                     <!-- registered users table-->
-                    <div class="container w-100 mx-auto px-2">
+                    <div class="container mx-auto mt-3 px-2" style="width:100%;">
                         <table id="users" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
                             <thead>
                                 <tr>
@@ -191,9 +167,44 @@ object-fit: cover;">
                                 </tr>
                                 {% endfor %}
                             </tbody>
-                        </table>   
+                        </table>
                     </div>
                     <!--/registered users table--->
+                </div>
+                <div class="tab-pane" id="tabs-activity">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4>Activity tab</h4>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#add-activity" class="btn btn-primary rounded-2 d-flex align-items-center me-2 py-1 px-2">
+                            <iconify-icon class="w-3 h-3 mr-2" icon="ic:baseline-plus"></iconify-icon>
+                            Add Activity
+                        </button>
+                    </div>
+                    {% if project.Activity %}
+                    <div class="row">
+                        <div class="col-auto col-md-8">
+                            {% for activity in project.Activity %}
+                            <div class="list-group-item mt-3">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <span class="avatar" style="background-image: url('{{activity.ImageUrl if activity.ImageUrl}}'); height: 75px; width: 75px"></span>
+                                    </div>
+                                    <div class="col text-truncate">
+                                        <span class="text-body d-block fw-medium ">{{activity.ActivityName}}</span>
+                                        <span class="text-body d-block fs-4">{{activity.Date.strftime('%A, %B %d %Y')}}, {{activity.StartTime.strftime('%I:%M %p') if activity.StartTime}} - {{activity.EndTime.strftime('%I:%M %p') if activity.EndTime}}</span>
+                                        <span class="text-body d-block fs-4">Location: {{activity.Location}}</span><br>
+                                        <div class="text-secondary text-truncate mt-1 fs-4">{{activity.Description}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-auto col-md-4 ">
+                            {% include 'admin/components/calendar.html' %} 
+                        </div>
+                    </div>
+                    {% else %}
+                    <p>No activities found.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -208,41 +219,19 @@ object-fit: cover;">
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    $(document).ready(function() {
         var table = $('#users').DataTable({
                 responsive: true
         })
         .columns.adjust()
         .responsive.recalc()
-        
-        const activityOutlineTab = document.getElementById('tabs-activity')
-        const detailsTab = document.getElementById('tabs-details')
-        const registeredTab = document.getElementById('tabs-registered')
-        const activityButton = document.getElementById('activity-button');
-        const detailsButton = document.getElementById('details-buttons');
-        
-        activityOutlineTab.addEventListener('click', function () {
-            detailsButton.classList.remove('d-inline-flex');
-            detailsButton.classList.add('d-none');
-            activityButton.classList.remove('d-none');
-            activityButton.classList.add('d-inline-flex');
+
+        $('#activity-tab').on('click', function() {
+            setTimeout(function() {
+                calendar.render();
+            }, 10); // Adjust the delay as needed
         });
-        detailsTab.addEventListener('click', function () {
-            activityButton.classList.remove('d-inline-flex');
-            activityButton.classList.add('d-none');
-            detailsButton.classList.remove('d-none');
-            detailsButton.classList.add('d-inline-flex');
-        });
-        registeredTab.addEventListener('click', function () {
-            activityButton.classList.remove('d-inline-flex');
-            activityButton.classList.add('d-none');
-            detailsButton.classList.remove('d-inline-flex');
-            detailsButton.classList.add('d-none');
-        });
-        // Add a delay before re-rendering calendar
-        // setTimeout(function() {
-        //     calendar.render();
-        // }, 10); // Adjust the delay as needed
-    });
+});
+
 </script>
 {% endblock %}
