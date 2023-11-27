@@ -7,7 +7,10 @@
     <!--Responsive Extension Datatables CSS-->
     <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">
-{% endblock %}
+    <!-- Multiple Select -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/multiple-select.css')}}">
+
+    {% endblock %}
 
 {% block content %}
 
@@ -178,6 +181,7 @@ object-fit: cover;">
                             <iconify-icon class="w-3 h-3 mr-2" icon="ic:baseline-plus"></iconify-icon>
                             Add Activity
                         </button>
+                        {% include 'programs/add_activity.html' %}
                     </div>
                     {% if project.Activity %}
                     <div class="row">
@@ -185,21 +189,36 @@ object-fit: cover;">
                             {% for activity in project.Activity %}
                             <div class="list-group-item mt-3">
                                 <div class="row">
-                                    <div class="col-auto">
-                                        <span class="avatar" style="background-image: url('{{activity.ImageUrl if activity.ImageUrl}}'); height: 75px; width: 75px"></span>
+                                    <div class="col-auto col-md-11">
+                                        <div class="row" data-bs-toggle="modal" data-bs-target="#view-activity">
+                                            <div class="col-auto">
+                                                <span class="avatar" style="background-image: url('{{activity.ImageUrl if activity.ImageUrl}}'); height: 75px; width: 75px"></span>
+                                            </div>
+                                            <div class="col-auto  text-truncate">
+                                                <span class="text-body d-block fw-medium ">{{activity.ActivityName}}</span>
+                                                <span class="text-body d-block fs-4">{{activity.Date.strftime('%A, %B %d %Y')}}, {{activity.StartTime.strftime('%I:%M %p') if activity.StartTime}} - {{activity.EndTime.strftime('%I:%M %p') if activity.EndTime}}</span>
+                                                <span class="text-body d-block fs-4">Location: {{activity.Location}}</span><br>
+                                                <div class="text-secondary text-truncate mt-1 fs-4">{{activity.Description}}</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col text-truncate">
-                                        <span class="text-body d-block fw-medium ">{{activity.ActivityName}}</span>
-                                        <span class="text-body d-block fs-4">{{activity.Date.strftime('%A, %B %d %Y')}}, {{activity.StartTime.strftime('%I:%M %p') if activity.StartTime}} - {{activity.EndTime.strftime('%I:%M %p') if activity.EndTime}}</span>
-                                        <span class="text-body d-block fs-4">Location: {{activity.Location}}</span><br>
-                                        <div class="text-secondary text-truncate mt-1 fs-4">{{activity.Description}}</div>
+                                    <div class="col-auto col-md-1">
+                                        <div class="d-flex">
+                                            <button type="button" data-bs-toggle="modal" data-bs-target="#" class="btn bg-transparent border-0 shadown-none d-flex align-items-center me-2 py-1 px-2">
+                                                <iconify-icon class="me-2" icon="bx:edit"></iconify-icon>
+                                            </button>
+                                            <button type="button" data-bs-toggle="modal" data-bs-target="#" class="btn bg-transparent border-0 shadown-none d-flex align-items-center  py-1 px-2">
+                                                <iconify-icon class="me-2" icon="ion:trash-outline"></iconify-icon>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            {% include 'programs/manage_activity.html' %}
                             {% endfor %}
                         </div>
                         <div class="col-auto col-md-4 ">
-                            {% include 'admin/components/calendar.html' %} 
+                            {#include 'components/calendar.html'#} 
                         </div>
                     </div>
                     {% else %}
@@ -218,6 +237,8 @@ object-fit: cover;">
 <!--Datatables -->
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<!-- Multiple Select -->
+<script src="{{ url_for('static', filename='js/multiple-select.js')}}"></script>
 <script>
     $(document).ready(function() {
         var table = $('#users').DataTable({
@@ -231,6 +252,12 @@ object-fit: cover;">
                 calendar.render();
             }, 10); // Adjust the delay as needed
         });
+        new MultipleSelect('#speaker', {
+            placeholder: 'Select Speaker'
+        })
+        new MultipleSelect('#project_team', {
+            placeholder: 'Select Faculty'
+        })
 });
 
 </script>
