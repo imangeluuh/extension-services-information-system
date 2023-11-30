@@ -499,6 +499,7 @@ def updateActivity(id):
     form = ActivityForm()
     activity = Activity.query.filter_by(ActivityId=id).first()
     if form.validate_on_submit():
+        print('valid form')
         if form.image.data is not None:
             # If extension project has previous image, remove it from imagekit
             if activity.ImageFileId is not None:
@@ -511,24 +512,37 @@ def updateActivity(id):
             status = saveImage(form.image.data, imagepath)
             if status.error is not None:
                 flash("File Upload Error")
-                return redirect(url_for('programs.programs'))
+                return redirect(url_for('programs.viewProject', id=activity.ProjectId))
             else:
                 activity.ImageUrl = status.url
                 activity.ImageFileId = status.file_id
             # Delete file from local storage
             if os.path.exists(imagepath):
                 os.remove(imagepath)
+
+        if form.speaker.data:
+            selected_values = form.speaker.data
+            speakers ={}
+            for choice in form.speaker.choices:
+                if choice[0] in selected_values:
+                    speakers[choice[0]] = choice[1]
+
+            activity.Speaker = speakers
+
         activity.ActivityName=form.activity_name.data
         activity.Date=form.date.data
-        activity.Description=form.activity_description.data
         activity.StartTime=form.start_time.data
         activity.EndTime=form.end_time.data
+        activity.Description=form.activity_description.data
+        activity.Location=form.location.data
+
         db.session.commit()
         flash('Activity is successfully updated.', category='success')
         return redirect(url_for('programs.viewProject', id=activity.ProjectId))
     if form.errors != {}: # If there are errors from the validations
         for field, error in form.errors.items():
-            flash(f"Field '{field}' has an error: {error}", category='error')
+            print(f"Field '{field}' has an error: {error}")
+    print('tapos na')
     return redirect(url_for('programs.viewProject', id=activity.ProjectId))
 
 @bp.route('/delete/activity/<int:id>', methods=['POST'])

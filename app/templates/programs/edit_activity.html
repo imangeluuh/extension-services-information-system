@@ -1,0 +1,92 @@
+<div class="modal modal-blur" id="edit-activity-{{activity.ActivityId}}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Activity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('programs.updateActivity', id=activity.ActivityId)}}" enctype="multipart/form-data" method="post">
+            {{ activity_form.csrf_token() }}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <!-- name -->
+                            {{ activity_form.activity_name.label(class="form-label") }}
+                            {{ activity_form.activity_name(class="form-control", value=activity.ActivityName)}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!--date -->
+                            {{ activity_form.date.label(class="form-label") }}
+                            {{ activity_form.date(class="form-control", value=activity.Date)}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- start time -->
+                            {{ activity_form.start_time.label(class="form-label") }}
+                            {{ activity_form.start_time(id="start_time", class="form-control", value=activity.StartTime.strftime('%H:%M'), required="required" if not activity)}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-4">
+                        <div class="mb-3">
+                            <!-- end time -->
+                            {{ activity_form.end_time.label(class="form-label") }}
+                            {{ activity_form.end_time(id="start_time", class="form-control", value=activity.StartTime.strftime('%H:%M'), required="required" if not activity)}}
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-6">
+                        <div class="mb-3">
+                            {% set my_list = [] %}
+
+                            {% for key, value in activity.Speaker.items() %}
+                                {% set _ = my_list.append(key) %}
+                            {% endfor %}
+                            
+                            <!-- speaker-->
+                            <div class="form-group">
+                                {{ activity_form.speaker.label(class="form-label")}}
+                                <select id="{{activity_form.speaker.id}}1" name="{{activity_form.speaker.name}}" multiple="" hidden>
+                                    {% for option in activity_form.speaker.choices %}
+                                    <option value="{{ option[0] }}" {{'selected' if option[0] in my_list}}>{{ option[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto col-md-6">
+                        <div class="mb-3">
+                            <!-- location -->
+                            {{ activity_form.location.label(class="form-label") }}
+                            {{ activity_form.location(class="form-control", value=activity.Location)}}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <!-- description -->
+                            {{ activity_form.activity_description.label(class="form-label") }}
+                            <textarea name="{{ activity_form.activity_description.name }}" class="form-control">{{ activity.Description }}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <!-- image -->
+                            {{ activity_form.image.label(class="form-label") }}
+                            {{ activity_form.image(class="form-control")}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </a>
+                {{ activity_form.save(class="btn btn-primary ms-auto")}}
+            </div>
+            </form>    
+        </div>
+    </div>
+</div>
+
