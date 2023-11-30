@@ -207,7 +207,7 @@ object-fit: cover;">
                                             <button type="button" data-bs-toggle="modal" data-bs-target="#edit-activity-{{activity.ActivityId}}" class="btn bg-transparent border-0 shadown-none d-flex align-items-center me-2 py-1 px-2">
                                                 <iconify-icon class="me-1 fs-1 text-primary" icon="bx:edit"></iconify-icon>
                                             </button>
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#" class="btn bg-transparent border-0 shadown-none d-flex align-items-center  py-1 px-2">
+                                            <button type="button" data-bs-toggle="modal" data-bs-target="#delete-activity-{{activity.ActivityId}}" class="btn bg-transparent border-0 shadown-none d-flex align-items-center  py-1 px-2">
                                                 <iconify-icon class="me-1 fs-1 text-danger " icon="ion:trash-outline"></iconify-icon>
                                             </button>
                                         </div>
@@ -216,6 +216,7 @@ object-fit: cover;">
                             </div>
                             {% include 'programs/view_activity.html' %}
                             {% include 'programs/edit_activity.html' %}
+                            {% include 'programs/delete_activity.html' %}
                             {% endfor %}
                         </div>
                         <div class="col-auto col-md-4 ">

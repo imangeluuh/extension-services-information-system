@@ -557,7 +557,6 @@ def deleteActivity(id):
         db.session.commit()
         flash('Activity is successfully deleted.', category='success')
     except Exception as e:
-        print(e)
         flash('There was an issue deleting the activity', category='error')
 
     return redirect(url_for('programs.viewProject', id=project_id))
