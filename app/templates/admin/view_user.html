@@ -1,0 +1,215 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>{{ user.FirstName }} {{ user.LastName}}'s Information</title>
+    <!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
+{% endblock %}
+
+{% block content %}
+        <!--Container-->
+        <div class="container w-100 mx-auto py-5">
+            <!--Card-->
+            <div class="rounded shadow bg-white">
+                <h1 class="d-flex align-items-center fw-semibold px-4 py-4 fs-1">
+                    {{ user.FirstName }} {{ user.LastName}}'s Information
+                </h1>
+                <!-- Tabs -->
+                <div class="card mx-3 shadow-none  ">
+                    <div class="card-header ">
+                        <ul class="nav nav-tabs card-header-tabs bg-white " data-bs-toggle="tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a href="#tabs-profile-3" class="nav-link active" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/user -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path></svg>
+                                    Profile</a>
+                            </li>
+                            {% if user.Login.Role.RoleName != "Faculty" %}
+                            <li class="nav-item" role="presentation">
+                                <a href="#tabs-home-3" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24"  viewBox="0 0 28 28"><path fill="currentColor" d="M6 12.5a2.5 2.5 0 1 1 5 0a2.5 2.5 0 0 1-5 0Zm2.5-1a1 1 0 1 0 0 2a1 1 0 0 0 0-2Zm0 5.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5Zm-1 2.5a1 1 0 1 1 2 0a1 1 0 0 1-2 0Zm5.5-7.25a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1-.75-.75Zm.75 6.25a.75.75 0 0 0 0 1.5h7.5a.75.75 0 0 0 0-1.5h-7.5ZM6 7.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 7.25ZM6.75 3A3.75 3.75 0 0 0 3 6.75v14.5A3.75 3.75 0 0 0 6.75 25h14.5A3.75 3.75 0 0 0 25 21.25V6.75A3.75 3.75 0 0 0 21.25 3H6.75ZM4.5 6.75A2.25 2.25 0 0 1 6.75 4.5h14.5a2.25 2.25 0 0 1 2.25 2.25v14.5a2.25 2.25 0 0 1-2.25 2.25H6.75a2.25 2.25 0 0 1-2.25-2.25V6.75Z"/></svg>
+                                    Projects</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a href="#tabs-home-5" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 17h2.1l6-5.95l-2.15-2.15L7 14.85V17Zm8.8-6.65l1.05-1.1Q17 9.1 17 8.9t-.15-.35l-1.4-1.4Q15.3 7 15.1 7t-.35.15l-1.1 1.05l2.15 2.15ZM5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h4.2q.325-.9 1.088-1.45T12 1q.95 0 1.713.55T14.8 3H19q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21H5Zm0-2h14V5H5v14Zm7-14.75q.325 0 .538-.213t.212-.537q0-.325-.213-.537T12 2.75q-.325 0-.537.213t-.213.537q0 .325.213.538T12 4.25ZM5 19V5v14Z"/></svg> Attendance</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <!-- User information -->
+                            <div class="tab-pane active show" id="tabs-profile-3" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-auto col-md-4">
+                                        <div class="mb-3 d-flex flex-column">
+                                            <!-- user id -->
+                                            <span class="datagrid-title">User ID</span>
+                                            <span class="datagrid-content">{{ user.UserId }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto col-md-8">
+                                        <!-- name -->
+                                        <div class="row">
+                                            <div class="col-auto col-md-4">
+                                                <div class="mb-3 d-flex flex-column">
+                                                    <!-- first name -->
+                                                    <span class="datagrid-title">First Name</span>
+                                                    <span class="datagrid-content">{{ user.FirstName }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto col-md-4">
+                                                <div class="mb-3 d-flex flex-column">
+                                                    <!-- middle name -->
+                                                    <span class="datagrid-title">Middle Name</span>
+                                                    <span class="datagrid-content">{{ user.MiddleName if user.MiddleName else 'N/A' }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto col-md-4">
+                                                <div class="mb-3 d-flex flex-column">
+                                                    <!-- last name -->
+                                                    <span class="datagrid-title">Last Name</span>
+                                                    <span class="datagrid-content">{{ user.LastName }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto col-md-2">
+                                        <div class="mb-3 d-flex flex-column">
+                                            <!-- birthdate -->
+                                            <span class="datagrid-title">Birthdate</span>
+                                            <span class="datagrid-content">{{ user.Birthdate }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto col-md-2">
+                                        <div class="mb-3 d-flex flex-column">
+                                            <!-- gender-->
+                                            <span class="datagrid-title">Gender</span>
+                                            <span class="datagrid-content"> {{ user.Gender }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto col-md-4">
+                                        <div class="mb-3 d-flex flex-column">
+                                            <!-- email -->
+                                            <span class="datagrid-title">Email</span>
+                                            <span class="datagrid-content">{{ user.Login.Email}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto col-md-4">
+                                        <div class="mb-3 d-flex flex-column">
+                                            <!-- contact -->
+                                            <span class="datagrid-title">Contact</span>
+                                            <span class="datagrid-content">{{ user.ContactDetails }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto col-md-6">
+                                        <div class="mb-3 d-flex flex-column">
+                                            <!-- Address -->
+                                            <span class="datagrid-title">Address</span>
+                                            <span class="datagrid-content">{{ user.Address }}</span>
+                                        </div>
+                                    </div>
+                                    {% if user.Login.Role.RoleName == "Student" %}
+                                    <div class="col-auto col-md-6">
+                                        <div class="mb-3 d-flex flex-column">
+                                            <!-- Skills interest -->
+                                            <span class="datagrid-title">Skills/Interest</span>
+                                            <span class="datagrid-content">{{ user.Student[0].SkillsInterest }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if user.Login.Role.RoleName != "Faculty" %}
+                            <div class="tab-pane" id="tabs-home-3" role="tabpanel">
+                                <div class="hidden p-4 rounded-3 " id="projects" role="tabpanel" aria-labelledby="projects-tab">
+                                    <table id="projects-table" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                                        <thead>
+                                            <tr>
+                                                <th data-priority="1" class="text-start">Project Name</th>
+                                                <th data-priority="2" class="text-start">Extension Program</th>
+                                                {% if user.Login.Role.RoleName != "Faculty" %}
+                                                <th data-priority="3" class="text-start">Lead Proponent</th>
+                                                {% endif %}
+                                                <th data-priority="4" class="text-start">Status</th>
+                                                <th data-priority="5" class="text-start">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for project in user_projects %}
+                                            <tr>
+                                                <td>{{ project.Name }}</td>
+                                                <td>{{ project.ExtensionProgram.Name }}</td>
+                                                {% if user.Login.Role.RoleName != "Faculty" %}
+                                                <td>{{ project.LeadProponent.FirstName ~ ' ' ~ project.LeadProponent.LastName }}</td>
+                                                {% endif %}
+                                                <td>{{ project.Status }}</td>
+                                                <td class="flex justify-center"><a href="{{ url_for('programs.viewProject', id=project.ProjectId) }}" class="bg-green-100 text-green-800 text-base font-medium mr-2 px-2.5 py-0.5 rounded">View</a></td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tabs-home-5" role="tabpanel">
+                                <div class="accordion" id="project-accordion">
+                                    <div class="accordion-item">
+                                        {% if user_projects %}
+                                            {% for project in user_projects %}
+                                                <h2 class="accordion-header" id="heading-{{project.ProjectId}}">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{project.ProjectId}}" aria-expanded="false">
+                                                    {{ project.Name }}
+                                                    </button>
+                                                </h2>
+                                                <div id="collapse-{{project.ProjectId}}" class="accordion-collapse collapse" data-bs-parent="#project-accordion" style="">
+                                                    <div class="accordion-body pt-0">
+                                                        {% for activity in project.Activity %}
+                                                        <div class="d-flex justify-content-between p-5"> 
+                                                            <p class="mb-2">{{ activity.ActivityName }}</p>
+                                                            <div class="d-flex align-items-center">
+                                                                {% if activity.Attendance[0] and activity.Attendance[0].HasAttended == True %}
+                                                                <span class="text-success fw-semibold pe-2">Attended</span>
+                                                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/8b/Eo_circle_green_white_checkmark.svg" alt="" width="18">
+                                                                {% elif activity.Attendance[0] and activity.Attendance[0].HasAttended == False %}
+                                                                <span class="text-danger fs-semibold pe-2">Absent</span>
+                                                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Cross_red_circle.svg/768px-Cross_red_circle.svg.png" alt="" width="18">
+                                                                {% else %}
+                                                                <span class="text-secondary fs-semibold">Activity has not yet started</span>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--/Card-->
+        </div>
+	    <!--/container-->
+{% endblock %}
+
+{% block script %}
+    <!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script>
+        $(document).ready(function() {
+        var table = $('#projects-table').DataTable({
+                responsive: true
+            })
+            .columns.adjust()
+            .responsive.recalc()
+        });
+    </script>
+{% endblock %}

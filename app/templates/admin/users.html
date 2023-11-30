@@ -1,0 +1,90 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>PUPQC-ESIS {{ 'Beneficiaries' if current_url_path == url_for('admin.beneficiaries') else 'Students' }}</title>
+    <!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
+{% endblock %}
+
+{% block content %}
+        <!--Container-->
+        <div class="container w-100 mx-auto p-3">
+            <!--Title-->
+            <h1 class="d-flex align-items-center fw-semibold px-2 py-4 fs-1">
+                {% if current_url_path == url_for('admin.beneficiaries') %}
+                    Beneficiaries
+                {% elif current_url_path == url_for('admin.students') %}
+                    Students
+                {% else %}
+                    Faculty
+                {% endif %}
+                Record
+            </h1>
+            <!--Card-->
+            <div class="p-3 mt-3 rounded shadow bg-white">
+                <table id="users" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th data-priority="1" class="text-start">First Name</th>
+                            <th data-priority="2" class="text-start">Middle Name</th>
+                            <th data-priority="3" class="text-start">Last Name</th>
+                            <th data-priority="4" class="text-start">Email</th>
+                            <th data-priority="5" class="text-start">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.User.FirstName }}</td>
+                            <td>{{ user.User.MiddleName if user.User.MiddleName else 'N/A' }}</td>
+                            <td>{{ user.User.LastName }}</td>
+                            <td>{{ user.User.Login.Email }}</td>
+                            <td class="flex"><a href="{{ url_for('admin.viewUser', id=user.User.UserId) }}" class="bg-success rounded px-2 py-1">View</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!--/Card-->
+        </div>
+	    <!--/container-->
+{% endblock %}
+
+{% block script %}
+	<!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script>
+        // $(document).ready(function(){
+        //     const url = '';
+        //     $('#users').DataTable({
+        //         ajax:{
+        //             url:url,
+        //             dataSrc:''
+        //         },
+        //         columns:[
+        //             {data: "ID"},
+        //             {data: "Name"},
+        //             {data: "Status"},
+        //             {data: "Location"},
+        //             {data: "Start Date"},
+        //             {data: "End Date"},
+        //         ],
+        //         responsive: true
+        //     }).columns.adjust()
+        //     .responsive.recalc();
+        // })
+
+        $(document).ready(function() {
+
+        var table = $('#users').DataTable({
+                responsive: true
+            })
+            .columns.adjust()
+            .responsive.recalc()
+        });
+    </script>
+{% endblock %}
