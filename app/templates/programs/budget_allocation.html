@@ -1,0 +1,102 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>Project Budge Allocationt</title>
+    <!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
+{% endblock %}
+
+{% block content %}
+        <!--Container-->
+        <div class="container w-100 mx-auto">
+            <!--Title-->
+            <p class="d-flex align-items-center fs-1 px-2 py-4">
+                Projects Budget
+            </p>
+            <!--Card-->
+            <div class="p-4 mt-4 rounded shadow bg-white">
+                <table id="budget" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th data-priority="1" class="text-start">Extension Project</th>
+                            <th data-priority="2" class="text-start">Extension Program</th>
+                            <th data-priority="3" class="text-start">Fund Type</th>
+                            <th data-priority="4" class="text-start">Proposed Budget</th>
+                            <th data-priority="5" class="text-start">Approved Budget</th>
+                            <th data-priority="6" class="text-start">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in projects %}
+                        <tr>
+                            <td>{{ project.Title }}</td>
+                            <td>{{ project.ExtensionProgram.Name }}</td>
+                            <td>{{ project.FundType }}</td>
+                            <td class="proposed">{{project.ProposedBudget }}</td>
+                            <td class="approved">{{project.ApprovedBudget }}</td>
+                            <td class="flex"><a href="{{ url_for('programs.viewProject', id=project.ProjectId) }}" class="bg-success me-2 px-2 py-1 rounded">View</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="font-bold" colspan="3" style="padding: 0.75rem!important;">Total</td>
+                            <td class="font-bold" id="total-proposed" style="padding: 0.75rem!important;"></td>
+                            <td class="font-bold" id="total-approved" style="padding: 0.75rem!important;"></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <!--/Card-->
+        </div>
+	    <!--/container-->
+{% endblock %}
+
+{% block script %}
+    <!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script>
+
+        $(document).ready(function() {
+
+        var table = $('#budget').DataTable({
+                responsive: true,
+            })
+            .columns.adjust()
+            .responsive.recalc()
+
+        computeTotal();
+
+        table.on('draw', function() {
+            computeTotal();
+        });
+        
+        function computeTotal() {
+            var float_total_proposed = 0.00
+            $(".proposed").each(function( index ) {
+                float_total_proposed = float_total_proposed + parseFloat($( this ).text())
+                console.log($(this).text())
+                console.log(float_total_proposed)
+            });
+            // Format float_total_proposed to display two decimal places
+            float_total_proposed = float_total_proposed.toFixed(2);
+            $('#total-proposed').text(float_total_proposed)
+    
+            var float_total_approved = 0.00
+            $(".approved").each(function( index ) {
+                float_total_approved = float_total_approved + parseFloat($( this ).text())
+                console.log($(this).text())
+                console.log(float_total_approved)
+            });
+            // Format float_total_approved to display two decimal places
+            float_total_approved = float_total_approved.toFixed(2);
+            $('#total-approved').text(float_total_approved)
+        }
+        });
+    </script>
+{% endblock %}

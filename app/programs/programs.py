@@ -576,8 +576,12 @@ def calendar():
 @bp.route('/budget-allocation')
 @login_required(role=["Admin", "Faculty"])
 def budgetAllocation():
-    ext_programs = ExtensionProgram.query.all()
-    return render_template('admin/budget_allocation.html', ext_programs=ext_programs)
+    projects = None 
+    if current_user.Role.RoleName == "Faculty":
+        projects = Project.query.filter_by(LeadProponentId= current_user.User[0].UserId).all()
+    else:
+        projects = Project.query.all()
+    return render_template('programs/budget_allocation.html', projects=projects)
 
 @bp.route('/questions')
 @login_required(role=["Admin", "Faculty"])
