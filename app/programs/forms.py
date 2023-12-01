@@ -7,13 +7,13 @@ from flask_wtf.file import FileField, FileAllowed
 from ..models import Agenda, Program, Collaborator, Speaker, Login
 import requests
 
-api_key = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJjNmYzMDFjZTg3OWE0M2YwOWMyZWYyZjUzODk1YjY1OSJ9.L0Xs2-s2hAhnOuUEyciVLPHOHDtH3OAeC_UgoMP3X64'
-
-access = requests.get(f"https://pupqcfis-com.onrender.com/api/all/faculty_data?token={api_key}")
-
-data = access.json()
 faculty_names = []
 try:
+    api_key = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJjNmYzMDFjZTg3OWE0M2YwOWMyZWYyZjUzODk1YjY1OSJ9.L0Xs2-s2hAhnOuUEyciVLPHOHDtH3OAeC_UgoMP3X64'
+
+    access = requests.get(f"https://pupqcfis-com.onrender.com/api/all/faculty_data?token={api_key}")
+
+    data = access.json()
     for faculty in data['FIS_data'][0]['faculty']:
         faculty_names.append((list(faculty.keys())[1], faculty['name']))
 except:
