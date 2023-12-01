@@ -561,6 +561,18 @@ def deleteActivity(id):
 
     return redirect(url_for('programs.viewProject', id=project_id))
 
+
+@bp.route('/calendar')
+@login_required(role=["Admin", "Faculty"])
+def calendar():
+    projects = Project.query.all()
+    selected_project_id = request.args.get('project_id', None)
+    # Call a function to fetch activities based on the selected project
+    activities = fetch_activities(selected_project_id)
+    
+    return render_template('programs/activity_calendar.html', projects=projects, events=activities, selected_project_id=selected_project_id)
+
+
 @bp.route('/budget-allocation')
 @login_required(role=["Admin", "Faculty"])
 def budgetAllocation():

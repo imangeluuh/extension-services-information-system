@@ -31,11 +31,11 @@
             }
         </style>
     </head>
-    <body class="sidebar-mini layout-fixed layout-navbar-fixed bg-light bg-gradient">
+    <body class="sidebar-mini layout-fixed layout-navbar-fixed bg-secondary-subtle">
         {% if current_user.is_authenticated %}
             {% include 'admin/components/sidebar.html' %}
             {% include 'admin/components/navbar.html' %}
-            <div class="content-wrapper">
+            <div class="content-wrapper bg-transparent ">
         {% endif %}
         {% block content %}
     
