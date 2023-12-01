@@ -34,7 +34,7 @@
                         <div class="mb-3">
                             <!-- end time -->
                             {{ activity_form.end_time.label(class="form-label") }}
-                            {{ activity_form.end_time(id="start_time", class="form-control", value=activity.StartTime.strftime('%H:%M'), required="required" if not activity)}}
+                            {{ activity_form.end_time(id="end_time", class="form-control", value=activity.StartTime.strftime('%H:%M'), required="required" if not activity)}}
                         </div>
                     </div>
                     <div class="col-auto col-md-6">

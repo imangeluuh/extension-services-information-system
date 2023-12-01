@@ -39,12 +39,17 @@
                     </div>
                     <div class="col-auto col-md-6">
                         <div class="mb-3">
+                            {% set project_team = [] %}
+
+                            {% for key, value in project.ProjectTeam.items() %}
+                                {% set _ = project_team.append(key) %}
+                            {% endfor %}
                             <!-- project team -->
                             <div class="form-group">
                                 {{ form.project_team.label(class="form-label")}}
                                 <select id="{{form.project_team.id}}" name="{{form.project_team.name}}" multiple="" hidden>
-                                    {% for option in form.project_team %}
-                                        {{ option }}
+                                    {% for option in form.project_team.choices %}
+                                        <option value="{{ option[0] }}" {{'selected' if option[0] in project_team}}>{{ option[1] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>

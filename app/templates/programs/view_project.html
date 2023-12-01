@@ -98,8 +98,10 @@ object-fit: cover;">
                         <div class="col-auto col-md-8">
                             <div class="datagrid-title">Project Team</div>
                             <div class="datagrid-content row">
-                                {% for faculty in project.ProjectTeam.split(",") %}
-                                    <span class="col-auto col-md-4">{{faculty.replace("{", "").replace("}", "").replace("\"", "")}}</span>
+                                {% for key, value in project.ProjectTeam.items() %}
+                                <div class="col-auto col-md-4">
+                                    {{ value }}
+                                </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -254,14 +256,14 @@ object-fit: cover;">
                 calendar.render();
             }, 10); // Adjust the delay as needed
         });
+        new MultipleSelect('#project_team', {
+            placeholder: 'Select Faculty'
+        })
         new MultipleSelect('#speaker', {
             placeholder: 'Select Speaker'
         })
         new MultipleSelect('#speaker1', {
             placeholder: 'Select Speaker'
-        })
-        new MultipleSelect('#project_team', {
-            placeholder: 'Select Faculty'
         })
 });
 

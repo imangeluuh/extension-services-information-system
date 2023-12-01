@@ -282,11 +282,17 @@ def insertProject():
                 os.remove(imagepath)
 
             lead_proponent = current_user.User[0]
+            selected_values = form.project_team.data
+            project_team ={}
+            for choice in form.project_team.choices:
+                if choice[0] in selected_values:
+                    project_team[choice[0]] = choice[1]
+
             project_to_add = Project(Title = form.title.data,
                                     Implementer = form.implementer.data,
                                     LeadProponentId = lead_proponent.UserId,
                                     CollaboratorId = form.collaborator.data,
-                                    ProjectTeam = form.project_team.data,
+                                    ProjectTeam = project_team,
                                     TargetGroup = form.target_group.data,
                                     ProjectType = form.project_type.data,
                                     StartDate = form.start_date.data,
@@ -499,7 +505,6 @@ def updateActivity(id):
     form = ActivityForm()
     activity = Activity.query.filter_by(ActivityId=id).first()
     if form.validate_on_submit():
-        print('valid form')
         if form.image.data is not None:
             # If extension project has previous image, remove it from imagekit
             if activity.ImageFileId is not None:
@@ -541,8 +546,7 @@ def updateActivity(id):
         return redirect(url_for('programs.viewProject', id=activity.ProjectId))
     if form.errors != {}: # If there are errors from the validations
         for field, error in form.errors.items():
-            print(f"Field '{field}' has an error: {error}")
-    print('tapos na')
+            flash(f"Field '{field}' has an error: {error}")
     return redirect(url_for('programs.viewProject', id=activity.ProjectId))
 
 @bp.route('/delete/activity/<int:id>', methods=['POST'])
