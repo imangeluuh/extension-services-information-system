@@ -1,0 +1,96 @@
+<div class="tab-pane active show" id="tabs-home-3" role="tabpanel">
+    {% if published_announcements %}
+        {% for announcement in published_announcements %}
+            <p class="fs-4 mb-2">Published at {{ announcement.Created.strftime("%m/%d/%Y, %H:%M:%S")}}</p>
+            <div class="p-3 pb-2 mb-4 rounded-4 bg-secondary-subtle d-flex justify-content-between">
+                <div class="overflow-hidden" style="max-height: 50px;">
+                    <strong class="fs-3">{{ announcement.Title }}</strong>
+                    <p class="fs-4 text-secondary m-0">{{ announcement.Content|safe if announcement.Content else '[No Content]' }}</p>
+                </div>
+                <div class="d-flex align-items-center me-2">
+                    <!-- Dropdown menu -->
+                    <div class="dropdown">
+                        <a href="#" class="btn border-0 bg-transparent " data-bs-toggle="dropdown">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path fill="currentColor" d="M9.5 13a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0z"/></svg>
+                        </a>
+                        <div class="dropdown-menu bg-secondary-subtle ">
+                            <a class="dropdown-item" href="{{url_for('announcement.viewAnnouncement', id=announcement.AnnouncementId, slug=announcement.Slug)}}">
+                                <svg class="icon dropdown-item-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5Z"/>
+                                </svg>
+                                View
+                            </a>
+                            <form action="{{ url_for('announcement.unpublishAnnouncement', id=announcement.AnnouncementId) }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="dropdown-item bg-transparent border-0">
+                                    <svg class="icon dropdown-item-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                        <g transform="translate(24 0) scale(-1 1)">
+                                            <path fill="currentColor" d="M12 20.75a7.26 7.26 0 0 1-7.25-7.25a.75.75 0 0 1 1.5 0A5.75 5.75 0 1 0 12 7.75H9.5a.75.75 0 0 1 0-1.5H12a7.25 7.25 0 0 1 0 14.5Z"/>
+                                            <path fill="currentColor" d="M12 10.75a.74.74 0 0 1-.53-.22l-3-3a.75.75 0 0 1 0-1.06l3-3a.75.75 0 1 1 1.06 1.06L10.06 7l2.47 2.47a.75.75 0 0 1 0 1.06a.74.74 0 0 1-.53.22Z"/>
+                                        </g>
+                                    </svg>
+                                    Unpublish
+                                </button>
+                            </form>
+                        </div>
+                    </div>      
+                </div>
+            </div>
+        {% endfor %}
+        {% if published_prev_url %}
+        <a href="{{ published_prev_url }}" class="pe-4">Newer announcements</a>
+        {% endif %}
+        {% if published_next_url %}
+        <a href="{{ published_next_url }}">Older announcements</a>
+        {% endif %}
+    {% else %}
+        <p class="text-center">No Published Announcement</p>
+    {% endif %}
+</div>
+<div class="tab-pane" id="tabs-profile-3" role="tabpanel">
+{% if draft_announcements %}
+    {% for announcement in draft_announcements %}
+        {% if announcement.IsLive == 0 %}
+        <p class="fs-4 mb-2">Last Updated at {{ announcement.Updated.strftime("%m/%d/%Y, %H:%M:%S")}}</p>
+        <div class="p-3 pb-2 mb-4 rounded-4 bg-secondary-subtle d-flex justify-content-between">
+            <div class="overflow-hidden" style="max-height: 50px;">
+                <strong class="fs-3">{{ announcement.Title }}</strong>
+                <p class="fs-4 text-secondary m-0">{{ announcement.Content|safe if announcement.Content else '[No Content]' }}</p>
+            </div>
+            <div class="d-flex align-items-center me-2">
+                <!-- Dropdown menu -->
+                <div class="dropdown">
+                    <a href="#" class="btn border-0 bg-transparent " data-bs-toggle="dropdown">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path fill="currentColor" d="M9.5 13a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0z"/></svg>
+                    </a>
+                    <div class="dropdown-menu bg-secondary-subtle ">
+                        <a class="dropdown-item" href="{{ url_for('announcement.updateAnnouncement', id=announcement.AnnouncementId) }}">
+                            <svg class="icon dropdown-item-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="m18.988 2.012l3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287l-3-3L8 13z"/>
+                                <path fill="currentColor" d="M19 19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"/>
+                            </svg>
+                            Edit
+                        </a>
+                        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#delete-announcement-{{ announcement.AnnouncementId }}">
+                            <svg class="icon dropdown-item-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                            </svg>
+                            Delete
+                        </a>
+                    </div>
+                </div>     
+            </div>
+        </div>
+        {% include 'announcement/delete_announcement.html' %}
+        {% endif %}
+    {% endfor %}
+    {% if draft_prev_url %}
+    <a href="{{ draft_prev_url }}" class="pr-4">Newer announcements</a>
+    {% endif %}
+    {% if draft_next_url %}
+    <a href="{{ draft_next_url }}">Older announcements</a>
+    {% endif %}
+{% else %}
+    <p class="text-center">No Draft Announcement</p>
+{% endif %}
+    </div>

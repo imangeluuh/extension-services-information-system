@@ -1,0 +1,4 @@
+<option selected disabled></option>
+{% for project in projects %}
+<option value="{{ project.ProjectId }}">{{ project.Title }}</option>
+{% endfor %}
