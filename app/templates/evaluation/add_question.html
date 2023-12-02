@@ -1,0 +1,170 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>Extension Project Budget</title>
+    <!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <!--Container-->
+    <div class="container w-100 flex justify-center mx-auto py-8">
+        <div class="page-header my-4">
+            <div class="row align-items-center mw-100">
+                <div class="col">
+                    <div class="mb-1">
+                    <ol class="breadcrumb bg-transparent p-0" aria-label="breadcrumbs">
+                        <li class="breadcrumb-item"><a href="{{url_for('evaluation.questions')}}">Evaluation Questions</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><a href="#">Add Question</a></li>
+                    </ol>
+                    </div>
+                    <h2 class="page-title">
+                        Add a new Question
+                    </h2>
+                </div>
+            </div>
+        </div>          
+        <!-- Card -->
+        <div class="p-5 mx-auto bg-white border border-secondary-subtle rounded-4 shadow" style="width:70%;">
+            <form class="" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <fieldset id="formFields">
+                    <div class="row mb-3">
+                        <label class="col-auto col-md-3">Question text</label>
+                        <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">* required</span>
+                        <textarea  name="question" placeholder="Question text" required class="col-auto col-md-6 text-secondary bg-secondary-subtle rounded border border-secondary-subtle"></textarea>
+                    </div>
+                    <div class="row d-flex align-items-center mb-3">
+                        <div class="col-auto col-md-3">
+                            <label class="mr-5">Question type</label>
+                        </div>
+                        <div class="col-auto col-md-3">
+                            <input type="radio" name="optional" class="mr-1" value="1"> Optional &nbsp;&nbsp;&nbsp;
+                        </div>
+                        <div class="col-auto col-md-3">
+                            <input type="radio" name="optional" class="mr-1" value="0" checked> Mandatory
+                        </div>
+                    </div>
+                    <div class="row d-flex align-items-center mb-3">
+                        <div class="col-auto col-md-3">
+                            <label class="mr-4">Response type</label>
+                        </div>
+                        <div class="col-auto col-md-3">
+                            <input type="radio" name="type" class="mr-1" value="MCQ" onchange="hideText()" checked> Multiple Choice &nbsp;&nbsp;&nbsp;
+                        </div>
+                        <div class="col-auto col-md-3">
+                            <input type="radio" name="type" class="mr-1" value="Text" onchange="hideMCQ()"> Text
+                        </div>
+                    </div>
+                    <br>
+                    <div id="MCQ">
+                        <div id="1" class="row d-flex align-items-center mb-3">
+                            <label class="col-auto col-md-3">Response 1</label>
+                            <input type="text" name="responses" class="col-auto col-md-6 bg-secondary-subtle border border-secondary-subtle text-secondary rounded">
+                            <span class="col-auto col-md-3 text-danger">* required</span>
+                        </div>
+                        <div id="2" class="row d-flex align-items-center mb-3">
+                            <label class="col-auto col-md-3">Response 2</label>
+                            <input type="text" name="responses" class="col-auto col-md-6 bg-secondary-subtle border border-secondary-subtle text-secondary rounded">
+                            <span class="col-auto col-md-3 text-danger">* required</span>
+                        </div>
+                        <div id="addInput" class="d-flex mt-3">
+                            <label></label>
+                            <a class="text-secondary bg-white border border-secondary-subtle rounded-2 px-3 py-2 me-2 mb-2" onclick="addInput()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z"/>
+                                </svg>
+                            </a>
+                            <a class="text-secondary bg-white border border-secondary-subtle rounded-2 px-3 py-2 me-2 mb-2" onclick="yesNo()">Yes/No</a>
+                            <a class="text-secondary bg-white border border-secondary-subtle rounded-2 px-3 py-2 me-2 mb-2" onclick="likert()">Likert scale</a>
+                            <a class="text-secondary bg-white border border-secondary-subtle rounded-2 px-3 py-2 me-2 mb-2" onclick="resetForm()">Reset</a>
+                        </div>
+                    </div>
+
+                    <div id="TEXT" style="display:none;">
+                        <div class="row d-flex align-items-center mb-3">
+                            <label class="col-auto col-md-3">Response</label>
+                            <input type="text" class="col-auto col-md-7 bg-secondary-subtle border border-secondary-subtle text-secondary p-2 rounded" placeholder="Free response field" disabled>
+                        </div>
+                    </div>
+
+                    <div class=" my-2">
+                        <button type="submit" name="bt" class="text-white bg-primary rounded-3 px-3 py-2 border-0 ">Add question</button>
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+        <!-- /Card -->
+    </div>
+    <!--/container-->
+{% endblock %}
+
+{% block script %}
+<script>
+var number = 3;
+function addInput(){
+
+    var container = document.getElementById("MCQ");
+    var div = document.getElementById("2").cloneNode(true);
+    div.id = "clone"+number;
+    div.children[0].innerHTML = "Response " + number;
+    div.children[1].value = "";
+    div.removeChild(div.children[2]);
+
+    container.insertBefore(div, document.getElementById("addInput"));
+
+    number++;
+}
+
+function yesNo(){
+
+    var rem = document.querySelectorAll("[id*='clone']");
+    for (var i = 0; i < rem.length; i++)
+        rem[i].parentNode.removeChild(rem[i]);
+    document.getElementById("1").children[1].value = "Yes";
+    document.getElementById("2").children[1].value = "No";
+
+    number = 3;
+}
+
+function likert(){
+
+    yesNo();
+    addInput();
+    addInput();
+    addInput();
+    document.getElementById("1").children[1].value = "Strongly agree";
+    document.getElementById("2").children[1].value = "Agree";
+    document.getElementById("clone3").children[1].value = "Neutral";
+    document.getElementById("clone4").children[1].value = "Disagree";
+    document.getElementById("clone5").children[1].value = "Strongly disagree";
+
+}
+
+function resetForm(){
+
+    yesNo();
+    document.getElementById("1").children[1].value = "";
+    document.getElementById("2").children[1].value = "";
+
+}
+
+function hideMCQ(){
+
+    document.getElementById("MCQ").style.display = "none"
+    document.getElementById("TEXT").style.display = "initial";
+
+}
+
+function hideText(){
+
+    resetForm();
+    document.getElementById("MCQ").style.display = "initial"
+    document.getElementById("TEXT").style.display = "none";
+
+}
+    </script>
+{% endblock %}

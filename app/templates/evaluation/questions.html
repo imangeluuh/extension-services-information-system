@@ -1,0 +1,117 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>Evaluation Questions</title>
+    <!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/table_style.css')}}">
+{% endblock %}
+
+{% block content %}
+        <!--Container-->
+        <div class="container w-100 mx-auto mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 mb-0">
+                <h2 class="page-title">
+                    Evaluation Questions
+                </h2>
+                <a href="{{ url_for('evaluation.addQuestions') }}" class="btn btn-primary d-none d-sm-inline-block">
+                    <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
+                    Add question
+                </a>
+            </div>
+            <!--Card-->
+            <div class="p-4 rounded shadow bg-white">
+                <!--Title-->
+                <p class="d-flex align-items-center fw-bold pb-3 text-danger fs-1">
+                    Mandatory Question Pool
+                </p>
+                <table id="questions" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th data-priority="1" class="text-start">Question</th>
+                            <th data-priority="2" class="text-start">Type</th>
+                            <th data-priority="3" class="text-start">Responses</th>
+                            <th data-priority="4" class="text-start"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for question in mandatory_questions %}
+                        <tr>
+                            <td>{{ question.Text }}</td>
+                            <td>{% if question.Type == 1%}MCQ</td>
+                            <td>{% for response in question.responsesList() %} {{ loop.index }}. {{ response }} {{ "// " if not loop.last }} {% endfor %} {% else %}Text</td>
+                            <td>-- Free response -- {% endif %}</td>
+                            <td>
+                                <a href="{{ url_for('evaluation.deleteQuestion', id=question.QuestionId) }}" class="text-white bg-danger rounded-2 p-2 text-center mt-5">
+                                    <iconify-icon icon="ph:trash-bold"></iconify-icon>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!--/Card-->
+
+            <!--Card-->
+            <div class="p-4 rounded shadow bg-white">
+                <!--Title-->
+                <p class="d-flex pb-3 align-items-center fw-bold text-danger fs-1">
+                    Optional Question Pool
+                </p>
+                <table id="responses" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th data-priority="1" class="text-start">Question</th>
+                            <th data-priority="2" class="text-start">Type</th>
+                            <th data-priority="3" class="text-start">Responses</th>
+                            <th data-priority="4" class="text-start"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for question in optional_questions %}
+                        <tr>
+                            <td>{{ question.text }}</td>
+                            <td>{% if question.Type == 1%}MCQ</td>
+                            <td>{% for response in question.responsesList() %} {{ loop.index }}. {{ response }} {{ "// " if not loop.last }} {% endfor %} {% else %}Text</td>
+                            <td>-- Free response -- {% endif %}</td>
+                            <td>
+                                <a href="{{ url_for('evaluation.deleteQuestion', id=question.QuestionId) }}" class="text-white bg-red-700 hover:bg-red-800 font-medium rounded-md p-2 text-center mt-5">
+                                    <iconify-icon icon="ph:trash-bold"></iconify-icon>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!--/Card-->
+        </div>
+	    <!--/container-->
+{% endblock %}
+
+{% block script %}
+	<!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script>
+
+        $(document).ready(function() {
+
+        var table = $('#questions').DataTable({
+                responsive: true
+            })
+            .columns.adjust()
+            .responsive.recalc()
+        var response_table = $('#responses').DataTable({
+                responsive: true
+            })
+            .columns.adjust()
+            .responsive.recalc()
+        });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>Add Evaluation</title>
+    <!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<!--Container-->
+<div class="container w-100 flex justify-center mx-auto">
+    <div class="page-header my-4">
+        <div class="row align-items-center mw-100">
+            <div class="col">
+                <div class="mb-1">
+                <ol class="breadcrumb bg-transparent p-0" aria-label="breadcrumbs">
+                    <li class="breadcrumb-item"><a href="{{url_for('evaluation.evaluations')}}">Evaluations</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a href="#">Add Evaluation</a></li>
+                </ol>
+                </div>
+                <h2 class="page-title">
+                    Add a new Evaluation
+                </h2>
+            </div>
+        </div>
+    </div>  
+    <!-- Card -->
+    <div class="p-5 mx-auto bg-white border border-secondary-subtle rounded-4 shadow" style="width: 70%">
+        {% if activities %}
+        {% if questions %}
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <fieldset>
+                <div class="row d-flex align-items-center mb-3">
+                    <label class="col-auto col-md-3">Evaluation name</label>
+                    <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">* required</span>
+                    <input name="name" class="col-auto col-md-6 p-2 text-secondary bg-secondary-subtle rounded border border-secondary-subtle" placeholder="Evaluation name" required>
+                </div>
+                <div class="row d-flex align-items-center mb-3">
+                    <label class="col-auto col-md-3">Activity</label>
+                    <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">* required</span>
+                    <select class="col-auto col-md-6 p-2 text-secondary bg-secondary-subtle rounded border border-secondary-subtle" name="activity" required>
+                        <option selected disabled>Please select an activity...</option>
+                        {% for activity in activities %}
+                        <option value="{{activity.ActivityId}}">{{ activity.ActivityName }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <br>
+                <div class="row mb-3">
+                    <label class="col-auto col-md-3">Questions</label>
+                    <div class="col-auto col-md-6">
+                        <i>Select the questions you wish to include.</i>
+                    </div>
+                    <span class="col-auto col-md-3 text-danger fs-5 d-flex align-items-start">* required</span>
+                </div>
+                {% for question in questions %}
+                <div class="row mb-3">
+                    <label class="col-auto col-md-3"></label>
+                    <div class="col-auto col-md-6">
+                        <input name="questions" type="checkbox" value="{{ question.QuestionId }}"> {{ question.Text }} ({% if question.Type == 1 %}Text{% else %}MCQ{% endif %}{% if not question.Required %} - Optional{% endif %})</input>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class=" my-2">
+                    <button type="submit" name="bt" class="text-white bg-primary rounded-3 px-3 py-2 border-0 ">Add evaluation</button>
+                </div>
+            </fieldset>
+        </form>
+        {%else%}
+        <p>There are no questions currently in the pool. Please add a question first.</p>
+        {% endif %}
+        {%else%}
+        <p>No activities available.</p>
+        {% endif %}
+    </div>
+    <!-- /Card -->
+</div>
+<!--/container-->
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function() {
+        $('select').select2({placeholder: 'Please select an activity...', allowClear: true});
+    });
+</script>
+{% endblock %}

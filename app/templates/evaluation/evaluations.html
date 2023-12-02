@@ -1,0 +1,114 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>Extension Project Evaluation</title>
+    <!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
+{% endblock %}
+
+{% block content %}
+    <!--Container-->
+    <div class="container w-100 mx-auto">
+        <div class="d-flex justify-content-between my-4">
+            <h2 class="page-title">
+                Evaluations
+            </h2>
+            <a href="{{ url_for('evaluation.addEvaluation') }}" class="btn btn-primary d-none d-sm-inline-block">
+                <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
+                Add evaluation
+            </a>
+        </div>
+        <!--Card-->
+        <div class="p-4 rounded shadow bg-white">
+            <!--Title-->
+            <h1 class="d-flex align-items-center fw-bold pb-3 text-danger fs-2">
+                Active Evaluations
+            </h1>
+            <table id="active" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                <thead>
+                    <tr>
+                        <th data-priority="1" class="text-start">Name</th>
+                        <th data-priority="2" class="text-start">Activity</th>
+                        <th data-priority="3" class="text-start">Created</th>
+                        <th data-priority="4"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evaluation in active_evaluations %}
+                    <tr>
+                        <td>{{ evaluation.EvaluationName }}</td>
+                        <td>{{ evaluation.Activity.ActivityName }}</td>
+                        <td>{{ evaluation.CreatedAt.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td>
+                            <a href="{{ url_for('evaluation.closeEvaluation', id=evaluation.EvaluationId)}}" class="text-white bg-danger rounded-2 p-2 text-center mt-5r">
+                                <iconify-icon icon="subway:error" class="mr-1"></iconify-icon> Close
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!--/Card-->
+
+        <!--Card-->
+        <div class="p-4 rounded shadow bg-white">
+            <!--Title-->
+            <h1 class="d-flex pb-3 align-items-center fw-bold text-danger fs-2">
+                Closed Evaluations
+            </h1>
+            <table id="closed" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                <thead>
+                    <tr>
+                        <th data-priority="1" class="text-start">Name</th>
+                        <th data-priority="2" class="text-start">Activity</th>
+                        <th data-priority="3" class="text-start">Created</th>
+                        <th data-priority="4"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evaluation in inactive_evaluations %}
+                    <tr>
+                        <td>{{ evaluation.EvaluationName }}</td>
+                        <td>{{ evaluation.Activity.ActivityName }}</td>
+                        <td>{{ evaluation.CreatedAt.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td>
+                            <a href="{{url_for('evaluation.results', id=evaluation.EvaluationId)}}" class="d-flex align-items-center bg-primary rounded-2 p-2 text-center" >
+                                <iconify-icon icon="teenyicons:pie-chart-solid" class="mr-1"></iconify-icon> View Results</a>
+                            </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!--/Card-->
+    </div>
+    <!--/container-->
+{% endblock %}
+
+{% block script %}
+
+    <!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script>
+
+        $(document).ready(function() {
+        var active_table = $('#active').DataTable({
+                responsive: true
+            })
+            .columns.adjust()
+            .responsive.recalc()
+        var inactive_table = $('#closed').DataTable({
+                responsive: true
+            })
+            .columns.adjust()
+            .responsive.recalc()
+        });
+
+    </script>
+{% endblock %}
