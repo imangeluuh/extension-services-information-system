@@ -410,7 +410,7 @@ def updateProject(id):
         # Update project details
         extension_project.Title =form.title.data
         extension_project.Implementer = form.implementer.data
-        extension_project.Collaborator.CollaboratorId = form.collaborator.data
+        extension_project.CollaboratorId = form.collaborator.data
         extension_project.ProjectTeam = project_team
         extension_project.TargetGroup = form.target_group.data
         extension_project.ProjectType = form.project_type.data
