@@ -106,8 +106,9 @@
 {% endif %}
 
 {% if not current_user.is_authenticated %}
-<div class="bg-primary-subtle d-flex justify-content-center">
+<div class="bg-primary-subtle d-flex justify-content-center align-items-center py-4 fs-3">
     Get info that matters to you: Tell us your interests and sign up for emails.
+    <a href="{{url_for('auth.login')}}" class="btn btn-info ms-2">SIGN UP</a>
 </div>
 {% endif %}
 
