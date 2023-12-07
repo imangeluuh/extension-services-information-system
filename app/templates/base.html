@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+        <link href="{{url_for('static', filename='images/pupqc-esis.webp')}}" rel="icon" type="image/x-icon" />
+        <!-- Tabler -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
+        <!-- toastr -->
+        <link href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css" rel="stylesheet">
+        {% block head %}
+        
+        {% endblock %}
+        <style>
+        @media only screen and (max-width: 480px) {
+            .page-wrapper {
+                margin-left: 20px;
+                margin-right: 20px;
+            }
+        }
+
+        @media only screen and (min-width: 481px) and (max-width: 767px) {
+            .page-wrapper {
+                margin-left: 50px;
+                margin-right: 50px;
+            }
+        }
+
+        @media only screen and (min-width: 768px) {
+            .page-wrapper {
+                margin-left: 100px;
+                margin-right: 100px;
+            }
+        }
+
+        </style>
+    </head>
+    <body class="overflow-x-hidden">
+        <div class="page">
+            {% if current_user.is_authenticated or request.blueprint != 'auth' %}
+                {% include 'components/navbar.html' %}
+                <div class="page-wrapper">
+            {% endif %}
+            {% block content %}
+            
+            {% endblock %}
+            {% if current_user.is_authenticated or request.blueprint != 'auth' %}
+            </div>
+            {% endif %}
+        </div>
+        <!-- Jquery -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <!-- Tabler -->
+        <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
+        <!-- Toastr -->
+        <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.js"></script>
+        {% block script %}
+        
+        {% endblock %}
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <script>
+                        toastr.{{category}}("{{message|safe}}")
+                    </script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </body>
+</html>

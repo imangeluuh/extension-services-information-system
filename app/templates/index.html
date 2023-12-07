@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>PUPQC - ESIS </title>
+<style>
+    .carousel-inner {
+  padding: 1em;
+}
+.card {
+  margin: 0 0.5em;
+  box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);
+  border: none;
+}
+.carousel-control-prev,
+.carousel-control-next {
+  background-color: #e1e1e1;
+  width: 6vh;
+  height: 6vh;
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+@media (min-width: 768px) {
+  .carousel-item {
+    margin-right: 0;
+    flex: 0 0 33.333333%;
+    display: block;
+  }
+  .carousel-inner {
+    display: flex;
+  }
+}
+.card .img-wrapper {
+    max-width: 100%;
+    height: 13em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.card img {
+    max-height: 100%;
+}
+@media (max-width: 767px) {
+  .card .img-wrapper {
+    height: 17em;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if latest_announcements %}
+<div class="d-flex justify-content-center my-4 ">
+    <h2 class="page-title">Latest Announcement</h2>
+</div>
+<div id="carouselExampleControls" class="carousel">
+    <div class="carousel-inner">
+        {% for announcement in latest_announcements %}
+        <div class="carousel-item {{'active' if loop.first}}">
+            <div class="card">
+                <div class="img-wrapper"><img src="..." class="d-block w-100" alt="..."> </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ announcement.Title }}</h5>
+                    <p class="card-text text-trun" style="max-width:30px;">{{ announcement.Content|safe }}</p>
+                    <a href="{{url_for('announcement.viewAnnouncement', id=announcement.AnnouncementId, slug=announcement.Slug)}}" class="btn btn-primary">View announcement</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+{% endif %}
+
+{% if extension_programs %}
+<div class="my-5">
+    <h2 class="page-title mb-3">Select a program</h2>
+    <div class="row gy-4">
+        {% for ext_program in extension_programs %}
+        <div class="col-auto col-md-3">
+            <a href="" class=" text-decoration-none ">
+                <div class="card py-4">
+                    <div class="card-stamp">
+                        <div class="card-stamp-icon bg-white text-primary">
+                            <!-- Download SVG icon from http://tabler-icons.io/i/star -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title fs-1 text-center text-black">{{ ext_program.Name }}</h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if not current_user.is_authenticated %}
+<div class="bg-primary-subtle d-flex justify-content-center">
+    Get info that matters to you: Tell us your interests and sign up for emails.
+</div>
+{% endif %}
+
+{% if events_list %}
+<section class="my-5">
+    <!-- events -->
+    <div class="">
+        <h2 class="page-title">Upcoming Events</h2>
+        <hr class="">
+        <div class="row mt-3">
+            <div class="col-auto col-md-4">
+                {% for event in events_list %}
+                {% include 'components/_event.html' %}
+                {% endfor %}
+            </div>
+            <div class="col-auto col-md-8 order-first">
+                {% include 'components/calendar.html' %}
+            </div>
+        </div>
+    </div>
+    <!-- /events -->
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+    var multipleCardCarousel = document.querySelector(
+      "#carouselExampleControls"
+    );
+    if (window.matchMedia("(min-width: 768px)").matches) {
+      var carousel = new bootstrap.Carousel(multipleCardCarousel, {
+        interval: false,
+      });
+      var carouselWidth = $(".carousel-inner")[0].scrollWidth;
+      var cardWidth = $(".carousel-item").width();
+      var scrollPosition = 0;
+      $("#carouselExampleControls .carousel-control-next").on("click", function () {
+        if (scrollPosition < carouselWidth - cardWidth * 4) {
+          scrollPosition += cardWidth;
+          $("#carouselExampleControls .carousel-inner").animate(
+            { scrollLeft: scrollPosition },
+            600
+          );
+        }
+      });
+      $("#carouselExampleControls .carousel-control-prev").on("click", function () {
+        if (scrollPosition > 0) {
+          scrollPosition -= cardWidth;
+          $("#carouselExampleControls .carousel-inner").animate(
+            { scrollLeft: scrollPosition },
+            600
+          );
+        }
+      });
+    } else {
+      $(multipleCardCarousel).addClass("slide");
+    }
+</script>
+{% endblock %}

@@ -124,7 +124,8 @@ def createAnnouncement():
 
 @bp.route('/announcement/<int:id>/<string:slug>')
 def viewAnnouncement(id, slug):
-    announcement = Announcement.query.filter_by(AnnouncementId=id, Slug=slug)
+    announcement = Announcement.query.filter_by(AnnouncementId=id, Slug=slug).first()
+    print(announcement)
     return render_template('announcement/view_announcement.html', announcement=announcement)
 
 @bp.route('/unpublish/announcement/<int:id>', methods=['POST'])

@@ -1,0 +1,30 @@
+<div class="row gx-3 mt-4 mt-md-0">
+    <div class="col-12 col-md-2 d-flex justify-content-center p-0">
+        <div class="w-100  h-25 pt-0 mb-3">
+            <div class="w-100 rounded-top text-center shadow ">
+                <div class="d-block rounded-top  overflow-hidden  text-center ">
+                    <div class="bg-primary text-white py-1">
+                        {{ event.Date.strftime('%b') | upper }}
+                    </div>
+                    <div class="pt-1 border-start border-end border-white bg-white">
+                        <span class="text-2xl font-bold">
+                            {{ event.Date.strftime('%d') }}
+                        </span>
+                    </div>
+                    <div class=" border-start border-end border-bottom rounded-bottom-2 text-center border-white bg-white ">
+                        <span class="fs-5">
+                            {{ event.Date.strftime('%a') | upper }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-auto col-md-10 d-flex flex-column">
+        {{ event.ActivityName }}
+        <span class="fs-5">
+            {{ event.StartTime.strftime('%I:%M %p') }} to {{ event.EndTime.strftime('%I:%M %p') }}
+        </span>
+        <p>{{ event.Location }}</p>
+    </div>
+</div>
