@@ -50,7 +50,7 @@
 
 {% block content %}
 
-{% if latest_announcements %}
+{% if current_user.is_authenticated and latest_announcements %}
 <div class="d-flex justify-content-center my-4 ">
     <h2 class="page-title">Latest Announcement</h2>
 </div>
