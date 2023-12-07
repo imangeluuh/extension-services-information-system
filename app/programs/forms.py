@@ -80,7 +80,7 @@ class ProjectForm(FlaskForm):
                                         ('Finished', 'Finished')],
                                         validators=[DataRequired()])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
-    project_proposal = FileField('Project Proposal', validators=[FileAllowed(['docx', 'pdf']), DataRequired()])
+    project_proposal = FileField('Project Proposal', validators=[FileAllowed(['docx', 'pdf', 'docs'])])
     extension_program = HiddenField()
     submit = SubmitField("Save Project")
 

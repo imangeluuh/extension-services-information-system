@@ -14,6 +14,21 @@ from ..Api.resources import ExtensionProgramListApi
 
 # ============== Admin/Faculty views ===========================
 
+# Function to add project team input to dictionary
+def getProjectTeamInput(selected_values, choices):
+    project_team ={}
+    for choice in choices:
+        if choice[0] in selected_values:
+            project_team[choice[0]] = choice[1]
+    return project_team
+
+# Function to save image/file to local and upload it to cloud
+def saveImage(image, imagepath):
+    imagename = secure_filename(image.filename)
+    image.save(imagepath)
+    # Upload image to imagekit
+    return uploadImage(imagepath, imagename)
+
 @bp.route('/pupqc/extension-programs')
 @login_required(role=["Admin", "Faculty"])
 def programs():
@@ -22,13 +37,6 @@ def programs():
     programs = ExtensionProgram.query.all()    
     
     return render_template('programs/program_management.html', programs=programs, form=form, project_form=project_form)
-
-# Function to save image/file to local and upload it to cloud
-def saveImage(image, imagepath):
-    imagename = secure_filename(image.filename)
-    image.save(imagepath)
-    # Upload image to imagekit
-    return uploadImage(imagepath, imagename)
 
 @bp.route('/extension-program/<int:id>', methods=['GET', 'POST'])
 @login_required(role=["Admin", "Faculty"])
@@ -114,12 +122,15 @@ def insertExtensionProgram():
         if os.path.exists(imagepath):
             os.remove(imagepath)
 
+
         lead_proponent = current_user.User[0]
+        project_team = getProjectTeamInput(form.project.project_team.data, form.project.project_team.choices)
+
         project_to_add = Project(Title = form.project.title.data,
                                 Implementer = form.project.implementer.data,
                                 LeadProponentId = lead_proponent.UserId,
                                 CollaboratorId = form.project.collaborator.data,
-                                ProjectTeam = form.project.project_team.data,
+                                ProjectTeam = project_team,
                                 TargetGroup = form.project.target_group.data,
                                 ProjectType = form.project.project_type.data,
                                 StartDate = form.project.start_date.data,
@@ -281,12 +292,8 @@ def insertProject():
             if os.path.exists(imagepath):
                 os.remove(imagepath)
 
-            lead_proponent = current_user.User[0]
-            selected_values = form.project_team.data
-            project_team ={}
-            for choice in form.project_team.choices:
-                if choice[0] in selected_values:
-                    project_team[choice[0]] = choice[1]
+            lead_proponent = current_user.User[0]            
+            project_team = getProjectTeamInput(form.project_team.data, form.project_team.choices)
 
             project_to_add = Project(Title = form.title.data,
                                     Implementer = form.implementer.data,
@@ -398,11 +405,13 @@ def updateProject(id):
             if os.path.exists(filepath):
                 os.remove(filepath)
 
+        project_team = getProjectTeamInput(form.project_team.data, form.project_team.choices)
+
         # Update project details
         extension_project.Title =form.title.data
         extension_project.Implementer = form.implementer.data
         extension_project.Collaborator.CollaboratorId = form.collaborator.data
-        extension_project.ProjectTeam = form.project_team.data
+        extension_project.ProjectTeam = project_team
         extension_project.TargetGroup = form.target_group.data
         extension_project.ProjectType = form.project_type.data
         extension_project.StartDate =  form.start_date.data
@@ -587,157 +596,6 @@ def budgetAllocation():
         projects = Project.query.all()
     return render_template('programs/budget_allocation.html', projects=projects)
 
-@bp.route('/questions')
-@login_required(role=["Admin", "Faculty"])
-def questions():
-    mandatory_questions = Question.query.filter_by(State = 1, Required = 1).all()
-    optional_questions = Question.query.filter_by(State = 1, Required = 0).all()
-
-    return render_template('admin/questions.html', mandatory_questions=mandatory_questions, optional_questions=optional_questions)
-
-#delete question - deletest question from pool and redirects back to questions
-@bp.route("/questions/delete/<id>")
-@login_required(role=["Admin", "Faculty"])
-def deleteQuestion(id):
-
-    question = Question.query.filter_by(QuestionId=id).first()
-
-    if question:
-        question.State = 0
-        db.session.commit()
-
-    flash('The question has been deleted successfully.', category='success')
-    return redirect(url_for("programs.questions"))
-
-
-@bp.route('/questions/add', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
-def addQuestions():
-    if request.method == "POST":
-        question_text = request.form["question"]
-        responses = list(filter(None, request.form.getlist("responses")))
-        question_type = 1
-        if request.form["type"] == 'Text':
-            question_type = 2
-            responses = []
-        required = 1
-        if request.form['optional'] == '1':
-            required = 0
-
-        if question_text.isspace() or question_text == "" or question_type == 1 and (len(responses) < 2 or all(responses[i].isspace() for i in range(0, len(responses)-1))):
-            flash('Please complete all required fields.', category='error')
-            return render_template("admin/add_question.html")
-        
-        if not question_type in range(1,3):
-            flash('The application could not complete your request at this moment. Please try again later.', category='error')
-            return render_template("admin/add_question.html")
-        
-        try:
-            question_to_add = Question(Text=question_text, State=1, Type=question_type, Required=required, Responses=str(responses))
-            db.session.add(question_to_add)
-            db.session.commit()
-            flash('Your question has been successfully added to the pool.', category='success')
-        except:
-            flash('An error occured whilst adding your question to the pool. Please try again later.', category='error')
-    return render_template("admin/add_question.html")
-
-
-@bp.route('/surveys')
-@login_required(role=["Admin", "Faculty"])
-def surveys():
-    active_surveys = None
-    inactive_surveys = None
-
-    if current_user.Role.RoleId == 1:
-        active_surveys = Evaluation.query.filter_by(State = 1).all()
-        inactive_surveys = Evaluation.query.filter_by(State = 0).all()
-    else:
-        list_activities = [r.Project.Activity for r in Registration.query.filter_by(UserId=current_user.User[0].UserId).all()]
-        # Initialize an empty list to store the ActivityIds
-        list_activity_ids = []
-        
-        # Iterate through the outer list
-        for sublist in list_activities:
-            # Iterate through the inner list
-            for activity in sublist:
-                list_activity_ids.append(activity.ActivityId)  
-        
-        active_surveys = Evaluation.query.filter(Evaluation.ActivityId.in_(list_activity_ids)).filter_by(State = 1).all()
-        inactive_surveys = Evaluation.query.filter(Evaluation.ActivityId.in_(list_activity_ids)).filter_by(State = 0).all()
-
-    return render_template("admin/surveys.html", active_surveys=active_surveys, inactive_surveys=inactive_surveys)
-
-
-@bp.route('/surveys/add', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
-def addSurvey():
-    questions = Question.query.filter_by(State = 1).all()
-    activities = Activity.query.all()
-    if request.method == "POST":
-
-        survey_name = request.form["name"]
-        survey_activity = request.form["activity"]
-        survey_questions = request.form.getlist("questions")
-
-        if survey_name.isspace() or survey_name == "" or not survey_questions or not survey_activity:
-            flash('Please complete all required fields.', category='error')
-
-        try:
-            survey_to_add = Evaluation(EvaluationName=survey_name, ActivityId=survey_activity, State=1, Questions=str(survey_questions))
-            db.session.add(survey_to_add)
-            db.session.commit()
-            flash('Evaluation is successfully created.', category='success')
-        except:
-            flash('An error occured whilst creating your evaluation. Please try again later.', category='error')
-
-    return render_template('admin/add_survey.html', questions=questions, activities=activities)
-
-#close survey - makes survey inactive and redirects to surveys page
-@bp.route("/surveys/close/<id>")
-@login_required(role=["Admin", "Faculty"])
-def closeSurvey(id):
-    survey = Evaluation.query.filter_by(EvaluationId=id).first()
-
-    try:
-        if survey:
-            survey.State = 0
-            db.session.commit()
-            flash('The evaluation has been closed successfully.')
-    except:
-        flash('The evaluation could not be closed. Please try again later.')
-
-    return redirect(url_for("programs.surveys"))
-
-#results page - show survey results
-@bp.route("/results/<id>")
-@login_required(["Admin", "Faculty"])
-def results(id):
-
-    list_activities = [r.Project.Activity for r in Registration.query.filter_by(UserId=current_user.User[0].UserId).all()]
-    # Initialize an empty list to store the ActivityIds
-    list_activity_ids = []
-    
-    # Iterate through the outer list
-    for sublist in list_activities:
-        # Iterate through the inner list
-        for activity in sublist:
-            list_activity_ids.append(activity.ActivityId) 
-
-    survey = Evaluation.query.filter_by(EvaluationId=id).first()
-
-    if not survey: 
-        flash('The evaluation you have requested does not exist. Please check if your link is correct.', category='error')
-        return render_template("admin/results.html")
-
-    questions = []
-    for question_id in survey.questionsList():
-        question = Question.query.filter_by(QuestionId=question_id).first()
-        questions.append(question)
-
-    responses = Response.query.filter_by(EvaluationId=id).all()
-
-    return render_template("admin/results.html", survey=survey, questions=questions, responses=responses)
-
 from fillpdf import fillpdfs
 
 @bp.route('/cert/<int:id>', methods=['GET', 'POST'])
@@ -815,169 +673,14 @@ def cert(id):
 # ||                      USER VIEWS                     ||
 # =========================================================
 
-@bp.route('/programs')
-def programsList():
+@bp.route('/extension-programs')
+def extensionPrograms():
     extension_programs = ExtensionProgram.query.all()
     programs = Program.query.all()
     agendas = Agenda.query.all()
-    return render_template('programs/programs.html', extension_programs=extension_programs, programs=programs, agendas=agendas)
+    return render_template('programs/ext_programs_list.html', extension_programs=extension_programs, programs=programs, agendas=agendas)
 
 
-@bp.route('/projects/<int:program_id>', methods=['GET', 'POST'])
-def projectsList(program_id):
-    extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=program_id).first()
-    projects = Project.query.filter_by(ExtensionProgramId=program_id).all()
-    return render_template('programs/projects_list.html', extension_program=extension_program, projects=projects)
-    
-
-@bp.route('/filters')
-def filters():
-    # Retrieve only the names from the program table
-    extension_programs = ExtensionProgram.query.with_entities(ExtensionProgram.Name).all()
-    programs = Program.query.with_entities(Program.ProgramName).all()
-
-    # Convert the query result into a list of names
-    list_extension_programs = [extension_program[0] for extension_program in extension_programs]
-    list_programs = [program[0] for program in programs]
-
-    # Get the current month
-    current_month = datetime.now().month
-
-    # Create a list of months from current month to December
-    list_months = [calendar.month_name[i] for i in range(current_month, 13)]
-
-    dict_filters = {
-        'Extension Program': list_extension_programs,
-        'Program': list_programs,
-        'Month': list_months,
-    }
-
-    str_filter = request.args.get('filter')
-
-    list_filter = dict_filters[str_filter]
-
-    return render_template('programs/filters.html',list_filter=list_filter)
-
-
-@bp.route('/registration/<int:project_id>', methods=['GET', 'POST'])
-def registration(project_id):
-    project = Project.query.get_or_404(project_id)
-    current_date = datetime.utcnow()
-    list_activities = project.Activity
-    user_id = current_user.User[0].UserId if current_user.is_authenticated else None
-    bool_is_registered = True if Registration.query.filter_by(ProjectId=project_id, UserId=user_id).first() else False
-    if request.method == 'POST':
-        registration_to_create = Registration(ProjectId = project_id,
-                                            UserId=user_id)
-        try:
-            db.session.add(registration_to_create)
-            db.session.commit()
-            flash('Registration Successful!', category='success')
-        except:
-            flash('There was an issue during registration.', category='error')
-
-        return redirect(url_for('programs.registration', project_id=project_id))
-    return render_template("programs/project_reg.html", project=project, list_activities=list_activities, bool_is_registered=bool_is_registered, current_date=current_date)
-
-
-@bp.route('/registration/cancel/<int:project_id>', methods=['POST'])
-def cancelRegistration(project_id):
-    project = Project.query.get_or_404(project_id)
-    user_id = current_user.User[0].UserId if current_user.is_authenticated else None
-    registration = Registration.query.filter_by(ProjectId=project_id, UserId=user_id).first()
-
-    try:
-        db.session.delete(registration)
-        db.session.commit()
-        flash('Registration is successfully canceled.', category='success')
-    except:
-        flash('There was an issue canceling the registration.', category='error')
-
-    return redirect(url_for('programs.registration', project_id=project_id))
-
-
-#survey page - allows responses to be collected
-@bp.route("/survey/<id>", methods=["GET", "POST"])
-@login_required(role=["Beneficiary"])
-def survey(id):
-    
-    #check whether student is enrolled in course and hasn't already taken survey
-    list_activities = [r.Project.Activity for r in Registration.query.filter_by(UserId=current_user.User[0].UserId).all()]
-    # Initialize an empty list to store the ActivityIds
-    list_activity_ids = []
-    
-    # Iterate through the outer list
-    for sublist in list_activities:
-        # Iterate through the inner list
-        for activity in sublist:
-            list_activity_ids.append(activity.ActivityId)  
-
-    survey = Evaluation.query.filter_by(EvaluationId=id).first()
-    if survey.ActivityId not in list_activity_ids:
-        return redirect(url_for('programs.surveys'))
-
-    if not survey: 
-        flash('The survey you have requested does not exist. Please check your link is correct.', category='error')
-        return render_template("admin/survey.html")
-    
-    if Response.query.filter_by(EvaluationId=id, BeneficiaryId=current_user.User[0].UserId).first():
-        survey_taken = True
-        return render_template("admin/survey.html", survey=survey, survey_taken=survey_taken)
-
-    questions = []
-    for question_id in survey.questionsList():
-        question = Question.query.filter_by(QuestionId=question_id).first()
-        questions.append(question)
-
-    if request.method == "POST":
-        error = 0
-
-        #check for required fields
-        for question in questions:
-            response = request.form.get(str(question.QuestionId))
-            if question.Required and (response == None or response.isspace() or response == ""):
-                flash('Please fill out all the required fields', category='error')
-                return render_template("admin/survey.html", survey=survey, questions=questions)
-
-        #submit responses
-        for question in questions:
-            response = request.form.get(str(question.QuestionId))
-
-            if not response is None and not response.isspace() and response != "":
-                if question.Type == 1:
-                    if not save_response(id, current_user.User[0].UserId, question.QuestionId, None, int(response)):
-                        error = 1
-                        break
-
-                elif question.Type == 2:
-                    if not save_response(id, current_user.User[0].UserId, question.QuestionId, response, None):
-                        error = 1
-                        break
-        if not error:
-            attendance = Attendance(HasAttended = True, BeneficiaryId=current_user.User[0].UserId, ActivityId = survey.ActivityId)
-            db.session.add(attendance)
-            db.session.commit()
-            flash('Your response has been recorded successfully. Evaluation results will be made available to you through your dashboard when the survey closes.', category='success')
-            return redirect(url_for('programs.survey', id=id))
-        else:
-            flash('An error occured whilst recording your response. Please try again later.', category='error')
-        
-    return render_template("admin/survey.html", survey=survey, questions=questions)
-
-def save_response(survey_id, user_id, question_id, text, num):
-    if (text is None and num is None):
-        return 0 #failure
-    if not Evaluation.query.filter_by(EvaluationId=survey_id).first():
-        return 0 #failure: invalid survey id
-    if not Beneficiary.query.filter_by(BeneficiaryId=user_id).first():
-        return 0 #failure: invalid user id
-    if not Question.query.filter_by(QuestionId=question_id).first():
-        return 0 #failure: invalid question id
-
-    response_to_add = Response(EvaluationId=survey_id, BeneficiaryId=user_id, QuestionId=question_id, Text=text, Num=num)
-    db.session.add(response_to_add)
-    db.session.commit()
-    return 1
 
 # Define a new function to fetch activities based on the selected project
 def fetch_activities(selected_project_id=None):
