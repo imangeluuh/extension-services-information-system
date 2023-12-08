@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>PUPQC Extension Programs</title>
+
+{% endblock %}
+
+{% block content %}
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+            <h2 class="page-title">
+                Extension Programs
+            </h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row g-4">
+            {% for ext_program in extension_programs %}
+            <div class="col-sm-6 col-lg-4">
+            <a href="{{ url_for('programs.extensionProgram', id=ext_program.ExtensionProgramId) }}">
+            <div class="card card-sm">
+                <img src="{{ ext_program.ImageUrl }}" class="card-img-top object-fit-cover " style="max-height: 200px;">
+                <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <h3 class="card-title mb-1 text-decoration-none text-black ">{{ ext_program.Name }}</h3>
+                        <div class="tags-list">
+                            <button type="button" class="btn btn-xs border-secondary text-dark fs-5 p-1" disabled>{{ ext_program.Agenda.AgendaName }}</button>
+                            <button type="button" class="btn btn-xs border-secondary text-dark fs-5 p-1" disabled>{{ ext_program.Program.Abbreviation }}</button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

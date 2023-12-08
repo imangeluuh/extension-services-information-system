@@ -49,7 +49,7 @@
 {% endblock %}
 
 {% block content %}
-
+<div class="container-xl">
 {% if current_user.is_authenticated and latest_announcements %}
 <div class="d-flex justify-content-center my-4 ">
     <h2 class="page-title">Latest Announcement</h2>
@@ -86,7 +86,7 @@
     <div class="row gy-4">
         {% for ext_program in extension_programs %}
         <div class="col-auto col-md-3">
-            <a href="" class=" text-decoration-none ">
+            <a href="{{ url_for('programs.extensionProgram', id=ext_program.ExtensionProgramId)}}" class=" text-decoration-none ">
                 <div class="card py-4">
                     <div class="card-stamp">
                         <div class="card-stamp-icon bg-white text-primary">
@@ -104,6 +104,7 @@
     </div>
 </div>
 {% endif %}
+</div>
 
 {% if not current_user.is_authenticated %}
 <div class="bg-primary-subtle d-flex justify-content-center align-items-center py-4 fs-3">
@@ -113,7 +114,7 @@
 {% endif %}
 
 {% if events_list %}
-<section class="my-5">
+<section class="my-5 container-xl">
     <!-- events -->
     <div class="">
         <h2 class="page-title">Upcoming Events</h2>
@@ -132,7 +133,6 @@
     <!-- /events -->
 </section>
 {% endif %}
-
 {% endblock %}
 
 {% block script %}

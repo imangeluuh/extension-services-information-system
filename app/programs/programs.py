@@ -680,6 +680,28 @@ def extensionPrograms():
     agendas = Agenda.query.all()
     return render_template('programs/ext_programs_list.html', extension_programs=extension_programs, programs=programs, agendas=agendas)
 
+@bp.route('/extension-program/view/<int:id>')
+def extensionProgram(id):
+    extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
+    projects = Project.query.filter_by(ExtensionProgramId=id).order_by(db.case(
+            (Project.Status == "Ongoing", 1),
+            (Project.Status == "To Be Started", 2),
+            (Project.Status == "Finished", 3),
+        ).asc()
+    ).all()
+    project_ids = [project.ProjectId for project in projects]
+    events = Activity.query.filter(Activity.ProjectId.in_(project_ids)).all()
+    # Get all the faculty in each project in current extension program
+    faculty_team = {}
+    for project in projects:
+        faculty_team.update(project.ProjectTeam)
+    return render_template('programs/extension_program.html', extension_program=extension_program, projects=projects, events=events, faculty_team=faculty_team)
+
+
+# @bp.route('/projects')
+# def projects():
+#     projects = Project.query.all()
+#     return render_template('programs/projects_list.html', projects=projects)
 
 
 # Define a new function to fetch activities based on the selected project
