@@ -13,7 +13,7 @@ Deprecated
 dnspython
 email-validator
 fillpdf
-Flask
+Flask==2.3.2
 Flask-Admin
 Flask-Bcrypt
 Flask-CKEditor
@@ -24,7 +24,7 @@ Flask-Login
 Flask-Mail
 Flask-Migrate
 Flask-RESTful
-flask-restx
+flask-restx==1.1.0
 Flask-Session
 Flask-SQLAlchemy
 Flask-WTF
@@ -51,7 +51,7 @@ pdfrw2
 Pillow
 psycopg2
 psycopg2-binary
-Pygments
+Pygment
 PyJWT
 PyMuPDF
 PyMuPDFb
