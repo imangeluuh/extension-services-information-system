@@ -67,18 +67,12 @@ activity_model = api.model("Activity", {
     "Description": fields.String,
     "Location": fields.String,
     "ImageUrl": fields.String,
-    "ProjectId": fields.Integer,
-    "Speaker": fields.String,
+    "Speaker": fields.Raw,
 })
 
 agenda_model = api.model("Agenda", {
     "AgendaId": fields.Integer,
     "AgendaName": fields.String,
-})
-
-faculty_model = api.model("Faculty", {
-    "FacultyId": fields.String,
-    "User": fields.Nested(user_model),
 })
 
 collaborator_model = api.model("Collaborator", {
@@ -92,7 +86,7 @@ extension_project_model = api.model("ExtensionProject", {
     "ProjectId": fields.Integer,
     "Title": fields.String,
     "Implementer": fields.String,
-    "ProjectTeam": fields.String,
+    "ProjectTeam": fields.Raw,
     "TargetGroup": fields.String,
     "ProjectType": fields.String,
     "StartDate": fields.Date,
@@ -105,9 +99,7 @@ extension_project_model = api.model("ExtensionProject", {
     "Status": fields.String,
     "ImageUrl": fields.String,
     "ProjectProposalUrl": fields.String,
-    "ProjectScope": fields.String,
-    "ExtensionProgramId": fields.Integer,
-    "LeadProponent": fields.Nested(faculty_model),
+    "LeadProponent": fields.Nested(user_model),
     "Collaborator": fields.Nested(collaborator_model),
     "Activity": fields.Nested(activity_model),
 })
