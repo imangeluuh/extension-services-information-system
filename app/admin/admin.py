@@ -25,23 +25,18 @@ def adminLogin():
     
     # Prevents logged in users from accessing the page
     if current_user.is_authenticated:
-        return redirect(url_for('programs.programs'))  # Temp route
-    
+        return redirect(url_for('programs.programs')) 
     if request.method == "POST":
         if form.validate_on_submit():
-            data={'Email': form.email.data,
-                'Password': form.password.data}
-            response = requests.post(api.url_for(AdminLoginApi, _external=True), json=data)
-            if response.status_code == 200:
-                response_data = response.json()
-                session['access_token'] = response_data.get('access_token')
-                instance_user = Login()
-                instance_user.set_user_data(login_data=response_data['admin'])
-                login_user(instance_user, remember=True)
-                return redirect(url_for('programs.programs')) # Temp route
+            attempted_user = Login.query.filter_by(Email=form.email.data).first()
+            if attempted_user and attempted_user.RoleId == 1: 
+                if attempted_user.check_password_correction(attempted_password=form.password.data):
+                    login_user(attempted_user, remember=True)
+                    return redirect(url_for('programs.programs')) 
+                else:
+                    flash('The password you\'ve entered is incorrect.', category='error')
             else:
-                response_data = response.json()
-                flash(response_data.get('error'), category='error')
+                flash('The email you entered isn\'t connected to an account.', category='error')
     return render_template('auth/admin_login.html', form=form)
 
 @bp.route('/logout')
