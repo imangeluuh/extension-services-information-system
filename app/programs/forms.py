@@ -9,36 +9,57 @@ import requests
 
 faculty_names = []
 try:
-    api_key = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJjNmYzMDFjZTg3OWE0M2YwOWMyZWYyZjUzODk1YjY1OSJ9.L0Xs2-s2hAhnOuUEyciVLPHOHDtH3OAeC_UgoMP3X64'
+    url = 'https://pupqcfis-com.onrender.com/api/all/Faculty_Profile'
 
-    access = requests.get(f"https://pupqcfis-com.onrender.com/api/all/faculty_data?token={api_key}")
+    api_key = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiIzM2Y0ZWI4NWNjNDQ0MTQzOWFkMzMwYWUzMzJiNmYwYyJ9.5pjwXdaIIZf6Jm9zb26YueCPQhj6Tc18bbZ0vnX4S9M'
 
-    data = access.json()
-    for faculty in data['FIS_data'][0]['faculty']:
-        faculty_names.append((list(faculty.keys())[1], faculty['name']))
+    # Set up headers with the API key in the 'API Key' authorization header
+    headers = {
+        'Authorization': 'API Key',
+        'token': api_key,  # 'token' key with the API key value
+        'Content-Type': 'application/json'  # Adjust content type as needed
+    }
+
+    # Make a GET request to the API with the API key in the headers
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        # Process the API response data
+        api_data = response.json()
+        
+        # RETURNING SPECIFIC DATA FROM ALL FACULTIES
+        
+        # Extracting faculty_account_ids into a list
+        faculty_account_ids = list(api_data['Faculties'].keys())
+
+        # Fetching Specific data for each faculty
+        for faculty_id in faculty_account_ids:
+            faculty_info = api_data['Faculties'][faculty_id]
+            faculty_name = faculty_info['name']
+            faculty_names.append((faculty_info, faculty_name))
 except:
     # Sample only
     faculty_names = [
         ('1', 'Monika Shin'),
         ('2', 'John Doe'),
-        ('Alice Johnson', 'Alice Johnson'),
-        ('Michael Smith', 'Michael Smith'),
-        ('Emily Davis', 'Emily Davis'),
-        ('Daniel Brown', 'Daniel Brown'),
-        ('Sophia Martinez', 'Sophia Martinez'),
-        ('William Taylor', 'William Taylor'),
-        ('Olivia Miller', 'Olivia Miller'),
-        ('Ethan Anderson', 'Ethan Anderson'),
-        ('Grace White', 'Grace White'),
-        ('Matthew Lee', 'Matthew Lee'),
-        ('Ava Robinson', 'Ava Robinson'),
-        ('Jacob Wright', 'Jacob Wright'),
-        ('Lily Thomas', 'Lily Thomas'),
-        ('Christopher Hall', 'Christopher Hall'),
-        ('Emma Turner', 'Emma Turner'),
-        ('Alexander Carter', 'Alexander Carter'),
-        ('Chloe Harris', 'Chloe Harris'),
-        ('Benjamin Clark', 'Benjamin Clark'),
+        ('3', 'Alice Johnson'),
+        ('4', 'Michael Smith'),
+        ('5', 'Emily Davis'),
+        ('6', 'Daniel Brown'),
+        ('7', 'Sophia Martinez'),
+        ('8', 'William Taylor'),
+        ('9', 'Olivia Miller'),
+        ('10', 'Ethan Anderson'),
+        ('11', 'Grace White'),
+        ('12', 'Matthew Lee'),
+        ('13', 'Ava Robinson'),
+        ('14', 'Jacob Wright'),
+        ('15', 'Lily Thomas'),
+        ('16', 'Christopher Hall'),
+        ('17', 'Emma Turner'),
+        ('18', 'Alexander Carter'),
+        ('19', 'Chloe Harris'),
+        ('20', 'Benjamin Clark'),
     ]
 
 class ProgramForm(FlaskForm):
