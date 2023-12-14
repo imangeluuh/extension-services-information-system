@@ -2,12 +2,6 @@
 
 {% block head %}
 <title>{{ project.Title }}</title>
-<style>
-    .list-group-item.list-group-item-action.active {
-        border-left-color: #800000;
-    }
-
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -172,7 +166,7 @@
                             <span class="avatar" style="background-image: url({{activity.ImageUrl}}); height: 50px; width:50px"></span>
                             </div>
                             <div class="col text-truncate">
-                            <a href="" class="fs-3 fw-semibold text-reset d-block text-truncate">{{ activity.ActivityName }}</a>
+                            <a href="{{url_for('programs.activity', id=activity.ActivityId)}}" class="fs-3 fw-semibold text-reset d-block text-truncate">{{ activity.ActivityName }}</a>
                             <div class="fs-4 text-secondary text-truncate mt-n1">{{activity.Date.strftime('%A, %B %d %Y') }}</div>
                             <div class="fs-4 text-secondary text-truncate mt-n1"> {{ activity.StartTime.strftime('%I:%M %p') }} to {{ activity.EndTime.strftime('%I:%M %p') }}</div>
                             </div>
@@ -190,11 +184,6 @@
 
 {% block script %}
     <script>
-        $('.list-group-item').click(function () {
-            $('.list-group-item').removeClass('active');
-            $(this).addClass('active');
-        });
-
         $(document).ready(function() {
         calendar.render();
         });

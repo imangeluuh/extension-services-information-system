@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 import os, requests
 from ..decorators.decorators import login_required
 from ..Api.resources import ExtensionProgramListApi
+from sqlalchemy import func
 
 url = 'https://pupqcfis-com.onrender.com/api/all/Faculty_Profile'
 
@@ -350,7 +351,7 @@ def viewProject(id):
     project = Project.query.get_or_404(id)
     registered = Registration.query.filter_by(ProjectId=project.ProjectId)
     # for calendar - temp
-    events = fetch_activities(id)
+    events = Activity.query.filter_by(ProjectId=id).all()
     
     form.title.data = project.Title
     form.implementer.data = project.Implementer
@@ -788,3 +789,18 @@ def cancelRegistration(project_id):
         flash('There was an issue canceling the registration.', category='error')
 
     return redirect(url_for('programs.project', id=project_id))
+
+
+@bp.route('/activities')
+def activities():
+    activities = Activity.query.order_by(Activity.Date.desc()).all()
+    print(activities)
+    return render_template('programs/activities.html', activities=activities)
+
+@bp.route('/activities/<int:id>')
+def activity(id):
+    activity = Activity.query.filter_by(ActivityId=id).first()
+    suggestions = Activity.query.filter(Activity.Date > datetime.utcnow().date(),
+                                        Activity.ProjectId==activity.ProjectId).order_by(func.random()).limit(3).all()
+    print(suggestions)
+    return render_template('programs/activity.html', activity=activity, suggestions=suggestions)
