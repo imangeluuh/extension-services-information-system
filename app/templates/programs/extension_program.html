@@ -34,7 +34,7 @@
 <div class="page-body mb-0">
     <div class="container-xl">
         <div class="row">
-            <div class="col-auto col-md-3">
+            <div class="col-12 col-md-3">
                 <div class="card">
                     <div class="list-group list-group-flush">
                         <a href="#{{ extension_program.Name }}" class="list-group-item list-group-item-action active" aria-current="true">
@@ -47,7 +47,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-auto col-md-9">
+            <div class="col-12 col-md-9 mt-4 mt-md-0 ">
                 <section id="{{extension_program.Name}}">
                     <div class="card p-4">
                         <div class="row g-2">
@@ -66,7 +66,7 @@
                                 {% for project in projects %}
                                 <div class="col-auto col-md-6">
                                 <div class="row g-3 align-items-center">
-                                    <a href="#" class="col-auto">
+                                    <div class="col-auto">
                                     <span class="avatar" style="background-image: url({{project.ImageUrl}}); height: 50px; width:50px">
                                         <span class="badge 
                                         {% if project.Status == "Ongoing" %}
@@ -77,9 +77,9 @@
                                         bg-danger
                                         {% endif %}
                                         "></span></span>
-                                    </a>
+                                    </div>
                                     <div class="col text-truncate">
-                                    <a href="#" class="fs-2 text-reset d-block text-truncate">{{ project.Title }}</a>
+                                    <a href="{{url_for('programs.project', id=project.ProjectId)}}" class="fs-2 text-reset d-block text-truncate">{{ project.Title }}</a>
                                     <div class="fs-3 text-secondary text-truncate mt-n1">{{ project.Status }}</div>
                                     </div>
                                 </div>
@@ -141,7 +141,7 @@
                 {% for key, value in faculty_team.items()    %}
                 <div class="col-auto col-md-4">
                 <div class="row g-3 align-items-center">
-                    <span class="avatar" style="background-image: url(); height: 100px; width: 100px"></span>
+                    <span class="avatar avatar-md" style="background-image: url('{{faculty_profile[key]}}');"></span>
                     <div class="col text-truncate">
                     <span class="fs-2 text-reset d-block text-truncate">{{ value }}</span>
                     </div>

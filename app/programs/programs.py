@@ -12,6 +12,17 @@ import os, requests
 from ..decorators.decorators import login_required
 from ..Api.resources import ExtensionProgramListApi
 
+url = 'https://pupqcfis-com.onrender.com/api/all/Faculty_Profile'
+
+api_key = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiIzM2Y0ZWI4NWNjNDQ0MTQzOWFkMzMwYWUzMzJiNmYwYyJ9.5pjwXdaIIZf6Jm9zb26YueCPQhj6Tc18bbZ0vnX4S9M'
+
+# Set up headers with the API key in the 'API Key' authorization header
+headers = {
+    'Authorization': 'API Key',
+    'token': api_key,  # 'token' key with the API key value
+    'Content-Type': 'application/json'  # Adjust content type as needed
+}
+
 # ============== Admin/Faculty views ===========================
 
 # Function to add project team input to dictionary
@@ -168,11 +179,17 @@ def insertExtensionProgram():
             # Delete file from local storage
             if os.path.exists(imagepath):
                 os.remove(imagepath)
+                
+        speakers = getProjectTeamInput(form.activity.speaker.data, form.activity.speaker.choices)
+                
         activity_to_create = Activity(ActivityName=form.activity.activity_name.data,
                                         Date=form.activity.date.data,
+                                        StartTime=form.activity.start_time.data,
+                                        EndTime=form.activity.end_time.data,
                                         Description=form.activity.activity_description.data,
-                                        ProjectId=int_project_id,
-                                        Speaker="['Speaker 1', 'Speaker 2']", # temp
+                                        Location=form.activity.location.data,
+                                        Speaker=speakers,
+                                        ProjectId= int_project_id,
                                         ImageUrl=str_image_url,
                                         ImageFileId=str_image_file_id)
         db.session.add(activity_to_create)
@@ -581,7 +598,8 @@ def calendar():
     projects = Project.query.all()
     selected_project_id = request.args.get('project_id', None)
     # Call a function to fetch activities based on the selected project
-    activities = fetch_activities(selected_project_id)
+    activities = None
+    # activities = fetch_activities(selected_project_id)
     
     return render_template('programs/activity_calendar.html', projects=projects, events=activities, selected_project_id=selected_project_id)
 
@@ -690,26 +708,83 @@ def extensionProgram(id):
         ).asc()
     ).all()
     project_ids = [project.ProjectId for project in projects]
-    events = Activity.query.filter(Activity.ProjectId.in_(project_ids)).all()
+    events = Activity.query.filter(Activity.ProjectId.in_(project_ids),
+                                    Activity.Date>datetime.utcnow().date()).order_by(Activity.Date.desc()).all()
     # Get all the faculty in each project in current extension program
     faculty_team = {}
     for project in projects:
         faculty_team.update(project.ProjectTeam)
-    return render_template('programs/extension_program.html', extension_program=extension_program, projects=projects, events=events, faculty_team=faculty_team)
+
+    # Make a GET request to the API with the API key in the headers
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        # Process the API response data
+        api_data = response.json()
+        
+        faculty_profile = {project.LeadProponentId:'https://drive.google.com/uc?export=view&id='+api_data['Faculties'][project.LeadProponentId]['profile_pic']}
+        # RETURNING SPECIFIC DATA FROM ALL FACULTIES
+        for faculty in project.ProjectTeam.items():
+            faculty_info = api_data['Faculties'][faculty[0]]
+            faculty_profile[faculty[0]] = 'https://drive.google.com/uc?export=view&id='+faculty_info['profile_pic']
+    
+    return render_template('programs/extension_program.html', extension_program=extension_program, projects=projects, events=events, faculty_team=faculty_team, faculty_profile=faculty_profile)
 
 
-# @bp.route('/projects')
-# def projects():
-#     projects = Project.query.all()
-#     return render_template('programs/projects_list.html', projects=projects)
+@bp.route('/projects')
+def projects():
+    projects = Project.query.all()
+    return render_template('programs/projects_list.html', projects=projects)
 
+@bp.route('/projects/<int:id>')
+def project(id):
+    project = Project.query.filter_by(ProjectId=id).first()
+    activities = Activity.query.filter_by(ProjectId=id).all()
+    events = [activity for activity in activities if activity.Date > datetime.utcnow().date()]
+    user_id = current_user.User[0].UserId if current_user.is_authenticated else None
+    bool_is_registered = True if Registration.query.filter_by(ProjectId=id, UserId=user_id).first() else False
+    current_date = datetime.utcnow().date()
 
-# Define a new function to fetch activities based on the selected project
-def fetch_activities(selected_project_id=None):
+    # Make a GET request to the API with the API key in the headers
+    response = requests.get(url, headers=headers)
 
-    query = Activity.query
+    if response.status_code == 200:
+        # Process the API response data
+        api_data = response.json()
+        
+        faculty_profile = {project.LeadProponentId:'https://drive.google.com/uc?export=view&id='+api_data['Faculties'][project.LeadProponentId]['profile_pic']}
+        # RETURNING SPECIFIC DATA FROM ALL FACULTIES
+        for faculty in project.ProjectTeam.items():
+            faculty_info = api_data['Faculties'][faculty[0]]
+            faculty_profile[faculty[0]] = 'https://drive.google.com/uc?export=view&id='+faculty_info['profile_pic']
+    return render_template('programs/project_reg.html', project=project, events=events,activities=activities, faculty_profile=faculty_profile, bool_is_registered=bool_is_registered, current_date=current_date)
 
-    if selected_project_id:
-        query = query.filter(Activity.ProjectId == selected_project_id)
+@bp.route('/registration/<int:project_id>', methods=['POST'])
+@login_required(role=["Beneficiary", "Student"])
+def registration(project_id):
+    user_id = current_user.User[0].UserId
+    registration_to_create = Registration(ProjectId = project_id,
+                                        UserId=user_id)
+    try:
+        db.session.add(registration_to_create)
+        db.session.commit()
+        flash('Registration Successful!', category='success')
+    except:
+        flash('There was an issue during registration.', category='error')
 
-    return query.with_entities(Activity.ActivityName, Activity.Date, Project.Title).join(Project).all()
+    return redirect(url_for('programs.project', id=project_id))
+
+@bp.route('/registration/cancel/<int:project_id>', methods=['POST'])
+@login_required(role=["Beneficiary", "Student"])
+def cancelRegistration(project_id):
+    user_id = current_user.User[0].UserId if current_user.is_authenticated else None
+    registration = Registration.query.filter_by(ProjectId=project_id, UserId=user_id).first()
+
+    try:
+        db.session.delete(registration)
+        db.session.commit()
+        flash('Registration is successfully canceled.', category='success')
+    except:
+        flash('There was an issue canceling the registration.', category='error')
+
+    return redirect(url_for('programs.registration', project_id=project_id))
