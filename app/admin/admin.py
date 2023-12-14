@@ -10,7 +10,6 @@ from ..store import uploadImage
 from ..email import sendEmail
 from werkzeug.utils import secure_filename
 import requests
-from ..programs.programs import fetch_activities
 
 
 def saveImage(image, imagepath):
