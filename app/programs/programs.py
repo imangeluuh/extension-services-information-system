@@ -722,9 +722,9 @@ def extensionProgram(id):
         # Process the API response data
         api_data = response.json()
         
-        faculty_profile = {project.LeadProponentId:'https://drive.google.com/uc?export=view&id='+api_data['Faculties'][project.LeadProponentId]['profile_pic']}
+        faculty_profile = {}
         # RETURNING SPECIFIC DATA FROM ALL FACULTIES
-        for faculty in project.ProjectTeam.items():
+        for faculty in faculty_team.items():
             faculty_info = api_data['Faculties'][faculty[0]]
             faculty_profile[faculty[0]] = 'https://drive.google.com/uc?export=view&id='+faculty_info['profile_pic']
     
@@ -787,4 +787,4 @@ def cancelRegistration(project_id):
     except:
         flash('There was an issue canceling the registration.', category='error')
 
-    return redirect(url_for('programs.registration', project_id=project_id))
+    return redirect(url_for('programs.project', id=project_id))

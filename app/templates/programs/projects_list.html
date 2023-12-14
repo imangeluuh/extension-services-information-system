@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>PUPQC Extension Projects</title>
+
+{% endblock %}
+
+{% block content %}
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+            <h2 class="page-title">
+                Extension Projects
+            </h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="page-body">
+    <div class="container-xl">
+        {% for project in projects %}
+        <div class="card mb-4">
+            <div class="row row-0">
+                <div class="col-3">
+                    <!-- Photo -->
+                    <img src="{{project.ImageUrl}}" class="w-100 h-100 object-cover card-img-start" alt="{{project.Title}}">
+                </div>
+                <div class="col">
+                <div class="card-body">
+                    <a href="{{url_for('programs.project', id=project.ProjectId)}}" class="text-black">
+                        <h3 class="card-title">{{project.Title}}</h3>
+                    </a>
+                    <p class="text-secondary">{{project.ImpactStatement|safe}}</p>
+                </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
