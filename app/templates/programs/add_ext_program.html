@@ -430,6 +430,57 @@ input[type="file"]::-webkit-file-upload-button,
                             {% endfor %}
                         </ul>
                     </div>
+                    <div class="col-auto col-md-4 text-start d-flex flex-column">
+                        <!--date -->
+                        {{ form.activity.date.label }}
+                        {{ form.activity.date(class="input")}}
+                        <ul>
+                            {% for error in form.activity.date.errors %}
+                            <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-12 col-md-4 text-start d-flex flex-column">
+                        <!-- start time -->
+                        {{  form.activity.start_time.label }}
+                        {{  form.activity.start_time(class="input")}}
+                        <ul>
+                            {% for error in form.activity.start_time.errors %}
+                            <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-12 col-md-4 text-start d-flex flex-column">
+                        <!-- end time -->
+                        {{  form.activity.end_time.label }}
+                        {{  form.activity.end_time(class="input")}}
+                        <ul>
+                            {% for error in form.activity.end_time.errors %}
+                            <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-12 col-md-6 text-start d-flex flex-column">
+                        <!-- speaker-->
+                        <div class="form-group">
+                            {{ form.activity.speaker.label}}
+                            <select id="{{form.activity.speaker.id}}" name="{{form.activity.speaker.name}}" class="input" multiple="" hidden>
+                                {% for option in form.activity.speaker %}
+                                    {{ option }}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6  text-start d-flex flex-column">
+                        <!-- lcoation -->
+                        {{ form.activity.location.label }}
+                        {{ form.activity.location(class="input") }}
+                        <ul>
+                            {% for error in form.activity.location.errors %}
+                            <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                     <div class="col-12 text-start d-flex flex-column">
                         <!-- description -->
                         {{ form.activity.activity_description.label }}
@@ -440,22 +491,12 @@ input[type="file"]::-webkit-file-upload-button,
                             {% endfor %}
                         </ul>
                     </div>
-                    <div class="col-auto col-md-6 text-start d-flex flex-column">
+                    <div class="col-12 text-start d-flex flex-column">
                         <!-- image -->
                         {{ form.activity.image.label }}
                         {{ form.activity.image(class="form-control mt-1")}}
                         <ul>
                             {% for error in form.activity.image.errors %}
-                            <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    <div class="col-auto col-md-6 text-start d-flex flex-column">
-                        <!--date -->
-                        {{ form.activity.date.label }}
-                        {{ form.activity.date(class="input")}}
-                        <ul>
-                            {% for error in form.activity.date.errors %}
                             <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                             {% endfor %}
                         </ul>
@@ -476,6 +517,10 @@ input[type="file"]::-webkit-file-upload-button,
 
 <script>
     new MultipleSelect('#project-project_team', {
+        placeholder: 'Select Faculty'
+    })
+    document.getElementById("multiple-select-container-1").classList.add("input");
+    new MultipleSelect('#activity-speaker', {
         placeholder: 'Select Faculty'
     })
     document.getElementById("multiple-select-container-1").classList.add("input");
@@ -500,12 +545,12 @@ $(".next").click(function () {
     // Check if all required fields in the current form are filled out
     var filledOut = true;
     
-    // requiredFields.each(function() {
-    //     if ($(this).val() === "") {
-    //         filledOut = false;
-    //         return false; // exit the loop early if a required field is empty
-    //     }
-    // });
+    requiredFields.each(function() {
+        if ($(this).val() === "") {
+            filledOut = false;
+             return false; // exit the loop early if a required field is empty
+        }
+    });
     if (!filledOut) {
         toastr.error("Please fill out all the fields.");
         animating = false;

@@ -36,7 +36,8 @@ try:
         for faculty_id in faculty_account_ids:
             faculty_info = api_data['Faculties'][faculty_id]
             faculty_name = faculty_info['name']
-            faculty_names.append((faculty_info, faculty_name))
+            faculty_names.append((faculty_id, faculty_name))
+
 except:
     # Sample only
     faculty_names = [
