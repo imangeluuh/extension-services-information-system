@@ -113,19 +113,20 @@
 </div>
 {% endif %}
 
-{% if events_list %}
+{% if events %}
 <section class="my-5 container-xl">
     <!-- events -->
     <div class="">
-        <h2 class="page-title">Upcoming Events</h2>
+        <h2 class="page-title">Upcoming Activities</h2>
         <hr class="">
         <div class="row mt-3">
             <div class="col-auto col-md-4">
-                {% for event in events_list %}
+                {% for event in events %}
                 {% include 'components/_event.html' %}
                 {% endfor %}
             </div>
-            <div class="col-auto col-md-8 order-first">
+            <div class="col-auto col-md-8 order-first d-flex justify-content-center ">
+              <div style="width: 90%">
                 {% include 'components/calendar.html' %}
             </div>
         </div>
