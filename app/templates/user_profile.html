@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Profile - PUPQC-ESIS</title>
+    <!--Regular Datatables CSS-->
+    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+    <!--Responsive Extension Datatables CSS-->
+    <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
+{% endblock %}
+{% block content %}
+<div class="my-4">
+    <div class="container-xl">
+        <h2 class="page-title mb-3">Personal Data</h2>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-uppercase text-danger fw-bolder">{{current_user.User[0].LastName}}, {{current_user.User[0].FirstName}} {{current_user.User[0].MiddleName if current_user.User[0].MiddleName}}</h3>
+            </div>
+            <div class="card-body">
+                <div class="row gy-2">
+                    <div class="col-12 col-md-3 datagrid-item">
+                        <div class="datagrid-title">ID</div>
+                    </div>
+                    <div class="col-12 col-md-9 datagrid-item">
+                        <div class="datagrid-content fw-bold">{{current_user.User[0].UserId}}</div>
+                    </div>
+                    <div class="col-12 col-md-3 datagrid-item">
+                        <div class="datagrid-title">Name</div>
+                    </div>
+                    <div class="col-12 col-md-9 datagrid-item">
+                        <div class="datagrid-content fw-bold text-uppercase ">{{current_user.User[0].LastName}}, {{current_user.User[0].FirstName}} {{current_user.User[0].MiddleName if current_user.User[0].MiddleName}}</div>
+                    </div>
+                    <div class="col-12 col-md-3 datagrid-item">
+                        <div class="datagrid-title">Gender</div>
+                    </div>
+                    <div class="col-12 col-md-9 datagrid-item">
+                        <div class="datagrid-content fw-bold">{{current_user.User[0].Gender}}</div>
+                    </div>
+                    <div class="col-12 col-md-3 datagrid-item">
+                        <div class="datagrid-title">Date of Birth</div>
+                    </div>
+                    <div class="col-12 col-md-9 datagrid-item">
+                        <div class="datagrid-content fw-bold">{{current_user.User[0].Birthdate}}</div>
+                    </div>
+                    <div class="col-12 col-md-3 datagrid-item">
+                        <div class="datagrid-title">Contact Details</div>
+                    </div>
+                    <div class="col-12 col-md-9 datagrid-item">
+                        <div class="datagrid-content fw-bold">{{current_user.User[0].ContactDetails}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+            <!--Container-->
+            <div class="bg-white p-3 w-100 ">
+                <table id="projects" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th data-priority="1">Project Name</th>
+                            <th data-priority="2">Extension Program</th>
+                            <th data-priority="3">Status</th>
+                            <th data-priority="4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if projects %}
+                            {% for project in projects %}
+                            <!-- project[0] = project, project[1] = certificate -->
+                            <tr>
+                                <td>{{ project[0].Title}}</td>
+                                <td>{{ project[0].ExtensionProgram.Name }}</td>
+                                <td>{{ project[0].Status }}</td>
+                                <td>
+                                    <a href="{{url_for('programs.project', id=project[0].ProjectId)}}" class="btn text-white" style="background-color: #D99923;">View</a>
+                                    {% if project[1] %}
+                                    <a href="{{project[1].CertificateUrl}}" class="btn text-white" style="background-color: #D99923;">Certificate</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>   
+            </div>
+            <!--/container-->
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<!--Datatables -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var table = $('#projects').DataTable({
+                responsive: true
+        })
+    });
+</script>
+{% endblock %}
+
