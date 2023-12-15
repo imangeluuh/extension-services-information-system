@@ -599,8 +599,7 @@ def calendar():
     projects = Project.query.all()
     selected_project_id = request.args.get('project_id', None)
     # Call a function to fetch activities based on the selected project
-    activities = None
-    # activities = fetch_activities(selected_project_id)
+    activities = Activity.query.all()
     
     return render_template('programs/activity_calendar.html', projects=projects, events=activities, selected_project_id=selected_project_id)
 
@@ -620,9 +619,7 @@ from fillpdf import fillpdfs
 @bp.route('/cert/<int:id>', methods=['GET', 'POST'])
 @login_required(role=["Admin", "Faculty"])
 def cert(id):
-    fillpdfs.get_form_fields("C:\\Users\\angel\\Desktop\\e-cert (beneficiary) (FILLABLE).pdf")
-    fillpdfs.print_form_fields("C:\\Users\\angel\\Desktop\\e-cert (beneficiary) (FILLABLE).pdf")
-    
+    fillpdfs.get_form_fields(os.path.join(current_app.config["UPLOAD_FOLDER"], "e-cert (beneficiary) (FILLABLE).pdf"))
     # Get all the registered beneficiaries in the project
     beneficiaries_id = [registration.UserId for registration in Registration.query.filter_by(ProjectId=id).all()]
     registered_beneficiaries = [User.query.filter_by(UserId=beneficiary_id).first() for beneficiary_id in beneficiaries_id]
@@ -645,7 +642,6 @@ def cert(id):
         if beneficiary.MiddleName:
             beneficiary_name += beneficiary.MiddleName[0] + '. '
         beneficiary_name += beneficiary.LastName
-        print(beneficiary_name)
         data_dict = {'Text-n_L-ntAGRy': beneficiary_name,
                     'Text-Pnb29VfGWk': extension_program.Name,
                     'Date-jWSJ8ZAYJ_': datetime.utcnow(),
@@ -684,6 +680,7 @@ def cert(id):
         db.session.add(cert_to_add)
     
     db.session.commit()
+    flash('Certificate is successfully released', category='success')
 
     return redirect(url_for('programs.programs'))
 
