@@ -137,8 +137,11 @@
             <hr class="">
             <div class="row mt-3">
                 <div class="col-auto col-md-4">
+                    <!-- should be limited to 5 events -->
                     {% for event in events %}
-                    {% include 'components/_event.html' %}
+                    <div class="mb-3">
+                        {% include 'components/_event.html' %}
+                    </div>
                     {% endfor %}
                 </div>
                 <div class="col-auto col-md-8 order-first d-flex justify-content-center ">
