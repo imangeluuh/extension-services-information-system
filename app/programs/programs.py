@@ -651,7 +651,8 @@ def cert(id):
         # Get the initials of the beneficiary
         beneficiary_initials = ''.join([word[0] for word in beneficiary_name.split()])
         # Fill the pdf with the required information
-        filepath = os.path.join(current_app.root_path, "media") + "/" + extension_program.Name + "-" + beneficiary_initials + " CERTIFICATE.pdf"
+        filepath = os.path.join(current_app.root_path, "media") + "\\" + extension_program.Name + "-" + beneficiary_initials + " CERTIFICATE.pdf"
+        fillpdfs.write_fillable_pdf(os.path.join(current_app.config["UPLOAD_FOLDER"], "e-cert (beneficiary) (FILLABLE).pdf"), filepath, data_dict, flatten=True)
 
         # Upload cert pdf to cloud
         status = uploadImage(filepath, extension_program.Name + "-" + beneficiary_initials + " CERTIFICATE.pdf")
