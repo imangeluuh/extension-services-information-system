@@ -116,7 +116,7 @@ def facultyLogin():
                     flash('The password you\'ve entered is incorrect.', category='error')
             else:
                 flash('The email you entered isn\'t connected to an account.', category='error')
-        return render_template('auth/login.html', form=form, current_url_path=current_url_path)
+    return render_template('auth/login.html', form=form, current_url_path=current_url_path)
         
 @bp.route('/logout')
 def logout():
