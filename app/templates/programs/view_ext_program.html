@@ -80,6 +80,21 @@
     <div class="list-group list-group-flush overflow-auto" style="max-height: 35rem">
         {% for project in ext_program.Projects %}
         <div class="list-group-item">
+            {% if current_user.Role.RoleName == "Faculty" %}
+                {% if project.LeadProponentId == current_user.User[0].UserId %}
+                <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}">
+                    <div class="row">
+                        <div class="col-auto">
+                            <span class="avatar" style="background-image: url('{{project.ImageUrl if project.ImageUrl}}'); height: 75px; width: 75px"></span>
+                        </div>
+                        <div class="col text-truncate">
+                            <span class="text-body d-block">{{project.Title}}</span>
+                            <div class="text-secondary text-truncate mt-n1">{{project.LeadProponent.FirstName}} {{project.LeadProponent.LastName}}</div>
+                        </div>
+                    </div>
+                </a>
+                {% endif %}
+            {% else %}
             <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}">
                 <div class="row">
                     <div class="col-auto">
@@ -91,6 +106,7 @@
                     </div>
                 </div>
             </a>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
