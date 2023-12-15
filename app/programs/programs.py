@@ -740,8 +740,10 @@ def projects():
 @bp.route('/projects/<int:id>')
 def project(id):
     project = Project.query.filter_by(ProjectId=id).first()
-    activities = Activity.query.filter_by(ProjectId=id).all()
+    activities = Activity.query.filter_by(ProjectId=id).order_by(Activity.Date.desc()).all()
     events = [activity for activity in activities if activity.Date > datetime.utcnow().date()]
+    # arrange upcoming activities in ascending order
+    events.reverse()
     user_id = current_user.User[0].UserId if current_user.is_authenticated else None
     bool_is_registered = True if Registration.query.filter_by(ProjectId=id, UserId=user_id).first() else False
     current_date = datetime.utcnow().date()
@@ -802,5 +804,8 @@ def activity(id):
     activity = Activity.query.filter_by(ActivityId=id).first()
     suggestions = Activity.query.filter(Activity.Date > datetime.utcnow().date(),
                                         Activity.ProjectId==activity.ProjectId).order_by(func.random()).limit(3).all()
-    print(suggestions)
-    return render_template('programs/activity.html', activity=activity, suggestions=suggestions)
+    current_date = datetime.utcnow().date()
+    user_id = current_user.User[0].UserId if current_user.is_authenticated else None
+    evaluation_id = activity.Evaluation[0].EvaluationId
+    bool_is_evaluation_taken = True if Response.query.filter_by(BeneficiaryId=user_id, EvaluationId=evaluation_id).first() else False
+    return render_template('programs/activity.html', activity=activity, suggestions=suggestions, current_date=current_date, bool_is_evaluation_taken=bool_is_evaluation_taken)
