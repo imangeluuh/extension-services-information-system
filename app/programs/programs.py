@@ -793,7 +793,6 @@ def cancelRegistration(project_id):
 @bp.route('/activities')
 def activities():
     activities = Activity.query.order_by(Activity.Date.desc()).all()
-    print(activities)
     return render_template('programs/activities.html', activities=activities)
 
 @bp.route('/activities/<int:id>')
@@ -803,6 +802,6 @@ def activity(id):
                                         Activity.ProjectId==activity.ProjectId).order_by(func.random()).limit(3).all()
     current_date = datetime.utcnow().date()
     user_id = current_user.User[0].UserId if current_user.is_authenticated else None
-    evaluation_id = activity.Evaluation[0].EvaluationId
+    evaluation_id = activity.Evaluation[0].EvaluationId if activity.Evaluation else None
     bool_is_evaluation_taken = True if Response.query.filter_by(BeneficiaryId=user_id, EvaluationId=evaluation_id).first() else False
     return render_template('programs/activity.html', activity=activity, suggestions=suggestions, current_date=current_date, bool_is_evaluation_taken=bool_is_evaluation_taken)
