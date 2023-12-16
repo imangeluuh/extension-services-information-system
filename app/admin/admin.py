@@ -2,7 +2,7 @@ from app.admin import bp
 from flask import render_template, url_for, request, redirect, flash, session
 from flask_login import current_user, login_user, login_required, logout_user
 from .forms import LoginForm
-from ..models import Login, Beneficiary, Project, Student, Registration, User, Faculty
+from ..models import Login, Beneficiary, Project, Student, Registration, User, Faculty, ExtensionProgram
 from ..Api.resources import AdminLoginApi
 from ..decorators.decorators import login_required
 from app import db, api
@@ -80,3 +80,18 @@ def viewUser(id):
     else:
         user_projects = Project.query.filter_by(LeadProponentId=user.UserId)
     return render_template('admin/view_user.html', user=user, user_projects=user_projects)
+    
+@bp.route('/dashboard')
+@login_required(role=["Admin"])
+def dashboard():
+    programs = ExtensionProgram.query.all()
+    programs_participants = []
+    for program in programs:
+        participants = [program.Name, 0]
+        for project in program.Projects:
+            registered = project.Registration
+            participants[1] += len(registered)
+        programs_participants.append(participants)
+
+    return render_template('admin/dashboard.html', programs_participants=programs_participants)
+    
