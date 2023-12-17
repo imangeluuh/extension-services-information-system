@@ -1,7 +1,7 @@
 {% extends 'admin/base.html' %}
 
 {% block head %}
-    <title>Project Budge Allocationt</title>
+    <title>Project Budget Allocation</title>
     <!--Regular Datatables CSS-->
 	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
 	<!--Responsive Extension Datatables CSS-->
@@ -37,7 +37,7 @@
                             <td>{{ project.FundType }}</td>
                             <td class="proposed">{{project.ProposedBudget }}</td>
                             <td class="approved">{{project.ApprovedBudget }}</td>
-                            <td class="flex"><a href="{{ url_for('programs.viewProject', id=project.ProjectId) }}" class="bg-success me-2 px-2 py-1 rounded">View</a></td>
+                            <td class="flex"><a href="{{ url_for('programs.projectBudget', id=project.ProjectId) }}" class="bg-success me-2 px-2 py-1 rounded">View</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -12,6 +12,7 @@ import os, requests
 from ..decorators.decorators import login_required
 from ..Api.resources import ExtensionProgramListApi
 from sqlalchemy import func
+from fillpdf import fillpdfs
 
 url = 'https://pupqcfis-com.onrender.com/api/all/Faculty_Profile'
 
@@ -614,7 +615,13 @@ def budgetAllocation():
         projects = Project.query.all()
     return render_template('programs/budget_allocation.html', projects=projects)
 
-from fillpdf import fillpdfs
+@bp.route('/budget-allocation/<int:id>', methods=['GET', 'POST'])
+@login_required(role=["Admin", "Faculty"])
+def projectBudget(id):
+    project = Project.query.filter_by(ProjectId=id).first()
+    return render_template('programs/project_budget.html', project=project)
+
+
 
 @bp.route('/cert/<int:id>', methods=['GET', 'POST'])
 @login_required(role=["Admin", "Faculty"])

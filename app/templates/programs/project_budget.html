@@ -1,0 +1,92 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>{{project.Title}} Budget</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+{% endblock %}
+
+{% block content %}
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">
+                {{ project.Title }}
+                </h2>
+            </div>
+            <!-- Page title actions -->
+            <div class="col-auto ms-auto d-print-none">
+                <div class="d-flex">
+                <input type="search" class="form-control d-inline-block w-9 me-3" placeholder="Search user…">
+                <a href="#" class="btn btn-primary">
+                    <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
+                    Add Item
+                </a>
+                </div>
+            </div>
+            </div>
+            </div>
+    <!-- Page body -->
+    <div class="page-body">
+        <div class="container-xl">
+            <div class="card p-0">
+                <div id="main" style="width: 100%; height: 250px"></div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                  <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <a href="#tabs-home-4" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">To be purchased</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <a href="#tabs-profile-4" class="nav-link" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab">Purchased</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="card-body">
+                  <div class="tab-content">
+                    <div class="tab-pane active show" id="tabs-home-4" role="tabpanel">
+                      <h4>Home tab</h4>
+                      <div>Cursus turpis vestibulum, dui in pharetra vulputate id sed non turpis ultricies fringilla at sed facilisis lacus pellentesque purus nibh</div>
+                    </div>
+                    <div class="tab-pane" id="tabs-profile-4" role="tabpanel">
+                      <h4>Profile tab</h4>
+                      <div>Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc amet, pellentesque id egestas velit sed</div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript">
+        // Initialize the echarts instance based on the prepared dom
+        var myChart = echarts.init(document.getElementById('main'));
+    
+        // Specify the configuration items and data for the chart
+        var option = {
+        xAxis: {
+            type: 'value'
+        },
+        yAxis: {
+            type: 'category',
+            data: ['Internal', 'External']
+        },
+        series: [
+            {
+            data: [120, 200],
+            type: 'bar'
+            }
+        ],
+        color: ['#800000', '#f2cb05']
+        };
+    
+        // Display the chart using the configuration items and data just specified.
+        myChart.setOption(option);
+    </script>
+{% endblock %}
