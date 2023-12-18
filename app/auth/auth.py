@@ -2,12 +2,10 @@ from app.auth import bp
 from flask import render_template, url_for, request, redirect, flash, session
 from .forms import BeneficiaryRegisterForm, StudentRegisterForm, LoginForm, ResetPasswordRequestForm, ResetPasswordForm
 from ..models import Login, User, Beneficiary, Student
-from app import db, api
-from ..Api.resources import BeneficiaryLoginApi, StudentLoginApi, FacultyLoginApi, BeneficiaryRegisterApi, StudentRegisterApi
+from app import db
 from flask_login import login_user, logout_user, current_user
 from datetime import timedelta
 import uuid
-import requests, json
 from .email import sendPasswordResetEmail
 
 lockout_duration = timedelta(minutes=1)
@@ -27,6 +25,7 @@ def beneficiaryLogin():
     if current_user.is_authenticated:
         return redirect(url_for('home'))  # Temp route
     form = LoginForm()
+
     if request.method == "POST":
         if form.validate_on_submit():
             attempted_user = Login.query.filter_by(Email=form.email.data).first()
