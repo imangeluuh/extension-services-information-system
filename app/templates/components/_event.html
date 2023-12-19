@@ -20,12 +20,14 @@
             </div>
         </div>
         <div class="col-12 col-md-10 d-flex flex-column">
-            {{ event.ActivityName }}
+            <a href="{{ url_for('programs.activity', id=event.ActivityId)}}" class="text-black">
+                {{ event.ActivityName }}
+            </a>
             <span class="fs-5">
                 {{ event.StartTime.strftime('%I:%M %p') }} to {{ event.EndTime.strftime('%I:%M %p') }}
             </span>
             <p>{{ event.Location }}</p>
-            <small class="text-secondary ">{{ event.Project.Title }}</small>
+            <small class="text-secondary text-truncate">{{ event.Project.Title }}</small>
         </div>
     </div>
 </div>
