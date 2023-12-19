@@ -56,7 +56,7 @@
                                 <th data-priority="1" class="text-start">Item</th>
                                 <th data-priority="2" class="text-start">Activity</th>
                                 <th data-priority="3" class="text-start">Estimated Amount</th>
-                                <th data-priority="4" class="text-start">Action</th>
+                                <th data-priority="4" class="text-start"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,7 +64,18 @@
                                 <td>Venue Fee</td>
                                 <td>Digital Literacy Workshop</td>
                                 <td>5,000</td>
-                                <td class="flex"><a href="" data-bs-toggle="modal" data-bs-target="#purchased-btn" class="text-primary bg-transparent text-decoration-underline  rounded px-2 py-1">Purchased</a></td>
+                                <td class="d-flex align-items-center ">
+                                  <a href="" data-bs-toggle="modal" data-bs-target="#purchased-btn" data-toggle="tooltip" data-placement="left" title="Purchased" class="me-2 text-decoration-none text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m9 20.42l-6.21-6.21l2.83-2.83L9 14.77l9.88-9.89l2.83 2.83z"/></svg>
+                                  </a>
+                                  <a href="" data-bs-toggle="modal" data-bs-target="#" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
+                                  </a>
+                                  <a href="" data-bs-toggle="modal" data-bs-target="#delete-item-" data-toggle="tooltip" data-placement="right" title="Delete" class="me-2 text-decoration-none text-danger">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="m112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320"/><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M192 112V72h0a23.93 23.93 0 0 1 24-24h80a23.93 23.93 0 0 1 24 24h0v40m-64 64v224m-72-224l8 224m136-224l-8 224"/></svg>
+                                  </a>
+                                </td>
+                                {% include 'programs/delete_item.html' %}
                             </tr>
                         </tbody>
                     </table>
@@ -77,7 +88,7 @@
                                 <th data-priority="2" class="text-start">Activity</th>
                                 <th data-priority="3" class="text-start">Amount</th>
                                 <th data-priority="4" class="text-start">Date</th>
-                                <th data-priority="5" class="text-start">Action</th>
+                                <th data-priority="5" class="text-start"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -86,7 +97,18 @@
                                 <td>Digital Literacy Workshop</td>
                                 <td>5,000</td>
                                 <td>12/15/2023</td>
-                                <td class="flex"><a href="" data-bs-toggle="modal" data-bs-target="#view-item" class="text-primary bg-transparent text-decoration-underline  rounded px-2 py-1">View</a></td>
+                                <td class="d-flex align-items-center ">
+                                  <a href="" data-bs-toggle="modal" data-bs-target="#" data-toggle="tooltip" data-placement="left" title="View Receipt" class="me-2 text-decoration-none text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="40" d="M160 336V48l32 16l32-16l31.94 16l32.37-16L320 64l31.79-16l31.93 16L416 48l32.01 16L480 48v224"/><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32" d="M480 272v112a80 80 0 0 1-80 80a80 80 0 0 1-80-80v-48H48a15.86 15.86 0 0 0-16 16c0 64 6.74 112 80 112h288"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M224 144h192m-128 80h128"/></svg>
+                                  </a>
+                                  <a href="" data-bs-toggle="modal" data-bs-target="#view-item" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
+                                  </a>
+                                  <a href="" data-bs-toggle="modal" data-bs-target="#delete-item-" data-toggle="tooltip" data-placement="right" title="Delete" class="me-2 text-decoration-none text-danger">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="m112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320"/><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M192 112V72h0a23.93 23.93 0 0 1 24-24h80a23.93 23.93 0 0 1 24 24h0v40m-64 64v224m-72-224l8 224m136-224l-8 224"/></svg>
+                                  </a>
+                                </td>
+                                {% include 'programs/delete_item.html' %}
                             </tr>
                         </tbody>
                     </table>
