@@ -37,6 +37,9 @@ def beneficiaryLogin():
                     flash('The password you\'ve entered is incorrect.', category='error')
             else:
                 flash('The email you entered isn\'t connected to an account.', category='error')
+        if form.errors != {}: # If there are errors from the validations
+            for err_msg in form.errors.values():
+                flash(err_msg, category='error')
     return render_template('auth/login.html', form=form, current_url_path=current_url_path)
 
 @bp.route('/beneficiary/signup', methods=['GET', 'POST'])
@@ -76,7 +79,9 @@ def studentLogin():
                     flash('The password you\'ve entered is incorrect.', category='error')
             else:
                 flash('The email you entered isn\'t connected to an account.', category='error')
-
+        if form.errors != {}: # If there are errors from the validations
+            for err_msg in form.errors.values():
+                flash(err_msg, category='error')
     return render_template('auth/login.html', form=form, current_url_path=current_url_path)
 
 @bp.route('/student/signup', methods=['GET', 'POST'])
@@ -115,6 +120,9 @@ def facultyLogin():
                     flash('The password you\'ve entered is incorrect.', category='error')
             else:
                 flash('The email you entered isn\'t connected to an account.', category='error')
+        if form.errors != {}: # If there are errors from the validations
+            for err_msg in form.errors.values():
+                flash(err_msg, category='error')
     return render_template('auth/login.html', form=form, current_url_path=current_url_path)
         
 @bp.route('/logout')
