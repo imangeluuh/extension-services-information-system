@@ -2,8 +2,10 @@
     .fc-day-today {
         background-color: rgba(242, 203, 5, 0.25)!important;
     }
-    .fc-event.fc-daygrid-event {
+    .fc-event.fc-daygrid-event,
+    .fc-event.fc-timegrid-event{
         background-color: #800000;
+        outline: 0;
     }
     .fc-daygrid-event-dot {
         display: none
@@ -46,6 +48,7 @@
                 start: '{{ event.Date~'T'~event.StartTime }}', 
                 end: '{{ event.Date~'T'~event.EndTime }}', 
                 project: '{{ event.Project.Title }}', 
+                url: '{{ url_for("programs.activity", id=event.ActivityId)}}'
             },
             {% endfor %}
         ];

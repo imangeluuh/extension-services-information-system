@@ -22,16 +22,16 @@
         <div class="row g-4">
             {% for ext_program in extension_programs %}
             <div class="col-sm-6 col-lg-4">
-            <a href="{{ url_for('programs.extensionProgram', id=ext_program.ExtensionProgramId) }}">
+            <a href="{{ url_for('programs.extensionProgram', id=ext_program.ExtensionProgramId) }}" class="text-decoration-none ">
             <div class="card card-sm">
                 <img src="{{ ext_program.ImageUrl }}" class="card-img-top object-fit-cover " style="max-height: 200px;">
                 <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div>
                         <h3 class="card-title mb-1 text-decoration-none text-black ">{{ ext_program.Name }}</h3>
-                        <div class="tags-list">
-                            <button type="button" class="btn btn-xs border-secondary text-dark fs-5 p-1" disabled>{{ ext_program.Agenda.AgendaName }}</button>
-                            <button type="button" class="btn btn-xs border-secondary text-dark fs-5 p-1" disabled>{{ ext_program.Program.Abbreviation }}</button>
+                        <div class="tags-list row">
+                            <span class="border border-secondary-subtle text-muted fs-5 p-1 me-1" style="max-width: fit-content;">{{ ext_program.Agenda.AgendaName }}</span>
+                            <span class="border border-secondary-subtle text-muted fs-5 p-1"  style="max-width: fit-content;">{{ ext_program.Program.Abbreviation }}</span>
                         </div>
                     </div>
                 </div>
