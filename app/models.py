@@ -169,9 +169,6 @@ class Project(db.Model):
     ProjectType = db.Column(db.String(100), nullable=False)
     StartDate = db.Column(db.Date)
     EndDate = db.Column(db.Date)
-    ProposedBudget = db.Column(db.Numeric(12, 2), nullable=False)
-    ApprovedBudget = db.Column(db.Numeric(12, 2), nullable=False)
-    FundType = db.Column(db.String(20), nullable=False)
     ImpactStatement = db.Column(db.Text, nullable=False)
     Objectives = db.Column(db.Text, nullable=False)
     Status = db.Column(db.String(20), nullable=False) 
@@ -186,6 +183,7 @@ class Project(db.Model):
     Registration = db.relationship('Registration', backref='Project', cascade='all, delete-orphan', passive_deletes=True)
     Certificate = db.relationship('Certificate', back_populates='Project')
     Activity = db.relationship("Activity", back_populates="Project", passive_deletes=True)
+    Budget = db.relationship('Budget', back_populates='Project', cascade='all, delete-orphan')
 
 class Program(db.Model):
     __tablename__ = 'Program'
@@ -213,6 +211,7 @@ class Collaborator(db.Model):
     SignedMOAUrl = db.Column(db.Text, nullable=False)
     SignedMOAFileId = db.Column(db.Text, nullable=False)
     Projects = db.relationship("Project", back_populates='Collaborator', lazy=True)
+    Budget = db.relationship('Budget', back_populates='Collaborator', cascade='all, delete-orphan')
 
 
 class Activity(db.Model):
@@ -232,6 +231,7 @@ class Activity(db.Model):
     Project = db.relationship('Project', back_populates='Activity')
     Evaluation = db.relationship("Evaluation", back_populates='Activity', cascade='all, delete-orphan', lazy=True)
     Attendance = db.relationship('Attendance', back_populates='Activity', cascade='all, delete-orphan')
+    Item = db.relationship('Item', back_populates='Activity', cascade='all, delete-orphan')
 
 class Speaker(db.Model):
     __tablename__ = 'Speaker'
@@ -242,6 +242,31 @@ class Speaker(db.Model):
     LastName = db.Column(db.String(50), nullable=False)
     # Email = db.Column(db.String(100), nullable=False)
     ContactDetails = db.Column(db.String(13), nullable=False)
+
+class Item(db.Model):
+    __tablename__ = 'Item'
+
+    ItemId = db.Column(db.Integer, primary_key=True)
+    ItemName = db.Column(db.String(50), nullable=False)
+    Amount = db.Column(db.Numeric(12, 2), nullable=False)
+    IsPurchased = db.Column(db.Boolean, nullable=False, default=0)
+    DatePurchased = db.Column(db.DateTime)
+    ReceiptUrl = db.Column(db.Text)
+    ReceiptId = db.Column(db.Text)
+    ActivityId = db.Column(db.Integer, db.ForeignKey('Activity.ActivityId', ondelete='CASCADE'), nullable=False)
+    Activity = db.relationship("Activity", back_populates="Item", passive_deletes=True)
+
+class Budget(db.Model):
+    __tablename__ = 'Budget'
+
+    BudgetId = db.Column(db.Integer, primary_key=True)
+    FundType = db.Column(db.String(20), nullable=False)
+    ProposedAmount = db.Column(db.Numeric(12, 2))
+    ApprovedAmount = db.Column(db.Numeric(12, 2), nullable=False)
+    ProjectId = db.Column(db.Integer, db.ForeignKey('Project.ProjectId', ondelete='CASCADE'), nullable=False)
+    CollaboratorId = db.Column(db.Integer, db.ForeignKey('Collaborator.CollaboratorId', ondelete='CASCADE'))
+    Project = db.relationship("Project", back_populates="Budget", passive_deletes=True)
+    Collaborator = db.relationship("Collaborator", back_populates="Budget", passive_deletes=True)
 
 class Announcement(db.Model):
     __tablename__ = 'Announcement'

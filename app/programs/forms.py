@@ -1,10 +1,10 @@
 from flask import current_app
 from flask_wtf import FlaskForm
 from flask_ckeditor import CKEditorField
-from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField
+from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField
 from wtforms.validators import DataRequired, Optional
 from flask_wtf.file import FileField, FileAllowed
-from ..models import Agenda, Program, Collaborator, Speaker, Login
+from ..models import Agenda, Program, Collaborator, Activity
 import requests
 
 faculty_names = []
@@ -27,12 +27,10 @@ try:
         # Process the API response data
         api_data = response.json()
         
-        # RETURNING SPECIFIC DATA FROM ALL FACULTIES
-        
         # Extracting faculty_account_ids into a list
         faculty_account_ids = list(api_data['Faculties'].keys())
 
-        # Fetching Specific data for each faculty
+        # Fetching name for each faculty
         for faculty_id in faculty_account_ids:
             faculty_info = api_data['Faculties'][faculty_id]
             faculty_name = faculty_info['name']
@@ -90,11 +88,6 @@ class ProjectForm(FlaskForm):
                                                             validators=[DataRequired()])
     start_date = DateField("Start Date", validators=[DataRequired()])
     end_date = DateField("End Date", validators=[DataRequired()])
-    proposed_budget = StringField('Proposed Budget', validators=[DataRequired()])
-    approved_budget = StringField('Approved Budget', validators=[DataRequired()])
-    fund_type = SelectField('Fund Type', choices=[('Internal', 'Internal'),
-                                                ('External', 'External')],
-                                                validators=[DataRequired()])
     impact_statement = CKEditorField("Impact Statement", validators=[DataRequired()])
     objectives = CKEditorField("Objective of the Project", validators=[DataRequired()])
     status = SelectField('Status', choices=[('To be started', 'To be started'),
@@ -129,3 +122,14 @@ class CombinedForm(FlaskForm):
     project = FormField(ProjectForm)
     activity = FormField(ActivityForm)
     submit = SubmitField("Submit") 
+
+class ItemForm(FlaskForm):
+    item = StringField("Item", validators=[DataRequired()])
+    amount = DecimalField("Amount", validators=[DataRequired()])
+    activity = SelectField("Activity", validators=[DataRequired()])
+    receipt = FileField("Receipt", validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
+
+class BudgetForm(FlaskForm):
+    proposed_budget = DecimalField("Proposed Budget", validators=[DataRequired()])
+    approved_budget = DecimalField("Approved Budget", validators=[DataRequired()])
+    fund_type = StringField("Fund Type", validators=[DataRequired()])

@@ -1,8 +1,8 @@
 from app.programs import bp
 from flask import render_template, url_for, request, redirect, flash, current_app
 from flask_login import current_user
-from ..models import Project, ExtensionProgram, Program, Registration, Agenda, ExtensionProgram, Activity, Question, Evaluation, Response, Beneficiary, Attendance, User, Certificate
-from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm
+from ..models import Project, ExtensionProgram, Program, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget
+from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm, BudgetForm
 import calendar
 from datetime import datetime
 from app import db, api
@@ -56,13 +56,14 @@ def programs():
 def viewExtensionProgram(id):
     ext_program_form = ProgramForm()
     form = ProjectForm()
+    budget_form= BudgetForm()
     ext_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
 
     # fill the edit form with extension program details
     ext_program_form.program_name.data = ext_program.Name
     ext_program_form.rationale.data = ext_program.Rationale
 
-    return render_template('programs/view_ext_program.html', ext_program=ext_program, ext_program_form=ext_program_form, form=form)
+    return render_template('programs/view_ext_program.html', ext_program=ext_program, ext_program_form=ext_program_form, form=form, budget_form=budget_form)
 
 @bp.route('/extension-program/insert', methods=['GET', 'POST'])
 @login_required(role=["Admin", "Faculty"])
@@ -323,9 +324,6 @@ def insertProject():
                                     ProjectType = form.project_type.data,
                                     StartDate = form.start_date.data,
                                     EndDate = form.end_date.data,
-                                    ProposedBudget = form.proposed_budget.data,
-                                    ApprovedBudget = form.approved_budget.data,
-                                    FundType = form.fund_type.data,
                                     ImpactStatement = form.impact_statement.data,
                                     Objectives = form.objectives.data,
                                     Status = form.status.data,
@@ -335,6 +333,24 @@ def insertProject():
                                     ProjectProposalFileId = str_proposal_file_id,
                                     ExtensionProgramId = form.extension_program.data)
             db.session.add(project_to_add)
+            
+            # Get the id of the recently added project
+            db.session.flush()
+            int_project_id = project_to_add.ProjectId
+
+            # Add budget of the project
+            proposed_budgets = request.form.getlist('proposed_budget')
+            approved_budgets = request.form.getlist('approved_budget')
+            fund_types = request.form.getlist('fund_type')
+            budget_data = zip(proposed_budgets, approved_budgets, fund_types)
+            for proposed_budget, approved_budget, fund_type in budget_data:
+                budget_to_add = Budget(FundType=fund_type,
+                                        ProposedAmount=proposed_budget,
+                                        ApprovedAmount=approved_budget,
+                                        ProjectId=int_project_id,
+                                        CollaboratorId=form.collaborator.data if fund_type=='External' else None)
+                db.session.add(budget_to_add)
+
             db.session.commit()
             flash('Extension project is successfully inserted.', category='success')
             return redirect(url_for('programs.programs'))
@@ -362,9 +378,6 @@ def viewProject(id):
     form.project_type.data = project.ProjectType
     form.start_date.data = project.StartDate
     form.end_date.data = project.EndDate
-    form.proposed_budget.data = project.ProposedBudget
-    form.approved_budget.data = project.ApprovedBudget
-    form.fund_type.data = project.FundType
     form.impact_statement.data = project.ImpactStatement
     form.objectives.data = project.Objectives
     form.status.data = project.Status
@@ -618,8 +631,12 @@ def budgetAllocation():
 @bp.route('/budget-allocation/<int:id>', methods=['GET', 'POST'])
 @login_required(role=["Admin", "Faculty"])
 def projectBudget(id):
+    form = ItemForm()
     project = Project.query.filter_by(ProjectId=id).first()
-    return render_template('programs/project_budget.html', project=project)
+    if request.method == 'POST':
+        print(form.data)
+        print(float(form.amount.data))
+    return render_template('programs/project_budget.html', project=project, form=form)
 
 
 
@@ -726,6 +743,7 @@ def extensionProgram(id):
     if response.status_code == 200:
         # Process the API response data
         api_data = response.json()
+        print(api_data['Faculties'])
         
         faculty_profile = {}
         # RETURNING SPECIFIC DATA FROM ALL FACULTIES

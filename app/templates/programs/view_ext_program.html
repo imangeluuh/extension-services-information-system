@@ -2,11 +2,6 @@
 
 {% block head %}
     <title>{{ ext_program.Name }}</title> 
-    <!--Regular Datatables CSS-->
-	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
-	<!--Responsive Extension Datatables CSS-->
-	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/table_style.css') }}">  
 {% endblock %}
 
 {% block content %}
@@ -120,32 +115,32 @@
 
 {% endblock %}
 {% block script %}
-<!--Datatables -->
-<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
-
 <script id="item-template" type="text/template">
-        <div class="col-12 col-md-4">
-            <div class="mb-3">
-                {{ budget_form.proposed_budget.label(class="form-label") }}
-                {{ budget_form.proposed_budget(class="form-control")}}
+    <div class="col-12 budget">
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <div class="mb-3">
+                    {{ budget_form.proposed_budget.label(class="form-label") }}
+                    {{ budget_form.proposed_budget(class="form-control")}}
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="mb-3">
+                    {{ budget_form.approved_budget.label(class="form-label") }}
+                    {{ budget_form.approved_budget(class="form-control")}}
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="mb-3">
+                    {{ budget_form.fund_type.label(class="form-label") }}
+                    {{ budget_form.fund_type(class="form-control")}}
+                </div>
+            </div>
+            <div class="col-12 col-md-1 d-flex align-items-end">
+                <button type="button" class="btn bg-transparent border-0 text-danger remove-item p-0 fs-1 pb-3"><iconify-icon icon="ion:trash-outline"></iconify-icon></button>
             </div>
         </div>
-        <div class="col-12 col-md-4">
-            <div class="mb-3">
-                {{ budget_form.approved_budget.label(class="form-label") }}
-                {{ budget_form.approved_budget(class="form-control")}}
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <div class="mb-3">
-                {{ budget_form.fund_type.label(class="form-label") }}
-                {{ budget_form.fund_type(class="form-control")}}
-            </div>
-        </div>
-        <div class="col-12 col-md-1 d-flex align-items-bottom">
-            <button type="button" class="btn btn-danger remove-item">Remove</button>
-        </div>
+    </div>
 </script>
 <script>
     $(document).ready(function() {
@@ -158,15 +153,7 @@
     });
 
     $('body').on('click', '.remove-item', function() {
-        $(this).closest('form').remove();
-    });
-
-
-    var table = $('#projects').DataTable({
-            responsive: true
-        })
-        .columns.adjust()
-        .responsive.recalc()
+        $(this).closest('.budget').remove();
     });
 </script>
 
