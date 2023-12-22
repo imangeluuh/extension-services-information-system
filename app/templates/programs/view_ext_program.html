@@ -123,8 +123,44 @@
 <!--Datatables -->
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+
+<script id="item-template" type="text/template">
+        <div class="col-12 col-md-4">
+            <div class="mb-3">
+                {{ budget_form.proposed_budget.label(class="form-label") }}
+                {{ budget_form.proposed_budget(class="form-control")}}
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="mb-3">
+                {{ budget_form.approved_budget.label(class="form-label") }}
+                {{ budget_form.approved_budget(class="form-control")}}
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="mb-3">
+                {{ budget_form.fund_type.label(class="form-label") }}
+                {{ budget_form.fund_type(class="form-control")}}
+            </div>
+        </div>
+        <div class="col-12 col-md-1 d-flex align-items-bottom">
+            <button type="button" class="btn btn-danger remove-item">Remove</button>
+        </div>
+</script>
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
+    var itemCount = 1; // Keep track of the number of forms
+
+    $('#add-item-button').click(function() {
+        itemCount++;
+        var newForm = $('#item-template').html().replace(/__prefix__/g, itemCount); // Replace placeholders
+        $('#add-item-button').before(newForm);
+    });
+
+    $('body').on('click', '.remove-item', function() {
+        $(this).closest('form').remove();
+    });
+
 
     var table = $('#projects').DataTable({
             responsive: true
@@ -133,4 +169,5 @@ $(document).ready(function() {
         .responsive.recalc()
     });
 </script>
+
 {% endblock %}

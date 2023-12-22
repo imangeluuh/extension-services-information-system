@@ -4,141 +4,142 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">New project</h5>
+                <h5 class="modal-title">Project Information</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ url_for('programs.insertProject') }}" enctype="multipart/form-data" method="post">
-            {{ form.csrf_token() }}
-            {{ form.extension_program(value=ext_program.ExtensionProgramId)}}
+            <form id="project-form" action="{{ url_for('programs.insertProject') }}" enctype="multipart/form-data" method="post">
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <!-- name -->
-                            {{ form.title.label(class="form-label") }}
-                            {{ form.title(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-6">
-                        <div class="mb-3">
-                            <!-- implementer -->
-                            {{ form.implementer.label(class="form-label") }}
-                            {{ form.implementer(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-6">
-                        <div class="mb-3">
-                            <!-- collaborator -->
-                            {{ form.collaborator.label(class="form-label") }}
-                            {{ form.collaborator(class="form-select")}}
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <!-- target_group -->
-                            {{ form.target_group.label(class="form-label") }}
-                            {{ form.target_group(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-6">
-                        <div class="mb-3">
-                            <!-- project team -->
-                            <div class="form-group">
-                                {{ form.project_team.label(class="form-label")}}
-                                <select id="{{form.project_team.id}}" name="{{form.project_team.name}}" multiple="" hidden>
-                                    {% for option in form.project_team %}
-                                        {{ option }}
-                                    {% endfor %}
-                                </select>
+                        {{ form.csrf_token() }}
+                        {{ form.extension_program(value=ext_program.ExtensionProgramId)}}
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <!-- name -->
+                                {{ form.title.label(class="form-label") }}
+                                {{ form.title(class="form-control")}}
                             </div>
                         </div>
-                    </div>
-                    <div class="col-auto col-md-6">
+                        <div class="col-auto col-md-6">
+                            <div class="mb-3">
+                                <!-- implementer -->
+                                {{ form.implementer.label(class="form-label") }}
+                                {{ form.implementer(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="col-auto col-md-6">
+                            <div class="mb-3">
+                                <!-- collaborator -->
+                                {{ form.collaborator.label(class="form-label") }}
+                                {{ form.collaborator(class="form-select")}}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <!-- target_group -->
+                                {{ form.target_group.label(class="form-label") }}
+                                {{ form.target_group(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="col-auto col-md-6">
+                            <div class="mb-3">
+                                <!-- project team -->
+                                <div class="form-group">
+                                    {{ form.project_team.label(class="form-label")}}
+                                    <select id="{{form.project_team.id}}" name="{{form.project_team.name}}" multiple="" hidden>
+                                        {% for option in form.project_team %}
+                                            {{ option }}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto col-md-6">
+                            <div class="mb-3">
+                                <!-- project type -->
+                                {{ form.project_type.label(class="form-label") }}
+                                {{ form.project_type(class="form-select")}}
+                            </div>
+                        </div>
+                        <div class="col-auto col-md-4">
+                            <div class="mb-3">
+                                <!-- start date -->
+                                {{ form.start_date.label(class="form-label") }}
+                                {{ form.start_date(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="col-auto col-md-4">
+                            <div class="mb-3">
+                                <!-- end date -->
+                                {{ form.end_date.label(class="form-label") }}
+                                {{ form.end_date(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="col-auto col-md-4">
+                            <div class="mb-3">
+                                <!-- status -->
+                                {{ form.status.label(class="form-label") }}
+                                {{ form.status(class="form-select")}}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <!-- impact_statement -->
+                                {{ form.impact_statement.label(class="form-label") }}
+                                {{ form.impact_statement(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <!-- objectives -->
+                                {{ form.objectives.label(class="form-label") }}
+                                {{ form.objectives(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="col-auto col-md-6">
+                            <div class="mb-3">
+                                <!-- image -->
+                                {{ form.image.label(class="form-label") }}
+                                {{ form.image(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="col-auto col-md-6">
+                            <div class="mb-3">
+                                <!-- project_proposal -->
+                                {{ form.project_proposal.label(class="form-label") }}
+                                {{ form.project_proposal(class="form-control")}}
+                            </div>
+                        </div>
+                    <div class="col-12 col-md-4">
                         <div class="mb-3">
-                            <!-- project type -->
-                            {{ form.project_type.label(class="form-label") }}
-                            {{ form.project_type(class="form-select")}}
+                            {{ budget_form.proposed_budget.label(class="form-label") }}
+                            {{ budget_form.proposed_budget(class="form-control")}}
                         </div>
                     </div>
-                    <div class="col-auto col-md-4">
+                    <div class="col-12 col-md-4">
                         <div class="mb-3">
-                            <!-- start date -->
-                            {{ form.start_date.label(class="form-label") }}
-                            {{ form.start_date(class="form-control")}}
+                            {{ budget_form.approved_budget.label(class="form-label") }}
+                            {{ budget_form.approved_budget(class="form-control")}}
                         </div>
                     </div>
-                    <div class="col-auto col-md-4">
+                    <div class="col-12 col-md-4">
                         <div class="mb-3">
-                            <!-- end date -->
-                            {{ form.end_date.label(class="form-label") }}
-                            {{ form.end_date(class="form-control")}}
+                            {{ budget_form.fund_type.label(class="form-label") }}
+                            {{ budget_form.fund_type(class="form-control")}}
                         </div>
                     </div>
-                    <div class="col-auto col-md-4">
-                        <div class="mb-3">
-                            <!-- status -->
-                            {{ form.status.label(class="form-label") }}
-                            {{ form.status(class="form-select")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-4">
-                        <div class="mb-3">
-                            <!-- proposed_budget -->
-                            {{ form.proposed_budget.label(class="form-label") }}
-                            {{ form.proposed_budget(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-4">
-                        <div class="mb-3">
-                            <!-- approved_budget -->
-                            {{ form.approved_budget.label(class="form-label") }}
-                            {{ form.approved_budget(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-4">
-                        <div class="mb-3">
-                            <!-- fund_type -->
-                            {{ form.fund_type.label(class="form-label") }}
-                            {{ form.fund_type(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <!-- impact_statement -->
-                            {{ form.impact_statement.label(class="form-label") }}
-                            {{ form.impact_statement(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <!-- objectives -->
-                            {{ form.objectives.label(class="form-label") }}
-                            {{ form.objectives(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-6">
-                        <div class="mb-3">
-                            <!-- image -->
-                            {{ form.image.label(class="form-label") }}
-                            {{ form.image(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-6">
-                        <div class="mb-3">
-                            <!-- project_proposal -->
-                            {{ form.project_proposal.label(class="form-label") }}
-                            {{ form.project_proposal(class="form-control")}}
-                        </div>
-                    </div>
+                    <button id="add-item-button">Add more item</button>
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                <a href="#" id="cancel-button" class="btn btn-link link-secondary" data-bs-dismiss="modal">
                     Cancel
                 </a>
-                {{ form.submit(class="btn btn-primary ms-auto")}}
+                <button type="submit" id="submit-btn" class="btn btn-primary ms-auto">
+                    Save
+                </button type="button">
             </div>
-            </form>    
+        </form>
+          
             {{ ckeditor.load(pkg_type="basic") }}
             {{ ckeditor.config() }}
         </div>
@@ -146,10 +147,14 @@
 </div>
 
 <!-- Multiple Select -->
+ <!-- Jquery -->
+ <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        
 <script src="{{ url_for('static', filename='js/multiple-select.js')}}"></script>
 <script>
-    new MultipleSelect('#project_team', {
-            placeholder: 'Select Faculty'
-        })
+        
+new MultipleSelect('#project_team', {
+        placeholder: 'Select Faculty'
+})
 </script>
 
