@@ -126,10 +126,15 @@ class CombinedForm(FlaskForm):
 class ItemForm(FlaskForm):
     item = StringField("Item", validators=[DataRequired()])
     amount = DecimalField("Amount", validators=[DataRequired()])
-    activity = SelectField("Activity", validators=[DataRequired()])
+    activity = SelectField("Activity", choices=[('Internal', 'Internal'),
+                                                ('External', 'External')],
+                                        validators=[DataRequired()])
+    date = DateField("Date Purchased")
     receipt = FileField("Receipt", validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        with current_app.app_context():
+            self.activity.choices = [(activity.ActivityId, activity.ActivityName) for activity in Activity.query.all()]
 
-class BudgetForm(FlaskForm):
-    proposed_budget = DecimalField("Proposed Budget", validators=[DataRequired()])
-    approved_budget = DecimalField("Approved Budget", validators=[DataRequired()])
-    fund_type = StringField("Fund Type", validators=[DataRequired()])

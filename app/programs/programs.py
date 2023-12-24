@@ -1,8 +1,8 @@
 from app.programs import bp
 from flask import render_template, url_for, request, redirect, flash, current_app
 from flask_login import current_user
-from ..models import Project, ExtensionProgram, Program, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget
-from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm, BudgetForm
+from ..models import Project, ExtensionProgram, Program, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item
+from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm
 import calendar
 from datetime import datetime
 from app import db, api
@@ -56,14 +56,13 @@ def programs():
 def viewExtensionProgram(id):
     ext_program_form = ProgramForm()
     form = ProjectForm()
-    budget_form= BudgetForm()
     ext_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
 
     # fill the edit form with extension program details
     ext_program_form.program_name.data = ext_program.Name
     ext_program_form.rationale.data = ext_program.Rationale
 
-    return render_template('programs/view_ext_program.html', ext_program=ext_program, ext_program_form=ext_program_form, form=form, budget_form=budget_form)
+    return render_template('programs/view_ext_program.html', ext_program=ext_program, ext_program_form=ext_program_form, form=form)
 
 @bp.route('/extension-program/insert', methods=['GET', 'POST'])
 @login_required(role=["Admin", "Faculty"])
@@ -445,7 +444,7 @@ def updateProject(id):
         extension_project.CollaboratorId = form.collaborator.data
         extension_project.ProjectTeam = project_team
         extension_project.TargetGroup = form.target_group.data
-        extension_project.ProjectType = form.project_type.data
+        extension_project.ProjectTyFpe = form.project_type.data
         extension_project.StartDate =  form.start_date.data
         extension_project.EndDate = form.end_date.data
         extension_project.ImpactStatement = form.impact_statement.data
@@ -659,10 +658,41 @@ def budgetAllocation():
 def projectBudget(id):
     form = ItemForm()
     project = Project.query.filter_by(ProjectId=id).first()
+    external_budget = Budget.query.filter_by(ProjectId=id, FundType='External').first()
+    internal_budget = Budget.query.filter_by(ProjectId=id, FundType='Internal').first()
+    to_be_purchased_items = []
+    purchased_items = []
+    if project.Activity:
+        for activity in project.Activity:
+            if activity.Item:
+                for item in activity.Item:
+                    if item.IsPurchased==0:
+                        to_be_purchased_items.append(item)
+                    else:
+                        purchased_items.append(item)
+
     if request.method == 'POST':
-        print(form.data)
-        print(float(form.amount.data))
-    return render_template('programs/project_budget.html', project=project, form=form)
+        print('hello')
+        if form.validate_on_submit():
+            print('hello1')
+            item_to_add = Item(ItemName=form.item.data,
+                                Amount=form.amount.data,
+                                ActivityId=form.activity.data)
+            try:
+                db.session.add(item_to_add)
+                db.session.commit()
+                flash('Item is successfully inserted', category='success')
+            except:
+                flash('There was an issue inserting the item', category='error')
+
+        if form.errors != {}: # If there are errors from the validations
+            print('hello2?')
+            for field, error in form.errors.items():
+                flash(f"Field '{field}' has an error: {error}", category='error')
+        
+        return redirect(url_for('programs.projectBudget', id=id))
+    
+    return render_template('programs/project_budget.html', project=project, form=form, external_budget=external_budget, internal_budget=internal_budget, to_be_purchased_items=to_be_purchased_items, purchased_items=purchased_items)
 
 
 

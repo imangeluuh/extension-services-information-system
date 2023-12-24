@@ -60,23 +60,101 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Venue Fee</td>
-                                <td>Digital Literacy Workshop</td>
-                                <td>5,000</td>
-                                <td class="d-flex align-items-center ">
-                                  <a href="" data-bs-toggle="modal" data-bs-target="#purchased-btn" data-toggle="tooltip" data-placement="left" title="Purchased" class="me-2 text-decoration-none text-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m9 20.42l-6.21-6.21l2.83-2.83L9 14.77l9.88-9.89l2.83 2.83z"/></svg>
-                                  </a>
-                                  <a href="" data-bs-toggle="modal" data-bs-target="#" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
-                                  </a>
-                                  <a href="" data-bs-toggle="modal" data-bs-target="#delete-item-" data-toggle="tooltip" data-placement="right" title="Delete" class="me-2 text-decoration-none text-danger">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="m112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320"/><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M192 112V72h0a23.93 23.93 0 0 1 24-24h80a23.93 23.93 0 0 1 24 24h0v40m-64 64v224m-72-224l8 224m136-224l-8 224"/></svg>
-                                  </a>
-                                </td>
-                                {% include 'programs/delete_item.html' %}
-                            </tr>
+                            {% if to_be_purchased_items %}
+                            {% for item in to_be_purchased_items %}
+                                <tr>
+                                    <td>{{item.ItemName}}</td>
+                                    <td>{{item.Activity.ActivityName}}</td>
+                                    <td>{{item.Amount}}</td>
+                                    <td class="d-flex align-items-center ">
+                                      <a href="" data-bs-toggle="modal" data-bs-target="#purchased-btn-{{item.ItemId}}" data-toggle="tooltip" data-placement="left" title="Purchased" class="me-2 text-decoration-none text-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m9 20.42l-6.21-6.21l2.83-2.83L9 14.77l9.88-9.89l2.83 2.83z"/></svg>
+                                      </a>
+                                      <a href="" data-bs-toggle="modal" data-bs-target="#edit-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
+                                      </a>
+                                      <a href="" data-bs-toggle="modal" data-bs-target="#delete-item-" data-toggle="tooltip" data-placement="right" title="Delete" class="me-2 text-decoration-none text-danger">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="m112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320"/><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M192 112V72h0a23.93 23.93 0 0 1 24-24h80a23.93 23.93 0 0 1 24 24h0v40m-64 64v224m-72-224l8 224m136-224l-8 224"/></svg>
+                                      </a>
+                                    </td>
+                                    {% include 'programs/delete_item.html' %}
+                                </tr>
+                                
+                                <!-- Purchased modal -->
+                                <div class="modal modal-blur fade" id="purchased-btn-{{item.ItemId}}" tabindex="-1" style="display: none;" aria-hidden="true">
+                                  <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                      <div class="modal-body">
+                                        <form action="">
+                                        <div class="row">
+                                          <div class="col-12 mb-3">
+                                            {{form.item.label(class="form-label")}}
+                                            {{form.item(class="form-control", value=item.ItemName, disabled="disabled")}}
+                                          </div>
+                                          <div class="col-12 mb-3">
+                                              {{form.activity.label(class="form-label")}}
+                                              <select name="{{form.activity.name}}" id="{{form.activity.id}}" class="form-select" disabled >
+                                                <option value="{{item.Activity.ActivityId}}" selected>{{item.Activity.ActivityName}}</option>
+                                              </select>
+                                          </div>
+                                          <div class="col-12 col-md-6 mb-3">
+                                            <label for="amount" class="form-label">Amount</label>
+                                            {{form.amount(class="form-control", value=item.Amount)}}
+                                          </div>
+                                          <div class="col-12 col-md-6">
+                                              {{form.date.label(class="form-label")}}
+                                              <input type="date" name="{{form.date.name}}" id="{{form.date.id}}" class="form-control" required>
+                                          </div>
+                                          <div class="col-12">
+                                              <label for="receipt" class="form-label">Receipt</label>
+                                              <input type="file" name="{{form.receipt.name}}" class="form-control" required>
+                                          </div>
+                                        </div>
+                                        </form>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <!-- edit item modal -->
+                                <div class="modal modal-blur fade" id="edit-item-{{item.ItemId}}" tabindex="-1" style="display: none;" aria-hidden="true">
+                                  <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                      <div class="modal-body">
+                                        <form action="">
+                                          <div class="row">
+                                            <div class="col-12 mb-3">
+                                              {{form.item.label(class="form-label")}}
+                                              {{form.item(class="form-control", value=item.ItemName)}}
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                              {{form.activity.label(class="form-label")}}
+                                              <select name="{{form.activity.name}}" id="{{form.activity.id}}" class="form-select">
+                                                {% for activity in project.Activity %}
+                                                <option value="{{activity.ActivityId}}" {{'selected' if activity.ActivityId==item.ActivityId}}>{{activity.ActivityName}}</option>
+                                                {% endfor %}
+                                              </select>
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                              <label for="amount" class="form-label">Amount</label>
+                                              {{form.amount(class="form-control", value=item.Amount)}}
+                                            </div>
+                                          </div>
+                                          </form>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            {% endfor %}
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -92,24 +170,28 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Venue Fee</td>
-                                <td>Digital Literacy Workshop</td>
-                                <td>5,000</td>
-                                <td>12/15/2023</td>
-                                <td class="d-flex align-items-center ">
-                                  <a href="" data-bs-toggle="modal" data-bs-target="#" data-toggle="tooltip" data-placement="left" title="View Receipt" class="me-2 text-decoration-none text-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="40" d="M160 336V48l32 16l32-16l31.94 16l32.37-16L320 64l31.79-16l31.93 16L416 48l32.01 16L480 48v224"/><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32" d="M480 272v112a80 80 0 0 1-80 80a80 80 0 0 1-80-80v-48H48a15.86 15.86 0 0 0-16 16c0 64 6.74 112 80 112h288"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M224 144h192m-128 80h128"/></svg>
-                                  </a>
-                                  <a href="" data-bs-toggle="modal" data-bs-target="#view-item" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
-                                  </a>
-                                  <a href="" data-bs-toggle="modal" data-bs-target="#delete-item-" data-toggle="tooltip" data-placement="right" title="Delete" class="me-2 text-decoration-none text-danger">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="m112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320"/><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M192 112V72h0a23.93 23.93 0 0 1 24-24h80a23.93 23.93 0 0 1 24 24h0v40m-64 64v224m-72-224l8 224m136-224l-8 224"/></svg>
-                                  </a>
-                                </td>
-                                {% include 'programs/delete_item.html' %}
-                            </tr>
+                            {% if purchased_items %}
+                            {% for item in purchased_items %}
+                                <tr>
+                                    <td>{{item.ItemName}}</td>
+                                    <td>{{item.Activity.ActivityName}}</td>
+                                    <td>{{item.Amount}}</td>
+                                    <td>12/15/2023</td>
+                                    <td class="d-flex align-items-center ">
+                                      <a href="" data-bs-toggle="modal" data-bs-target="#" data-toggle="tooltip" data-placement="left" title="View Receipt" class="me-2 text-decoration-none text-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="40" d="M160 336V48l32 16l32-16l31.94 16l32.37-16L320 64l31.79-16l31.93 16L416 48l32.01 16L480 48v224"/><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32" d="M480 272v112a80 80 0 0 1-80 80a80 80 0 0 1-80-80v-48H48a15.86 15.86 0 0 0-16 16c0 64 6.74 112 80 112h288"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M224 144h192m-128 80h128"/></svg>
+                                      </a>
+                                      <a href="" data-bs-toggle="modal" data-bs-target="#view-item" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
+                                      </a>
+                                      <a href="" data-bs-toggle="modal" data-bs-target="#delete-item-" data-toggle="tooltip" data-placement="right" title="Delete" class="me-2 text-decoration-none text-danger">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="m112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320"/><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M192 112V72h0a23.93 23.93 0 0 1 24-24h80a23.93 23.93 0 0 1 24 24h0v40m-64 64v224m-72-224l8 224m136-224l-8 224"/></svg>
+                                      </a>
+                                    </td>
+                                    {% include 'programs/delete_item.html' %}
+                                </tr>
+                            {% endfor %}
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -119,7 +201,7 @@
     </div>
 </div>
 
-<!-- Modals -->
+<!-- Add item modal -->
 <div class="modal modal-blur fade" id="add-item" tabindex="-1" style="display: none;" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -127,105 +209,33 @@
         <h5 class="modal-title">Add Item</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+      <form action="" method="post">
+      {{form.csrf_token()}}
       <div class="modal-body">
-        <form action="">
         <div class="row">
-          <div class="col-12">
-              <label for="item" class="form-label">Item</label>
-              <input type="text" name="item" class="form-control">
+          <div class="col-12 mb-3">
+              {{form.item.label(class="form-label")}}
+              {{form.item(class="form-control")}}
           </div>
-          <div class="col-12">
-              <label for="activity" class="form-label">Activity</label>
-              <select name="activity" class="form-select"></select>
+          <div class="col-12 mb-3">
+              {{form.activity.label(class="form-label")}}
+              <select name="{{form.activity.name}}" id="{{form.activity.id}}" class="form-select">
+                {% for activity in project.Activity %}
+                <option value="{{activity.ActivityId}}">{{activity.ActivityName}}</option>
+                {% endfor %}
+              </select>
           </div>
-          <div class="col-12">
-              <label for="estimated-amount" class="form-label">Estimated Amount</label>
-              <input type="text" name="estimated-amount" class="form-control">
+          <div class="col-12 mb-3">
+            <label for="amount" class="form-label">Estimated Amount</label>
+            {{form.amount(class="form-control")}}
           </div>
-        </div>
-        </form>
-        <div class="d-flex justify-content-center">
-            <img src="" alt="receipt">
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Add Item</button>
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Add Item</button>
       </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal modal-blur fade" id="purchased-btn" tabindex="-1" style="display: none;" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <form action="">
-        <div class="row">
-          <div class="col-12">
-              <label for="item" class="form-label">Item</label>
-              <input type="text" name="item" class="form-control">
-          </div>
-          <div class="col-12">
-              <label for="activity" class="form-label">Activity</label>
-              <select name="activity" class="form-select"></select>
-          </div>
-          <div class="col-12 col-md-6">
-              <label for="amount" class="form-label">Amount</label>
-              <input type="text" name="amount" class="form-control">
-          </div>
-          <div class="col-12 col-md-6">
-              <label for="date" class="form-label">Date</label>
-              <input type="date" name="date" class="form-control">
-          </div>
-          <div class="col-12">
-              <label for="receipt" class="form-label">Receipt</label>
-              <input type="file" name="receipt" class="form-control">
-          </div>
-        </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal modal-blur fade" id="view-item" tabindex="-1" style="display: none;" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <form action="">
-        <div class="row">
-          <div class="col-12">
-              <label for="item" class="form-label">Item</label>
-              <input type="text" name="item" class="form-control">
-          </div>
-          <div class="col-12">
-              <label for="activity" class="form-label">Activity</label>
-              <select name="activity" class="form-select"></select>
-          </div>
-          <div class="col-12 col-md-6">
-              <label for="amount" class="form-label">Amount</label>
-              <input type="text" name="amount" class="form-control">
-          </div>
-          <div class="col-12 col-md-6">
-              <label for="date" class="form-label">Date</label>
-              <input type="date" name="date" class="form-control">
-          </div>
-          <div class="col-12">
-              <label for="receipt" class="form-label">Receipt</label>
-              <input type="file" name="receipt" class="form-control">
-          </div>
-        </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save</button>
-      </div>
+    </form>
     </div>
   </div>
 </div>
@@ -255,6 +265,8 @@
 
     // Specify the configuration items and data for the chart
     var option = {
+    tooltip: {},
+    legend: {},
     xAxis: {
         type: 'value'
     },
@@ -266,16 +278,16 @@
         {
         data: [
           {
-            value: 150,
+            value: {{internal_budget.Amount if internal_budget else 0}},
             itemStyle: {
               color: '#f2cb05'
-            }
+            },
           },
           {
-            value: 200,
+            value: {{external_budget.Amount if external_budget else 0}},
             itemStyle: {
               color: '#800000'
-            }
+            },
           },
         ],
         type: 'bar'
