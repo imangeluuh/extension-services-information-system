@@ -109,25 +109,22 @@
                                 {{ form.project_proposal(class="form-control")}}
                             </div>
                         </div>
-                    <div class="col-12 col-md-4">
-                        <div class="mb-3">
-                            {{ budget_form.proposed_budget.label(class="form-label") }}
-                            {{ budget_form.proposed_budget(class="form-control")}}
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="approved_budget" class="form-label">Budget Amount</label>
+                                <input type="number" name="approved_budget"" class="form-control" required>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="mb-3">
-                            {{ budget_form.approved_budget.label(class="form-label") }}
-                            {{ budget_form.approved_budget(class="form-control")}}
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="fund_type" class="form-label">Fund Type</label>
+                                <select name="fund_type" id="fund_type" class="form-select">
+                                    <option value="Internal" required>Internal</option>
+                                    <option value="External" required>External</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="mb-3">
-                            {{ budget_form.fund_type.label(class="form-label") }}
-                            {{ budget_form.fund_type(class="form-control")}}
-                        </div>
-                    </div>
-                    <button id="add-item-button" class="bg-transparent text-primary border-0" style="width: fit-content;">
+                    <button type="button"  id="add-item-button" class="bg-transparent text-primary border-0" style="width: fit-content;">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon p-0 me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
                         Add budget
                     </button>

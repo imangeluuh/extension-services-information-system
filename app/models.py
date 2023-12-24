@@ -261,8 +261,7 @@ class Budget(db.Model):
 
     BudgetId = db.Column(db.Integer, primary_key=True)
     FundType = db.Column(db.String(20), nullable=False)
-    ProposedAmount = db.Column(db.Numeric(12, 2))
-    ApprovedAmount = db.Column(db.Numeric(12, 2), nullable=False)
+    Amount = db.Column(db.Numeric(12, 2), nullable=False)
     ProjectId = db.Column(db.Integer, db.ForeignKey('Project.ProjectId', ondelete='CASCADE'), nullable=False)
     CollaboratorId = db.Column(db.Integer, db.ForeignKey('Collaborator.CollaboratorId', ondelete='CASCADE'))
     Project = db.relationship("Project", back_populates="Budget", passive_deletes=True)

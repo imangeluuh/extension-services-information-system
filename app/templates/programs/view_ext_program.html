@@ -118,22 +118,19 @@
 <script id="item-template" type="text/template">
     <div class="col-12 budget">
         <div class="row">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-6">
                 <div class="mb-3">
-                    {{ budget_form.proposed_budget.label(class="form-label") }}
-                    {{ budget_form.proposed_budget(class="form-control")}}
+                    <label for="approved_budget" class="form-label">Budget Amount</label>
+                    <input type="number" name="approved_budget" class="form-control" required>
                 </div>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-5">
                 <div class="mb-3">
-                    {{ budget_form.approved_budget.label(class="form-label") }}
-                    {{ budget_form.approved_budget(class="form-control")}}
-                </div>
-            </div>
-            <div class="col-12 col-md-3">
-                <div class="mb-3">
-                    {{ budget_form.fund_type.label(class="form-label") }}
-                    {{ budget_form.fund_type(class="form-control")}}
+                    <label for="fund_type" class="form-label">Fund Type</label>
+                    <select name="fund_type" id="fund_type" class="form-select" required>
+                        <option value="Internal">Internal</option>
+                        <option value="External">External</option>
+                    </select>
                 </div>
             </div>
             <div class="col-12 col-md-1 d-flex align-items-end">
@@ -154,6 +151,7 @@
 
     $('body').on('click', '.remove-item', function() {
         $(this).closest('.budget').remove();
+    });
     });
 </script>
 

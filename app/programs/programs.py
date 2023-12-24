@@ -339,14 +339,12 @@ def insertProject():
             int_project_id = project_to_add.ProjectId
 
             # Add budget of the project
-            proposed_budgets = request.form.getlist('proposed_budget')
             approved_budgets = request.form.getlist('approved_budget')
             fund_types = request.form.getlist('fund_type')
-            budget_data = zip(proposed_budgets, approved_budgets, fund_types)
-            for proposed_budget, approved_budget, fund_type in budget_data:
+            budget_data = zip(approved_budgets, fund_types)
+            for approved_budget, fund_type in budget_data:
                 budget_to_add = Budget(FundType=fund_type,
-                                        ProposedAmount=proposed_budget,
-                                        ApprovedAmount=approved_budget,
+                                        Amount=approved_budget,
                                         ProjectId=int_project_id,
                                         CollaboratorId=form.collaborator.data if fund_type=='External' else None)
                 db.session.add(budget_to_add)
@@ -366,7 +364,8 @@ def viewProject(id):
     form = ProjectForm()
     activity_form = ActivityForm()
     project = Project.query.get_or_404(id)
-    registered = Registration.query.filter_by(ProjectId=project.ProjectId)
+    project_budget = Budget.query.filter_by(ProjectId=id).all()
+    registered = Registration.query.filter_by(ProjectId=project.ProjectId).all()
     # for calendar - temp
     events = Activity.query.filter_by(ProjectId=id).all()
     
@@ -382,7 +381,7 @@ def viewProject(id):
     form.objectives.data = project.Objectives
     form.status.data = project.Status
 
-    return render_template('programs/view_project.html', project=project, form=form, activity_form=activity_form, registered=registered, events=events)
+    return render_template('programs/view_project.html', project=project, form=form, activity_form=activity_form, registered=registered, events=events, project_budget=project_budget)
 
 
 @bp.route('/project/update/<int:id>', methods=['POST'])
@@ -390,6 +389,7 @@ def viewProject(id):
 def updateProject(id):
     form = ProjectForm()
     extension_project = Project.query.get_or_404(id)
+    project_budget = Budget.query.filter_by(ProjectId=id).all()
     if form.validate_on_submit():
         if form.image.data is not None:
             # If extension project has previous image, remove it from imagekit
@@ -448,12 +448,38 @@ def updateProject(id):
         extension_project.ProjectType = form.project_type.data
         extension_project.StartDate =  form.start_date.data
         extension_project.EndDate = form.end_date.data
-        extension_project.ProposedBudget = form.proposed_budget.data
-        extension_project.ApprovedBudget = form.approved_budget.data
-        extension_project.FundType = form.fund_type.data
         extension_project.ImpactStatement = form.impact_statement.data
         extension_project.Objectives = form.objectives.data
         extension_project.Status = form.status.data
+
+        # Edit budget
+        ids = request.form.getlist('id')
+        approved_budgets = request.form.getlist('approved_budget')
+        fund_types = request.form.getlist('fund_type')
+        budget_data = zip(approved_budgets, fund_types)
+
+        # Delete the removed budget from database
+        if len(project_budget) != len(ids):
+            for budget in project_budget:
+                # If the id is not in request form, the budget has been removed
+                if str(budget.BudgetId) not in ids:
+                    db.session.delete(budget) # Delete the budget from the database
+        
+        count = 0 # Initial index 
+        for approved_budget, fund_type in budget_data:
+            # Update the data of first n budget/s in budget_data with id in database
+            if count < len(ids):
+                budget = Budget.query.filter_by(BudgetId=int(ids[count])).first()
+                budget.Amount = approved_budget
+                budget.FundType = fund_type
+                budget.CollaboratorId = form.collaborator.data
+            else: # Add to database the remaining/newly added budget
+                budget_to_add = Budget(Amount=approved_budget,
+                                        FundType=fund_type,
+                                        ProjectId=id,
+                                        CollaboratorId=form.collaborator.data)
+                db.session.add(budget_to_add)
+            count += 1 # Increment index
 
         try:
             db.session.commit()

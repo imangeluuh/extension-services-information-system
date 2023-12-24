@@ -83,27 +83,6 @@
                             {{ form.status(class="form-select")}}
                         </div>
                     </div>
-                    <div class="col-auto col-md-4">
-                        <div class="mb-3">
-                            <!-- proposed_budget -->
-                            {{ form.proposed_budget.label(class="form-label") }}
-                            {{ form.proposed_budget(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-4">
-                        <div class="mb-3">
-                            <!-- approved_budget -->
-                            {{ form.approved_budget.label(class="form-label") }}
-                            {{ form.approved_budget(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-4">
-                        <div class="mb-3">
-                            <!-- fund_type -->
-                            {{ form.fund_type.label(class="form-label") }}
-                            {{ form.fund_type(class="form-control")}}
-                        </div>
-                    </div>
                     <div class="col-12">
                         <div class="mb-3">
                             <!-- impact_statement -->
@@ -132,6 +111,54 @@
                             {{ form.project_proposal(class="form-control")}}
                         </div>
                     </div>
+                    {% for budget in project_budget %}
+                    {% if loop.first %}
+                    <input type="hidden" name="id" value="{{budget.BudgetId}}">
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label for="approved_budget" class="form-label">Budget Amount</label>
+                            <input type="number" name="approved_budget" value="{{budget.Amount}}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label for="fund_type" class="form-label">Fund Type</label>
+                            <select name="fund_type" id="fund_type" class="form-select">
+                                <option value="Internal" {{'selected' if budget.FundType == 'Internal'}} required>Internal</option>
+                                <option value="External" {{'selected' if budget.FundType == 'External'}} required>External</option>
+                            </select>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12 budget">
+                        <div class="row">
+                            <input type="hidden" name="id" value="{{budget.BudgetId}}">
+                            <div class="col-12 col-md-6">
+                                <div class="mb-3">
+                                    <label for="approved_budget" class="form-label">Budget Amount</label>
+                                    <input type="number" name="approved_budget" value="{{budget.Amount}}" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <div class="mb-3">
+                                    <label for="fund_type" class="form-label">Fund Type</label>
+                                    <select name="fund_type" id="fund_type" class="form-select">
+                                        <option value="Internal" {{'selected' if budget.FundType == 'Internal'}} required>Internal</option>
+                                        <option value="External" {{'selected' if budget.FundType == 'External'}} required>External</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn bg-transparent border-0 text-danger remove-item p-0 fs-1 pb-3"><iconify-icon icon="ion:trash-outline"></iconify-icon></button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    <button  type="button"  id="add-item-button" class="bg-transparent text-primary border-0" style="width: fit-content;">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon p-0 me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                        Add budget
+                    </button>
                 </div>
             </div>
             <div class="modal-footer">
