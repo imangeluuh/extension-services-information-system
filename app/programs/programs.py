@@ -672,9 +672,7 @@ def projectBudget(id):
                         purchased_items.append(item)
 
     if request.method == 'POST':
-        print('hello')
         if form.validate_on_submit():
-            print('hello1')
             item_to_add = Item(ItemName=form.item.data,
                                 Amount=form.amount.data,
                                 ActivityId=form.activity.data)
@@ -686,7 +684,6 @@ def projectBudget(id):
                 flash('There was an issue inserting the item', category='error')
 
         if form.errors != {}: # If there are errors from the validations
-            print('hello2?')
             for field, error in form.errors.items():
                 flash(f"Field '{field}' has an error: {error}", category='error')
         
@@ -694,6 +691,19 @@ def projectBudget(id):
     
     return render_template('programs/project_budget.html', project=project, form=form, external_budget=external_budget, internal_budget=internal_budget, to_be_purchased_items=to_be_purchased_items, purchased_items=purchased_items)
 
+
+@bp.route('/assign-student', methods=['POST'])
+@login_required(role=["Admin", "Faculty"])
+def assignStudent():
+    student_registration = Registration.query.filter_by(RegistrationId=int(request.form.get('id'))).first()
+    student_registration.IsAssigned = bool(request.form.get('is_assigned'))
+    try:
+        db.session.commit()
+        flash('Student is successfully assigned to manage attendance and evaluations', category='success')
+    except:
+        flash('There was an issue assigning the student', category='error')
+
+    return redirect(url_for('programs.viewProject', id=int(request.form.get('project_id'))))
 
 
 @bp.route('/cert/<int:id>', methods=['GET', 'POST'])

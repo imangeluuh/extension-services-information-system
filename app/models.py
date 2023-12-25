@@ -288,6 +288,7 @@ class Registration(db.Model):
 
     RegistrationId = db.Column(db.Integer, primary_key=True)
     RegistrationDate = db.Column(db.Date, default=datetime.utcnow, nullable=False)
+    IsAssigned = db.Column(db.Boolean, default=0, nullable=False)
     ProjectId = db.Column(db.Integer, db.ForeignKey('Project.ProjectId', ondelete='CASCADE'), nullable=False)
     UserId = db.Column(db.String(36), db.ForeignKey('User.UserId', ondelete='CASCADE'), nullable=False)
 

@@ -158,7 +158,18 @@ object-fit: cover;">
                                     <td>{{ user.User.LastName }}</td>
                                     <td>{{ user.User.Login.Role.RoleName }}</td>
                                     {% if current_user.Role.RoleName == 'Admin' %}
-                                    <td class="d-flex justify-content-center"><a href="{{ url_for('admin.viewUser', id=user.User.UserId) }}" class="bg-success-subtle text-success me-2 px-2 py-1 rounded-2">View</a></td>
+                                    <td class="d-flex">
+                                        <a href="{{ url_for('admin.viewUser', id=user.User.UserId) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">View</a>
+                                        {% if user.User.Login.Role.RoleName == 'Student' %}
+                                        <form action="{{ url_for('programs.assignStudent')}}" method="post">
+                                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                            <input type="hidden" name="id" value="{{user.RegistrationId}}">
+                                            <input type="hidden" name="is_assigned" value="{{1 if user.IsAssigned == 0 else 0}}">
+                                            <input type="hidden" name="project_id" value="{{project.ProjectId}}">
+                                            <input type="submit" value="{{'Assign' if user.IsAssigned == 0 else 'Unassign' }}" class="btn {{'btn-success' if user.IsAssigned == 0 else 'btn-danger'}} me-2 px-2 py-1 rounded-2">
+                                        </form>
+                                        {% endif %}
+                                    </td>
                                     {% endif %}
                                 </tr>
                                 {% endfor %}
