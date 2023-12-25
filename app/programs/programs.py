@@ -833,7 +833,7 @@ def project(id):
     # arrange upcoming activities in ascending order
     events.reverse()
     user_id = current_user.User[0].UserId if current_user.is_authenticated else None
-    bool_is_registered = True if Registration.query.filter_by(ProjectId=id, UserId=user_id).first() else False
+    registration = Registration.query.filter_by(ProjectId=id, UserId=user_id).first()
     current_date = datetime.utcnow().date()
 
     # Make a GET request to the API with the API key in the headers
@@ -848,7 +848,7 @@ def project(id):
         for faculty in project.ProjectTeam.items():
             faculty_info = api_data['Faculties'][faculty[0]]
             faculty_profile[faculty[0]] = 'https://drive.google.com/uc?export=view&id='+faculty_info['profile_pic']
-    return render_template('programs/project_reg.html', project=project, events=events,activities=activities, faculty_profile=faculty_profile, bool_is_registered=bool_is_registered, current_date=current_date)
+    return render_template('programs/project_reg.html', project=project, events=events,activities=activities, faculty_profile=faculty_profile, registration=registration, current_date=current_date)
 
 @bp.route('/registration/<int:project_id>', methods=['POST'])
 @login_required(role=["Beneficiary", "Student"])
@@ -896,3 +896,18 @@ def activity(id):
     evaluation_id = activity.Evaluation[0].EvaluationId if activity.Evaluation else None
     bool_is_evaluation_taken = True if Response.query.filter_by(BeneficiaryId=user_id, EvaluationId=evaluation_id).first() else False
     return render_template('programs/activity.html', activity=activity, suggestions=suggestions, current_date=current_date, bool_is_evaluation_taken=bool_is_evaluation_taken)
+
+@bp.route('/project/management/<int:id>')
+@login_required(role=["Student"])
+def studentProjectManage(id):
+    project = Project.query.filter_by(ProjectId=id).first()
+    registered_users = Registration.query.filter_by(ProjectId=id).all()
+    beneficiaries = []
+    students = []
+
+    for user in registered_users:
+        if user.User.Login.Role.RoleName == "Student":
+            students.append(user)
+        else:
+            beneficiaries.append(user)
+    return render_template('programs/student_manager.html', project=project, students=students, beneficiaries=beneficiaries)
