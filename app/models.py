@@ -110,6 +110,7 @@ class User(PaginatedAPIMixin, db.Model):
     Registration = db.relationship('Registration', backref='User', cascade='all, delete-orphan', passive_deletes=True)
     Login = db.relationship("Login", backref='User', lazy=True, passive_deletes=True)
     Certificate = db.relationship("Certificate", back_populates="User")
+    Attendance = db.relationship("Attendance", back_populates="User")
 
 class Admin(db.Model):
     __tablename__ = 'Admin'
@@ -131,7 +132,6 @@ class Beneficiary(db.Model):
     BeneficiaryId = db.Column(db.String(36), db.ForeignKey('User.UserId', ondelete='CASCADE'), primary_key=True)
     User = db.relationship("User", backref='Beneficiary', lazy=True, passive_deletes=True)
     EvaluationResponse = db.relationship("Response", back_populates="Beneficiary")
-    Attendance = db.relationship("Attendance", back_populates="Beneficiary")
 
 class Student(db.Model):
     __tablename__ = 'Student'
@@ -288,7 +288,7 @@ class Registration(db.Model):
 
     RegistrationId = db.Column(db.Integer, primary_key=True)
     RegistrationDate = db.Column(db.Date, default=datetime.utcnow, nullable=False)
-    IsAssigned = db.Column(db.Boolean, default=0, nullable=False)
+    IsAssigned = db.Column(db.Boolean, default=False, nullable=False)
     ProjectId = db.Column(db.Integer, db.ForeignKey('Project.ProjectId', ondelete='CASCADE'), nullable=False)
     UserId = db.Column(db.String(36), db.ForeignKey('User.UserId', ondelete='CASCADE'), nullable=False)
 
@@ -344,11 +344,10 @@ class Attendance(db.Model):
     __tablename__ = 'Attendance'
 
     AttendanceId = db.Column(db.Integer, primary_key=True)
-    HasAttended = db.Column(db.Boolean, default=False)
-    BeneficiaryId = db.Column(db.String(36), db.ForeignKey('Beneficiary.BeneficiaryId'), nullable=False)
+    UserId = db.Column(db.String(36), db.ForeignKey('User.UserId'), nullable=False)
     ActivityId = db.Column(db.Integer, db.ForeignKey('Activity.ActivityId', ondelete='CASCADE'), nullable=False)
     Activity = db.relationship("Activity", back_populates="Attendance", passive_deletes=True)
-    Beneficiary = db.relationship("Beneficiary", back_populates="Attendance")
+    User = db.relationship("User", back_populates="Attendance")
 
 class Certificate(db.Model):
     __tablename__ = 'Certificate'
