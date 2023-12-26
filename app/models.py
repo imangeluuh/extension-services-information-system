@@ -328,7 +328,7 @@ class Response(db.Model):
     __tablename__ = 'Response'
 
     ResponseId = db.Column(db.Integer, primary_key=True)
-    BeneficiaryId = db.Column(db.String(36), db.ForeignKey('Beneficiary.BeneficiaryId'), nullable=False)
+    BeneficiaryId = db.Column(db.String(36), db.ForeignKey('Beneficiary.BeneficiaryId'))
     EvaluationId = db.Column(db.Integer, db.ForeignKey('Evaluation.EvaluationId', ondelete='CASCADE'), nullable=False)
     QuestionId = db.Column(db.Integer, db.ForeignKey('Question.QuestionId'), nullable=False)
     Text = db.Column(db.Text)
