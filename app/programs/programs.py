@@ -1,7 +1,7 @@
 from app.programs import bp
 from flask import render_template, url_for, request, redirect, flash, current_app
 from flask_login import current_user
-from ..models import Project, ExtensionProgram, Program, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item
+from ..models import Project, ExtensionProgram, Program, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance
 from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm
 import calendar
 from datetime import datetime
@@ -901,13 +901,43 @@ def activity(id):
 @login_required(role=["Student"])
 def studentProjectManage(id):
     project = Project.query.filter_by(ProjectId=id).first()
-    registered_users = Registration.query.filter_by(ProjectId=id).all()
+    return render_template('programs/student_manager.html', project=project)
+
+@bp.route('project/<int:project_id>/activity/<int:activity_id>/attendance')
+@login_required(role=["Student"])
+def manageAttendance(project_id, activity_id):
+    project = Project.query.filter_by(ProjectId=project_id).first()
+    activity = Activity.query.filter_by(ActivityId=activity_id).first()
+    attendance = [attendance.UserId for attendance in Attendance.query.filter_by(ActivityId=activity_id).all()]
+    registered_users = Registration.query.filter_by(ProjectId=project_id).all()
     beneficiaries = []
     students = []
 
     for user in registered_users:
         if user.User.Login.Role.RoleName == "Student":
-            students.append(user)
+            if user.User.UserId in attendance:
+                students.append([user, 1])
+            else:
+                students.append([user, 0])
+            print(students)
         else:
-            beneficiaries.append(user)
-    return render_template('programs/student_manager.html', project=project, students=students, beneficiaries=beneficiaries)
+            if user.User.UserId in attendance:
+                beneficiaries.append([user, 1])
+            else:
+                beneficiaries.append([user, 0])
+    
+    return render_template('programs/record_attendance.html', project=project, activity=activity, beneficiaries=beneficiaries, students=students)
+
+@bp.route('/activity/record-attendance', methods=["POST"])
+@login_required(role=["Student"])
+def recordAttendance():
+    attendance_to_add = Attendance(UserId=request.form.get('user_id'),
+                                ActivityId=request.form.get('activity_id'))
+    try:
+        db.session.add(attendance_to_add)
+        db.session.commit()
+        flash('Attendance is successfully recorded.', category='success')
+    except:
+        flash('There was an issue recording the attendance.', category='error')
+    
+    return redirect(url_for('programs.manageAttendance', project_id=request.form.get('project_id'), activity_id=request.form.get('activity_id')))

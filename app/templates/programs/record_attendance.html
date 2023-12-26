@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>{{ project.Title }} Management</title>
+<!--Regular Datatables CSS-->
+<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+<!--Responsive Extension Datatables CSS-->
+<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}"> -->
+{% endblock %}
+
+{% block content %}
+<div class="container-xl w-100 flex justify-center mx-auto py-8">
+    <div class="page-header my-4">
+        <div class="row align-items-center mw-100">
+            <div class="col">
+                <div class="mb-2">
+                <ol class="breadcrumb bg-transparent p-0" aria-label="breadcrumbs">
+                    <li class="breadcrumb-item"><a href="{{url_for('programs.project', id=project.ProjectId)}}">{{project.Title}}</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{url_for('programs.studentProjectManage', id=project.ProjectId)}}">Attendance and Evaluation Management</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a href="#">{{activity.ActivityName}} Attendance</a></li>
+                </ol>
+                </div>
+                <h2 class="page-title">
+                   {{activity.ActivityName}} Attendance
+                </h2>
+            </div>
+        </div>
+    </div>   
+   <!-- Attendance Card -->
+   <div id="attendance-panel" class="card shadow">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a href="#tabs-home-3" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l-2 0l9 -9l9 9l-2 0"></path><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"></path><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path></svg>
+                Beneficiaries</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#tabs-profile-3" class="nav-link" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/beneficiary -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path></svg>
+                Students</a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <div class="tab-pane active show" id="tabs-home-3" role="tabpanel">
+                <table id="beneficiaries" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th data-priority="1">First Name</th>
+                            <th data-priority="2">Middle Name</th>
+                            <th data-priority="3">Last Name</th>
+                            <th data-priority="4"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for beneficiary in beneficiaries %}
+                        <form action="{{url_for('programs.recordAttendance')}}" method="post">
+                        <tr>
+                            <td>{{ beneficiary[0].User.FirstName }}</td>
+                            <td>{{ beneficiary[0].User.MiddleName if beneficiary[0].User.MiddleName else 'N/A' }}</td>
+                            <td>{{ beneficiary[0].User.LastName }}</td>
+                            <td class="d-flex">
+                                {% if not beneficiary[1] %}
+                                <form action="{{url_for('programs.recordAttendance')}}" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                    <input type="hidden" name="user_id" value="{{beneficiary[0].User.UserId}}">
+                                    <input type="hidden" name="project_id" value="{{project.ProjectId}}">
+                                    <input type="hidden" name="activity_id" value="{{activity.ActivityId}}">
+                                    <button type="submit" class="btn btn-success me-2 px-2 py-1 rounded-2">Attended</button>
+                                </form>
+                                {% else %}
+                                <span class="text-success">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m9.55 18l-5.7-5.7l1.425-1.425L9.55 15.15l9.175-9.175L20.15 7.4z"/></svg>
+                                    Attended
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </form>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane" id="tabs-profile-3" role="tabpanel">
+                <table id="students" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th data-priority="1">First Name</th>
+                            <th data-priority="2">Middle Name</th>
+                            <th data-priority="3">Last Name</th>
+                            <th data-priority="4"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student[0].User.FirstName }}</td>
+                            <td>{{ student[0].User.MiddleName if student[0].User.MiddleName else 'N/A' }}</td>
+                            <td>{{ student[0].User.LastName }}</td>
+                            <td class="d-flex">
+                                {% if not student[1] %}
+                                <form action="{{url_for('programs.recordAttendance')}}" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                    <input type="hidden" name="user_id" value="{{student[0].User.UserId}}">
+                                    <input type="hidden" name="project_id" value="{{project.ProjectId}}">
+                                    <input type="hidden" name="activity_id" value="{{activity.ActivityId}}">
+                                    <button type="submit" class="btn btn-success me-2 px-2 py-1 rounded-2">Attended</button>
+                                </form>
+                                {% else %}
+                                <span class="text-success">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m9.55 18l-5.7-5.7l1.425-1.425L9.55 15.15l9.175-9.175L20.15 7.4z"/></svg>
+                                    Attended
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Card -->
+</div>
+
+
+
+
+{% endblock %}
+
+{% block script %}
+<!--Datatables -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<script>
+    $(document).ready(function() {
+        var table = $('#activities').DataTable({
+            responsive: true,
+        })
+        .columns.adjust()
+        .responsive.recalc()
+
+        var beneficiaries_table = $('#beneficiaries').DataTable({
+                responsive: true,
+        })
+        .columns.adjust()
+        .responsive.recalc()
+
+        var students_table = $('#students').DataTable({
+                responsive: true,
+        })
+        .columns.adjust()
+        .responsive.recalc()
+
+    });
+</script>
+{% endblock %}

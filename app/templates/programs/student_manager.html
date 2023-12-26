@@ -6,7 +6,7 @@
 <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
 <!--Responsive Extension Datatables CSS-->
 <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}"> -->
 {% endblock %}
 
 {% block content %}
@@ -25,87 +25,9 @@
                 </h2>
             </div>
         </div>
-    </div>          
-    <div class="d-flex justify-content-center mb-4">
-        <button type="button" id="attendance-tab" class="btn btn-outline-primary rounded-end-0 active">
-            Attendance
-        </button>
-        <button type="button" id="evaluation-tab" class="btn btn-outline-primary rounded-start-0 border-start-0 ">
-            Evaluation
-        </button>
-    </div>
-    <!-- Attendance Card -->
-    <div id="attendance-panel" class="card shadow">
-        <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <a href="#tabs-home-3" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l-2 0l9 -9l9 9l-2 0"></path><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"></path><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path></svg>
-                    Beneficiaries</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a href="#tabs-profile-3" class="nav-link" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/beneficiary -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path></svg>
-                    Students</a>
-                </li>
-            </ul>
-        </div>
-        <div class="card-body">
-            <div class="tab-content">
-                <div class="tab-pane active show" id="tabs-home-3" role="tabpanel">
-                    <table id="beneficiaries" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
-                        <thead>
-                            <tr>
-                                <th data-priority="1">First Name</th>
-                                <th data-priority="2">Middle Name</th>
-                                <th data-priority="3">Last Name</th>
-                                <th data-priority="4">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for beneficiary in beneficiaries %}
-                            <tr>
-                                <td>{{ beneficiary.User.FirstName }}</td>
-                                <td>{{ beneficiary.User.MiddleName if beneficiary.User.MiddleName else 'N/A' }}</td>
-                                <td>{{ beneficiary.User.LastName }}</td>
-                                <td class="d-flex">
-                                    <a href="{{ url_for('admin.viewUser', id=beneficiary.User.UserId) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">Attended</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="tab-pane" id="tabs-profile-3" role="tabpanel">
-                    <table id="students" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
-                        <thead>
-                            <tr>
-                                <th data-priority="1">First Name</th>
-                                <th data-priority="2">Middle Name</th>
-                                <th data-priority="3">Last Name</th>
-                                <th data-priority="4">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for student in students %}
-                            <tr>
-                                <td>{{ student.User.FirstName }}</td>
-                                <td>{{ student.User.MiddleName if student.User.MiddleName else 'N/A' }}</td>
-                                <td>{{ student.User.LastName }}</td>
-                                <td class="d-flex">
-                                    <a href="{{ url_for('admin.viewUser', id=student.User.UserId) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">Attended</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /Card -->
+    </div>   
     <!-- Evaluation Card -->
-    <div id="evaluation-panel" class="card p-3 shadow d-none">
+    <div id="evaluation-panel" class="card p-3 shadow">
         <table id="activities" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
             <thead>
                 <tr>
@@ -117,7 +39,10 @@
                 {% for activity in project.Activity %}
                 <tr>
                     <td>{{activity.ActivityName}}</td>
-                    <td><a href="#" class="btn btn-success">Take evaluation</a></td>
+                    <td>
+                        <a href="{{url_for('programs.manageAttendance', project_id=project.ProjectId, activity_id=activity.ActivityId)}}" class="btn btn-success">Record Attendance</a>
+                        <a href="#" class="btn btn-success">Take evaluation</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -125,6 +50,9 @@
     </div>
     <!-- /Card -->
 </div>
+
+
+
 
 {% endblock %}
 
@@ -140,36 +68,6 @@
         .columns.adjust()
         .responsive.recalc()
 
-        var beneficiaries_table = $('#beneficiaries').DataTable({
-                responsive: true,
-        })
-        .columns.adjust()
-        .responsive.recalc()
-
-        var students_table = $('#students').DataTable({
-                responsive: true,
-        })
-        .columns.adjust()
-        .responsive.recalc()
-
-        $('#attendance-tab').click(function(){
-            $('#evaluation-panel').removeClass('d-block');
-            $('#evaluation-panel').addClass('d-none');
-            $('#attendance-panel').removeClass('d-none');
-            $('#attendance-panel').addClass('d-block');
-
-            $('#evaluation-tab').removeClass('active')
-            $('#attendance-tab').addClass('active')
-        });
-        $('#evaluation-tab').click(function(){
-            $('#attendance-panel').removeClass('d-block');
-            $('#attendance-panel').addClass('d-none');
-            $('#evaluation-panel').removeClass('d-none');
-            $('#evaluation-panel').addClass('d-block');
-
-            $('#attendance-tab').removeClass('active')
-            $('#evaluation-tab').addClass('active')
-        });
     });
 </script>
 {% endblock %}
