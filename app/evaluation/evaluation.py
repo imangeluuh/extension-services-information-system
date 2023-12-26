@@ -235,6 +235,52 @@ def evaluation(id):
         
     return render_template("evaluation/evaluation.html", evaluation=evaluation, questions=questions)
 
+#evaluatoin page - allows responses to be collected
+@bp.route("student/evaluation/<id>", methods=["GET", "POST"])
+@login_required(role=["Student"])
+def studentEvaluation(id):    
+    evaluation = Evaluation.query.filter_by(EvaluationId=id).first()
+
+    if not evaluation: 
+        flash('The evaluation you have requested does not exist. Please check if your link is correct.', category='error')
+        return redirect(request.referrer)
+
+    questions = []
+    for question_id in evaluation.questionsList():
+        question = Question.query.filter_by(QuestionId=question_id).first()
+        questions.append(question)
+
+    if request.method == "POST":
+        error = 0
+
+        #check for required fields
+        for question in questions:
+            response = request.form.get(str(question.QuestionId))
+            if question.Required and (response == None or response.isspace() or response == ""):
+                flash('Please fill out all the required fields', category='error')
+                return render_template("evaluation/evaluation.html", evaluation=evaluation, questions=questions)
+
+        #submit responses
+        for question in questions:
+            response = request.form.get(str(question.QuestionId))
+
+            if not response is None and not response.isspace() and response != "":
+                if question.Type == 1:
+                    if not save_response(id, None, question.QuestionId, None, int(response)):
+                        error = 1
+                        break
+
+                elif question.Type == 2:
+                    if not save_response(id, None, question.QuestionId, response, None):
+                        error = 1
+                        break
+        if not error:
+            flash('Your response has been recorded successfully.', category='success')
+            return redirect(request.referrer)
+        else:
+            flash('An error occured whilst recording your response. Please try again later.', category='error')
+        
+    return render_template("evaluation/evaluation.html", evaluation=evaluation, questions=questions)
 
 
 def save_response(evaluation_id, user_id, question_id, text, num):
@@ -242,8 +288,8 @@ def save_response(evaluation_id, user_id, question_id, text, num):
         return 0 #failure
     if not Evaluation.query.filter_by(EvaluationId=evaluation_id).first():
         return 0 #failure: invalid evaluation id
-    if not Beneficiary.query.filter_by(BeneficiaryId=user_id).first():
-        return 0 #failure: invalid user id
+    # if not Beneficiary.query.filter_by(BeneficiaryId=user_id).first():
+    #     return 0 #failure: invalid user id
     if not Question.query.filter_by(QuestionId=question_id).first():
         return 0 #failure: invalid question id
 
