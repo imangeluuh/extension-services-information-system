@@ -349,6 +349,9 @@ class Attendance(db.Model):
     Activity = db.relationship("Activity", back_populates="Attendance", passive_deletes=True)
     User = db.relationship("User", back_populates="Attendance")
 
+    # Create the unique constraint
+    __table_args__ = (db.UniqueConstraint("UserId", "ActivityId", name="unique_user_activity"),)
+
 class Certificate(db.Model):
     __tablename__ = 'Certificate'
 
