@@ -40,12 +40,14 @@
         </div>
         <div class="board">    
             <div class="lanes">
-              <div class="swim-lane" id="todo-lane">
+              <div class="swim-lane" id="tbp-lane">
                 <h3 class="heading">To Be Purchased</h3>
                 {% for item in to_be_purchased_items %}
-                <div class="task">
+                <div class="item">
+                  <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}">
                   <p class="id d-none">{{item.ItemId}}</p>
-                  <p class="item-name" draggable="true">{{item.ItemName}}</p>
+                  <p class="item-name mb-2" draggable="true">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{item.Amount}}</span></p>
+                  <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
                 </div>
                 {% endfor %}
               </div>
@@ -53,9 +55,16 @@
               <div class="swim-lane">
                 <h3 class="heading">Purchased</h3>
                 {% for item in purchased_items %}
-                <div class="task">
-                  <p class="id d-none">{{item.ItemId}}</p>
-                  <p class="item-name" draggable="true">{{item.ItemName}}</p>
+                <div class="item row">
+                  <div class="col-12 col-md-10">
+                    <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}">
+                    <p class="id d-none">{{item.ItemId}}</p>
+                    <p class="item-name mb-2" draggable="true">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{item.Amount}}</span></p>
+                    <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
+                  </div>
+                  <div class="col-12 col-md-2 d-flex align-items-center"  data-toggle="tooltip" data-placement="left" title="Receipt">
+                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="40" d="M160 336V48l32 16l32-16l31.94 16l32.37-16L320 64l31.79-16l31.93 16L416 48l32.01 16L480 48v224"/><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32" d="M480 272v112a80 80 0 0 1-80 80a80 80 0 0 1-80-80v-48H48a15.86 15.86 0 0 0-16 16c0 64 6.74 112 80 112h288"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M224 144h192m-128 80h128"/></svg></a>
+                  </div>
                 </div>
                 {% endfor %}
               </div>
@@ -123,6 +132,8 @@
         .responsive.recalc()
     });
 
+    var $remaining_internal = {{remaining_internal}}
+    var $remaining_external = {{remaining_external}}
     // Initialize the echarts instance based on the prepared dom
     var myChart = echarts.init(document.getElementById('main'));
 
@@ -141,13 +152,13 @@
         {
         data: [
           {
-            value: {{internal_budget.Amount if internal_budget else 0}},
+            value: $remaining_internal,
             itemStyle: {
               color: '#f2cb05'
             },
           },
           {
-            value: {{external_budget.Amount if external_budget else 0}},
+            value: $remaining_external,
             itemStyle: {
               color: '#800000'
             },
