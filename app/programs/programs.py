@@ -694,6 +694,7 @@ def projectBudget(id):
     return render_template('programs/project_budget.html', project=project, form=form, external_budget=external_budget, internal_budget=internal_budget, to_be_purchased_items=to_be_purchased_items, purchased_items=purchased_items)
 
 @bp.route("/purchase-item/<int:status>", methods=["POST"])
+@login_required(role=["Admin", "Faculty"])
 def purchaseItem(status):
     item_id = request.json["itemId"]
     item = Item.query.filter_by(ItemId=item_id).first()
@@ -708,6 +709,21 @@ def purchaseItem(status):
                 "amount": item.Amount}
     else:
         return { "error": "Item not found" }, 404
+
+@bp.route("/update-item/<int:id>", methods=["POST"])
+def updateItem(id):
+    form = ItemForm()
+    item = Item.query.filter_by(ItemId=id).first()
+    item.ItemName = form.item.data
+    item.ActivityId = form.activity.data
+    item.Amount = form.amount.data
+    try:
+        db.session.commit()
+        flash('Item is successfully updated', category='success')
+    except:
+        flash('There was an issue updating the item', category='error')
+    return redirect(request.referrer)
+
 
 
 @bp.route('/assign-student', methods=['POST'])
