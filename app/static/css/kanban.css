@@ -28,7 +28,8 @@
   justify-content: start;
   gap: 16px;
 
-  padding: 24px;
+  padding-top: 24px;
+  padding-bottom: 24px;
 
   overflow: scroll;
   height: 100%;
@@ -50,7 +51,7 @@
 
   padding: 12px;
   border-radius: 4px;
-  width: 48%;
+  width: 49%;
   min-height: 120px;
 
   flex-shrink: 0;

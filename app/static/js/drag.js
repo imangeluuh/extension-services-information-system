@@ -54,8 +54,8 @@ draggables.forEach((item) => {
                 }
                 // Assign the new status to previousStatus element
                 previousStatus.textContent = newStatus;
-                window.option.series[0].data[0].value = window.remainingInternal;
-                window.option.series[0].data[1].value = window.remainingExternal;
+                window.option.series[0].data[1].value = window.remainingInternal;
+                window.option.series[0].data[0].value = window.remainingExternal;
                 // Display the chart using the configuration items and data just specified.
                 window.myChart.setOption(window.option);
               }
