@@ -43,9 +43,10 @@
               <div class="swim-lane" id="tbp-lane">
                 <h3 class="heading">To Be Purchased</h3>
                 {% for item in to_be_purchased_items %}
-                <div class="item">
+                <div class="item user-select-none">
                   <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}">
                   <p class="id d-none">{{item.ItemId}}</p>
+                  <p class="previous-status d-none">0</p>
                   <p class="item-name mb-2" draggable="true">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{item.Amount}}</span></p>
                   <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
                 </div>
@@ -55,11 +56,12 @@
               <div class="swim-lane">
                 <h3 class="heading">Purchased</h3>
                 {% for item in purchased_items %}
-                <div class="item row">
+                <div class="item row user-select-none" draggable="true">
                   <div class="col-12 col-md-10">
                     <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}">
                     <p class="id d-none">{{item.ItemId}}</p>
-                    <p class="item-name mb-2" draggable="true">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{item.Amount}}</span></p>
+                    <p class="previous-status d-none">1</p>
+                    <p class="item-name mb-2">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{item.Amount}}</span></p>
                     <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
                   </div>
                   <div class="col-12 col-md-2 d-flex align-items-center"  data-toggle="tooltip" data-placement="left" title="Receipt">
@@ -132,13 +134,31 @@
         .responsive.recalc()
     });
 
-    var $remaining_internal = {{remaining_internal}}
-    var $remaining_external = {{remaining_external}}
+    // Calculate the remaining budget
+    window.externalBudget = {{external_budget}};
+    window.internalBudget = {{internal_budget}};
+
+    window.remainingInternal = window.internalBudget;
+    window.remainingExternal = window.externalBudget;
+    var total = 0;
+
+    {% if purchased_items %}
+        {% for item in purchased_items %}
+            total += {{item.Amount}};
+        {% endfor %}
+        window.remainingInternal -= total;
+        if (remainingInternal < 0) {
+            total = Math.abs(remainingInternal);
+            window.remainingInternal = 0;
+            window.remainingExternal -= total;
+        }
+    {% endif %}
+
     // Initialize the echarts instance based on the prepared dom
-    var myChart = echarts.init(document.getElementById('main'));
+    window.myChart = echarts.init(document.getElementById('main'));
 
     // Specify the configuration items and data for the chart
-    var option = {
+    window.option = {
     tooltip: {},
     legend: {},
     xAxis: {
@@ -152,13 +172,13 @@
         {
         data: [
           {
-            value: $remaining_internal,
+            value: window.remainingInternal,
             itemStyle: {
               color: '#f2cb05'
             },
           },
           {
-            value: $remaining_external,
+            value: window.remainingExternal,
             itemStyle: {
               color: '#800000'
             },
@@ -170,6 +190,6 @@
     };
 
     // Display the chart using the configuration items and data just specified.
-    myChart.setOption(option);
+    window.myChart.setOption(window.option);
 </script>
 {% endblock %}

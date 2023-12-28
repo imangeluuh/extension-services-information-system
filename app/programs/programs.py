@@ -658,8 +658,6 @@ def budgetAllocation():
 def projectBudget(id):
     form = ItemForm()
     project = Project.query.filter_by(ProjectId=id).first()
-    external_budget = Budget.query.filter_by(ProjectId=id, FundType='External').first()
-    internal_budget = Budget.query.filter_by(ProjectId=id, FundType='Internal').first()
     to_be_purchased_items = []
     purchased_items = []
     if project.Activity:
@@ -688,24 +686,12 @@ def projectBudget(id):
                 flash(f"Field '{field}' has an error: {error}", category='error')
         
         return redirect(url_for('programs.projectBudget', id=id))
-
-    total = 0
-    remaining_internal = internal_budget.Amount if internal_budget else 0
-    remaining_external = external_budget.Amount if external_budget else 0
-    print(remaining_internal)
-    print(remaining_external)
-    print(purchased_items)
-    if purchased_items:
-        for item in purchased_items:
-            total += item.Amount
-            print(item.Amount)
-        remaining_internal -= total
-        if remaining_internal < 0:
-            total = abs(remaining_internal)
-            remaining_internal = 0
-            remaining_external -= total
-
-    return render_template('programs/project_budget.html', project=project, form=form, external_budget=external_budget, internal_budget=internal_budget, to_be_purchased_items=to_be_purchased_items, purchased_items=purchased_items, remaining_internal=remaining_internal, remaining_external=remaining_external)
+    
+    external_budget = Budget.query.filter_by(ProjectId=id, FundType='External').first()
+    internal_budget = Budget.query.filter_by(ProjectId=id, FundType='Internal').first()
+    external_budget = external_budget.Amount if external_budget else 0
+    internal_budget = internal_budget.Amount if internal_budget else 0
+    return render_template('programs/project_budget.html', project=project, form=form, external_budget=external_budget, internal_budget=internal_budget, to_be_purchased_items=to_be_purchased_items, purchased_items=purchased_items)
 
 @bp.route("/purchase-item/<int:status>", methods=["POST"])
 def purchaseItem(status):
@@ -718,7 +704,8 @@ def purchaseItem(status):
         else:
             item.DatePurchased = None
         db.session.commit()
-        return { "message": "Item status updated successfully!" }
+        return { "message": "Item status updated successfully!",
+                "amount": item.Amount}
     else:
         return { "error": "Item not found" }, 404
 
