@@ -101,7 +101,7 @@
           </div>
         </div>
         <div class="card p-0">
-            <div id="main" style="width: 100%; height: 250px"></div>
+            <div id="main" style="width: 100%; height: 200px"></div>
         </div>
         <div class="board">    
             <div class="lanes d-flex justify-content-center ">
@@ -109,41 +109,63 @@
                 <h3 class="heading">To Be Purchased</h3>
                 {% for item in to_be_purchased_items %}
                 <div class="item row user-select-none">
-                  <div class="col-12 col-md-10">
+                  <div class="col-12 col-md-9">
                     <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}">
                     <p class="id d-none">{{item.ItemId}}</p>
                     <p class="previous-status d-none">0</p>
                     <p class="item-name mb-2" draggable="true">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{item.Amount}}</span></p>
                     <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
                   </div>
-                  <div class="col-12 col-md-2 d-flex align-items-center">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#edit-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
-                    </a>
+                  <div class="col-12 col-md-3 d-flex align-items-center">
+                    <div class="row d-flex align-items-center">
+                      <div class="col-12 col-md-4">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#edit-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
+                        </a>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#delete-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="right" title="Delete" class="me-2 text-decoration-none text-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="m112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320"/><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M192 112V72h0a23.93 23.93 0 0 1 24-24h80a23.93 23.93 0 0 1 24 24h0v40m-64 64v224m-72-224l8 224m136-224l-8 224"/></svg>
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 {% include 'programs/edit_item_modal.html' %}
+                {% include 'programs/delete_item.html' %}
                 {% endfor %}
               </div>
               <div class="swim-lane">
                 <h3 class="heading">Purchased</h3>
                 {% for item in purchased_items %}
                 <div class="item row user-select-none" draggable="true">
-                  <div class="col-12 col-md-10">
+                  <div class="col-12 col-md-9">
                     <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}">
                     <p class="id d-none">{{item.ItemId}}</p>
                     <p class="previous-status d-none">1</p>
                     <p class="item-name mb-2">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{item.Amount}}</span></p>
                     <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
                   </div>
-                  <div class="col-12 col-md-2 d-flex align-items-center"  data-toggle="tooltip" data-placement="left" title="Receipt">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#edit-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
-                    </a>
-                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="40" d="M160 336V48l32 16l32-16l31.94 16l32.37-16L320 64l31.79-16l31.93 16L416 48l32.01 16L480 48v224"/><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32" d="M480 272v112a80 80 0 0 1-80 80a80 80 0 0 1-80-80v-48H48a15.86 15.86 0 0 0-16 16c0 64 6.74 112 80 112h288"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M224 144h192m-128 80h128"/></svg></a>
+                  <div class="col-12 col-md-3 d-flex align-items-center"  data-toggle="tooltip" data-placement="left" title="Receipt">
+                    <div class="row">
+                      <div class="col-12 col-md-4">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#edit-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
+                        </a>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#delete-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="right" title="Delete" class="me-2 text-decoration-none text-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="m112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320"/><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M192 112V72h0a23.93 23.93 0 0 1 24-24h80a23.93 23.93 0 0 1 24 24h0v40m-64 64v224m-72-224l8 224m136-224l-8 224"/></svg>
+                        </a>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="40" d="M160 336V48l32 16l32-16l31.94 16l32.37-16L320 64l31.79-16l31.93 16L416 48l32.01 16L480 48v224"/><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32" d="M480 272v112a80 80 0 0 1-80 80a80 80 0 0 1-80-80v-48H48a15.86 15.86 0 0 0-16 16c0 64 6.74 112 80 112h288"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M224 144h192m-128 80h128"/></svg></a>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 {% include 'programs/edit_item_modal.html' %}
+                {% include 'programs/delete_item.html' %}
                 {% endfor %}
               </div>
             </div>

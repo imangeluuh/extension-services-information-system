@@ -724,7 +724,19 @@ def updateItem(id):
         flash('There was an issue updating the item', category='error')
     return redirect(request.referrer)
 
-
+@bp.route("/delete-item/<int:id>", methods=["POST"])
+def deleteItem(id):
+    item = Item.query.filter_by(ItemId=id).first()
+    try:
+        if item.ReceiptId is not None:
+            status = purgeImage(item.ReceiptId)
+        db.session.delete(item)
+        db.session.commit()
+        flash('Item is successfully deleted.', category='success')
+    except Exception as e:
+        flash('There was an issue deleting the item', category='error')
+    
+    return redirect(request.referrer)
 
 @bp.route('/assign-student', methods=['POST'])
 @login_required(role=["Admin", "Faculty"])

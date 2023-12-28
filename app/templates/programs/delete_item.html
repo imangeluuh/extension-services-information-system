@@ -1,4 +1,4 @@
-<div class="modal modal-blur p-5" id="delete-item-" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal modal-blur p-5" id="delete-item-{{item.ItemId}}" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
       <div class="modal-content">
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -11,7 +11,7 @@
         </div>
         <div class="modal-footer bg-light">
           <div class="w-100">
-            <form action="" method="POST">
+            <form action="{{url_for('programs.deleteItem', id=item.ItemId)}}" method="POST">
             <div class="row">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <div class="col">
