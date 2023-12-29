@@ -1,0 +1,26 @@
+<div class="modal modal-blur fade" id="receipt-{{item.ItemId}}" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Receipt</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{url_for('programs.uploadReceipt', id=item.ItemId)}}" method="post" enctype="multipart/form-data" >
+            {{form.hidden_tag()}}
+            <div class="modal-body">
+            {{form.receipt.label(class="form-label")}}
+            <input type="file" name="{{form.receipt.name}}" id="{{form.receipt.id}}" class="form-control" required>
+            {% if item.ReceiptUrl %}
+            <div class="d-flex mt-3">
+                <img src="{{item.ReceiptUrl}}" alt="">
+            </div>
+            {% endif %}
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Upload Receipt</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -711,6 +711,7 @@ def purchaseItem(status):
         return { "error": "Item not found" }, 404
 
 @bp.route("/update-item/<int:id>", methods=["POST"])
+@login_required(role=["Admin", "Faculty"])
 def updateItem(id):
     form = ItemForm()
     item = Item.query.filter_by(ItemId=id).first()
@@ -725,6 +726,7 @@ def updateItem(id):
     return redirect(request.referrer)
 
 @bp.route("/delete-item/<int:id>", methods=["POST"])
+@login_required(role=["Admin", "Faculty"])
 def deleteItem(id):
     item = Item.query.filter_by(ItemId=id).first()
     try:
@@ -736,6 +738,38 @@ def deleteItem(id):
     except Exception as e:
         flash('There was an issue deleting the item', category='error')
     
+    return redirect(request.referrer)
+
+@bp.route("/upload-receipt/<int:id>", methods=["POST"])
+@login_required(role=["Admin", "Faculty"])
+def uploadReceipt(id):
+    form = ItemForm()
+    item = Item.query.filter_by(ItemId=id).first()
+    # If item has previous reciept, remove it from imagekit
+    if item.ReceiptId is not None:
+        status = purgeImage(item.ReceiptId)
+    # Get the input image path
+    imagepath = os.path.join(
+            current_app.config["UPLOAD_FOLDER"], secure_filename(form.receipt.data.filename)
+        )
+    # Save receipt
+    status = saveImage(form.receipt.data, imagepath)
+    if status.error is not None:
+        flash("File Upload Error")
+        return redirect(request.referrer)
+    else:
+        item.ReceiptUrl = status.url
+        item.ReceiptId = status.file_id
+    # Delete file from local storage
+    if os.path.exists(imagepath):
+        os.remove(imagepath)
+
+    try:
+        db.session.commit()
+        flash('Receipt is successfully uploaded', category='success')
+    except:
+        flash('There was an issue uploading the receipt', category='error')
+
     return redirect(request.referrer)
 
 @bp.route('/assign-student', methods=['POST'])
