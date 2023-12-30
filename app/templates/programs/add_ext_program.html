@@ -339,36 +339,6 @@ input[type="file"]::-webkit-file-upload-button,
                                     {% endfor %}
                                 </ul>
                             </div>
-                            <div class="col-auto col-md-4 text-start">
-                                <!-- proposed_budget -->
-                                {{ form.project.proposed_budget.label }}
-                                {{ form.project.proposed_budget(class="input")}}
-                                <ul>
-                                    {% for error in form.project.proposed_budget.errors %}
-                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="col-auto col-md-4 text-start">
-                                <!-- approved_budget -->
-                                {{ form.project.approved_budget.label }}
-                                {{ form.project.approved_budget(class="input")}}
-                                <ul>
-                                    {% for error in form.project.approved_budget.errors %}
-                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="col-auto col-md-4 text-start">
-                                <!-- fund_type -->
-                                {{ form.project.fund_type.label }}
-                                {{ form.project.fund_type(class="input")}}
-                                <ul>
-                                    {% for error in form.project.fund_type.errors %}
-                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
                             <div class="col-12 text-start">
                                 <!-- impact statement -->
                                 {{ form.project.impact_statement.label }}
@@ -402,7 +372,7 @@ input[type="file"]::-webkit-file-upload-button,
                             <div class="col-auto col-md-6 text-start d-flex flex-column">
                                 <!-- project proposal -->
                                 {{ form.project.project_proposal.label }}
-                                {{ form.project.project_proposal(class="form-control")}}
+                                {{ form.project.project_proposal(class="form-control", required="required")}}
                                 <ul>
                                     {% for error in form.project.project_proposal.errors %}
                                     <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
@@ -412,8 +382,6 @@ input[type="file"]::-webkit-file-upload-button,
                         </div>
                         <input type="button" name="previous" class="previous action-button" value="Previous" />
                         <input type="button" name="next" class="next action-button" value="Next" />
-                        {{ ckeditor.load(pkg_type="basic") }}
-                        {{ ckeditor.config() }}
                     </fieldset>
 
                 <!-- Activity Form -->
@@ -508,6 +476,8 @@ input[type="file"]::-webkit-file-upload-button,
         </form>
             </div>
         </div>
+        {{ ckeditor.load(pkg_type="basic") }}
+        {{ ckeditor.config() }}
         <!--/container-->
 {% endblock %}
 

@@ -112,7 +112,7 @@ class ActivityForm(FlaskForm):
     start_time = TimeField("Start Time", format='%H:%M', validators=[DataRequired()])
     end_time = TimeField('End Time', format='%H:%M', validators=[DataRequired()])
     location = StringField("Location", validators=[DataRequired()])
-    activity_description = TextAreaField('Description', validators=[DataRequired()])
+    activity_description =  CKEditorField("Description", validators=[DataRequired()])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
     speaker = SelectMultipleField('Speaker', choices=faculty_names, validators=[DataRequired()])
     save = SubmitField("Save Activity") 

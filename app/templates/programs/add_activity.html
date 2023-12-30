@@ -13,28 +13,28 @@
                         <div class="mb-3">
                             <!-- name -->
                         {{ activity_form.activity_name.label(class="form-label") }}
-                        {{ activity_form.activity_name(class="form-control", value=activity.ActivityName if activity)}}
+                        {{ activity_form.activity_name(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!--date -->
                             {{ activity_form.date.label(class="form-label") }}
-                            {{ activity_form.date(class="form-control", value=activity.Date if activity)}}
+                            {{ activity_form.date(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!-- start time -->
                             {{ activity_form.start_time.label(class="form-label") }}
-                            {{ activity_form.start_time(id="start_time", class="form-control", value=activity.StartTime.strftime('%H:%M') if activity, required="required" if not activity)}}
+                            {{ activity_form.start_time(id="start_time", class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!-- end time -->
                             {{ activity_form.end_time.label(class="form-label") }}
-                            {{ activity_form.end_time(id="start_time", class="form-control", value=activity.StartTime.strftime('%H:%M') if activity, required="required" if not activity)}}
+                            {{ activity_form.end_time(id="start_time", class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-6">
@@ -42,7 +42,7 @@
                             <!-- speaker-->
                             <div class="form-group">
                                 {{ activity_form.speaker.label(class="form-label")}}
-                                <select id="{{activity_form.speaker.id}}" name="{{activity_form.speaker.name}}" multiple="" hidden>
+                                <select id="{{activity_form.speaker.id}}" name="{{activity_form.speaker.name}}" multiple="" hidden required>
                                     {% for option in activity_form.speaker %}
                                         {{ option }}
                                     {% endfor %}
@@ -61,7 +61,7 @@
                         <div class="mb-3">
                             <!-- description -->
                             {{ activity_form.activity_description.label(class="form-label") }}
-                            <textarea name="{{ activity_form.activity_description.name }}" class="form-control">{{ activity.Description if activity }}</textarea>
+                            {{ activity_form.activity_description(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-12">
@@ -79,7 +79,9 @@
                 </a>
                 {{ activity_form.save(class="btn btn-primary ms-auto")}}
             </div>
-            </form>    
+            </form>  
+            {{ ckeditor.load(pkg_type="basic") }}
+            {{ ckeditor.config() }}  
         </div>
     </div>
 </div>

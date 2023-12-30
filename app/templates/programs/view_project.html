@@ -195,14 +195,16 @@ object-fit: cover;">
                                 <div class="row">
                                     <div class="col-auto col-md-10">
                                         <div class="row" data-bs-toggle="modal" data-bs-target="#view-activity">
-                                            <div class="col-auto">
+                                            <div class="col-12 col-md-2">
                                                 <span class="avatar" style="background-image: url('{{activity.ImageUrl if activity.ImageUrl}}'); height: 75px; width: 75px"></span>
                                             </div>
-                                            <div class="col-auto  text-truncate">
+                                            <div class="col-12 col-md-10 text-truncate">
                                                 <span class="text-body d-block fw-medium ">{{activity.ActivityName}}</span>
                                                 <span class="text-body d-block fs-4">{{activity.Date.strftime('%A, %B %d %Y')}}, {{activity.StartTime.strftime('%I:%M %p') if activity.StartTime}} - {{activity.EndTime.strftime('%I:%M %p') if activity.EndTime}}</span>
                                                 <span class="text-body d-block fs-4">Location: {{activity.Location}}</span><br>
-                                                <div class="text-secondary text-truncate mt-1 fs-4">{{activity.Description}}</div>
+                                                <div class="text-secondary text-truncate mt-1 fs-4" style="max-height: 40px;">
+                                                    {{activity.Description|safe}}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

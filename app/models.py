@@ -222,7 +222,7 @@ class Activity(db.Model):
     Date = db.Column(db.Date, index=True, nullable=False)
     StartTime = db.Column(db.Time)
     EndTime = db.Column(db.Time)
-    Description = db.Column(db.String(255), nullable=False)
+    Description = db.Column(db.Text, nullable=False)
     Location = db.Column(db.String(255))
     ImageUrl = db.Column(db.Text)
     ImageFileId = db.Column(db.Text)
