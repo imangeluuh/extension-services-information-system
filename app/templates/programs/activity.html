@@ -55,6 +55,7 @@
                             {{activity.Description}}
                         </div>
                     </div>
+                    {% if suggestions %}
                     <span class="fs-1 fw-bold my-4 text-start ms-5">See also</span>
                     <div class="d-flex flex-column align-items-center  mt-3">
                         <div class="row mx-5 g-4" style="width: fit-content;">
@@ -72,6 +73,7 @@
                         {% endfor %}
                     </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

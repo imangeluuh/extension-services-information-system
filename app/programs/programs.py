@@ -968,9 +968,10 @@ def activities():
 @bp.route('/activities/<int:id>')
 def activity(id):
     activity = Activity.query.filter_by(ActivityId=id).first()
-    suggestions = Activity.query.filter(Activity.Date > datetime.utcnow().date(),
-                                        Activity.ProjectId==activity.ProjectId).order_by(func.random()).limit(3).all()
     current_date = datetime.utcnow().date()
+    suggestions = Activity.query.filter(Activity.Date > current_date,
+                                        Activity.ProjectId==activity.ProjectId,
+                                        Activity.ActivityId!=activity.ActivityId ).order_by(func.random()).limit(3).all()
     user_id = current_user.User[0].UserId if current_user.is_authenticated else None
     evaluation_id = activity.Evaluation[0].EvaluationId if activity.Evaluation else None
     bool_is_evaluation_taken = True if Response.query.filter_by(BeneficiaryId=user_id, EvaluationId=evaluation_id).first() else False
