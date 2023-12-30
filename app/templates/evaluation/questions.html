@@ -28,24 +28,29 @@
                 <p class="d-flex align-items-center fw-bold pb-3 text-danger fs-1">
                     Mandatory Question Pool
                 </p>
-                <table id="questions" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                <table id="mandatory" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
                     <thead>
                         <tr>
-                            <th data-priority="1" class="text-start">Question</th>
-                            <th data-priority="2" class="text-start">Type</th>
-                            <th data-priority="3" class="text-start">Responses</th>
-                            <th data-priority="4" class="text-start"></th>
+                            <th class="text-start">Question</th>
+                            <th class="text-start">Type</th>
+                            <th class="text-start">Responses</th>
+                            {% if current_user.Role.RoleName == 'Admin' %}
+                            <th class="text-start">Creator</th>
+                            {% endif %}
+                            <th class="text-start"> </th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for question in mandatory_questions %}
                         <tr>
                             <td>{{ question.Text }}</td>
-                            <td>{% if question.Type == 1%}MCQ</td>
-                            <td>{% for response in question.responsesList() %} {{ loop.index }}. {{ response }} {{ "// " if not loop.last }} {% endfor %} {% else %}Text</td>
-                            <td>-- Free response -- {% endif %}</td>
-                            <td>
-                                <a href="{{ url_for('evaluation.deleteQuestion', id=question.QuestionId) }}" class="text-white bg-danger rounded-2 p-2 text-center mt-5">
+                            <td>{{ 'MCQ' if question.Type == 1 else 'Text' }}</td>
+                            <td>{% if question.Type == 1%}{% for response in question.responsesList() %} {{ loop.index }}. {{ response }} {{ "// " if not loop.last }} {% endfor %} {% else %}-- Free response -- {% endif %}</td>
+                            {% if current_user.Role.RoleName == 'Admin'%}
+                            <td>{{ question.Creator.FirstName ~ ' ' ~ question.Creator.LastName }}</td>
+                            {% endif %}
+                            <td class="d-flex">
+                                <a href="{{ url_for('evaluation.deleteQuestion', id=question.QuestionId) }}" class="btn btn-danger rounded-2 text-center">
                                     <iconify-icon icon="ph:trash-bold"></iconify-icon>
                                 </a>
                             </td>
@@ -62,24 +67,29 @@
                 <p class="d-flex pb-3 align-items-center fw-bold text-danger fs-1">
                     Optional Question Pool
                 </p>
-                <table id="responses" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                <table id="optional" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
                     <thead>
                         <tr>
-                            <th data-priority="1" class="text-start">Question</th>
-                            <th data-priority="2" class="text-start">Type</th>
-                            <th data-priority="3" class="text-start">Responses</th>
-                            <th data-priority="4" class="text-start"></th>
+                            <th class="text-start">Question</th>
+                            <th class="text-start">Type</th>
+                            <th class="text-start">Responses</th>
+                            {% if current_user.Role.RoleName == 'Admin'%}
+                            <th class="text-start">Creator</th>
+                            {% endif %}
+                            <th class="text-start"></th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for question in optional_questions %}
                         <tr>
                             <td>{{ question.text }}</td>
-                            <td>{% if question.Type == 1%}MCQ</td>
-                            <td>{% for response in question.responsesList() %} {{ loop.index }}. {{ response }} {{ "// " if not loop.last }} {% endfor %} {% else %}Text</td>
-                            <td>-- Free response -- {% endif %}</td>
-                            <td>
-                                <a href="{{ url_for('evaluation.deleteQuestion', id=question.QuestionId) }}" class="text-white bg-red-700 hover:bg-red-800 font-medium rounded-md p-2 text-center mt-5">
+                            <td>{{ 'MCQ' if question.Type == 1 else 'Text' }}</td>
+                            <td>{% if question.Type == 1%}{% for response in question.responsesList() %} {{ loop.index }}. {{ response }} {{ "// " if not loop.last }} {% endfor %} {% else %}-- Free response -- {% endif %}</td>
+                            {% if current_user.Role.RoleName == 'Admin'%}
+                            <td>{{question.Creator.FirstName ~ ' ' ~ question.Creator.LastName }}</td>
+                            {% endif %}
+                            <td >
+                                <a href="{{ url_for('evaluation.deleteQuestion', id=question.QuestionId) }}" class="btn btn-danger rounded-2  text-center">
                                     <iconify-icon icon="ph:trash-bold"></iconify-icon>
                                 </a>
                             </td>
@@ -101,15 +111,32 @@
 
         $(document).ready(function() {
 
-        var table = $('#questions').DataTable({
-                responsive: true
+        var table = $('#mandatory').DataTable({
+                responsive: true,
+                "columns": [
+                    null,
+                    null,
+                    null,
+                    {% if current_user.Role.RoleName == "Admin" %}
+                    null,
+                    {% endif %}
+                    { "width": "10%" },
+                ]
+
             })
-            .columns.adjust()
             .responsive.recalc()
-        var response_table = $('#responses').DataTable({
-                responsive: true
+        var response_table = $('#optional').DataTable({
+                responsive: true,
+                "columns": [
+                    null,
+                    null,
+                    null,
+                    {% if current_user.Role.RoleName == "Admin" %}
+                    null,
+                    {% endif %}
+                    { "width": "10%" },
+                ]
             })
-            .columns.adjust()
             .responsive.recalc()
         });
 

@@ -111,6 +111,8 @@ class User(PaginatedAPIMixin, db.Model):
     Login = db.relationship("Login", backref='User', lazy=True, passive_deletes=True)
     Certificate = db.relationship("Certificate", back_populates="User")
     Attendance = db.relationship("Attendance", back_populates="User")
+    Question = db.relationship('Question', back_populates='Creator', cascade='all, delete-orphan')
+    Evaluation = db.relationship('Evaluation', back_populates='Creator', cascade='all, delete-orphan')
 
 class Admin(db.Model):
     __tablename__ = 'Admin'
@@ -184,6 +186,10 @@ class Project(db.Model):
     Certificate = db.relationship('Certificate', back_populates='Project')
     Activity = db.relationship("Activity", back_populates="Project", passive_deletes=True)
     Budget = db.relationship('Budget', back_populates='Project', cascade='all, delete-orphan')
+
+    def totalBudget(self):
+        # Calculates and returns the total budget for the project.
+        return sum(budget.Amount for budget in self.Budget)
 
 class Program(db.Model):
     __tablename__ = 'Program'
@@ -301,8 +307,10 @@ class Question(db.Model):
     State = db.Column(db.Integer, nullable=False)
     Type = db.Column(db.Integer, nullable=False)
     Required = db.Column(db.Integer, nullable=False)
+    CreatorId = db.Column(db.String(36), db.ForeignKey('User.UserId', ondelete='CASCADE'), nullable=False)
     Responses = db.Column(db.Text, nullable=False)
-    Response = db.relationship("Response", back_populates="Question")
+    Creator = db.relationship("User", back_populates="Question", passive_deletes=True)
+    Response = db.relationship("Response", back_populates="Question",  cascade='all, delete-orphan')
 
     def responsesList(self):
         return ast.literal_eval(self.Responses)
@@ -317,8 +325,10 @@ class Evaluation(db.Model):
     State = db.Column(db.Integer, nullable=False)
     Questions = db.Column(db.Text, nullable=False)
     CreatedAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
+    CreatorId = db.Column(db.String(36), db.ForeignKey('User.UserId', ondelete='CASCADE'), nullable=False)
     Activity = db.relationship("Activity", back_populates="Evaluation", passive_deletes=True)
     Response = db.relationship("Response", back_populates="Evaluation", cascade='all, delete-orphan')
+    Creator = db.relationship("User", back_populates="Evaluation", passive_deletes=True)
 
     def questionsList(self):
         return ast.literal_eval(self.Questions)
@@ -335,7 +345,7 @@ class Response(db.Model):
     Num = db.Column(db.Integer)
     Beneficiary = db.relationship("Beneficiary", back_populates="EvaluationResponse")
     Evaluation = db.relationship("Evaluation", back_populates="Response", passive_deletes=True)
-    Question = db.relationship("Question", back_populates="Response")
+    Question = db.relationship("Question", back_populates="Response", passive_deletes=True)
 
     def responsesList(self):
         return ast.literal_eval(self.Responses)

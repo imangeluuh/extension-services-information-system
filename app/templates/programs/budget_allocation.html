@@ -22,7 +22,7 @@
                     <thead>
                         <tr>
                             <th data-priority="1" class="text-start">Extension Project</th>
-                            <th data-priority="2" class="text-start">Extension Program</th>\
+                            <th data-priority="2" class="text-start">Extension Program</th>
                             <th data-priority="3" class="text-start">Approved Budget</th>
                             <th data-priority="4" class="text-start">Action</th>
                         </tr>
@@ -32,15 +32,14 @@
                         <tr>
                             <td>{{ project.Title }}</td>
                             <td>{{ project.ExtensionProgram.Name }}</td>
-                            <td class="approved">{{project.ApprovedBudget }}</td>
-                            <td class="flex"><a href="{{ url_for('programs.projectBudget', id=project.ProjectId) }}" class="bg-success me-2 px-2 py-1 rounded">View</a></td>
+                            <td class="approved">{{project.totalBudget() }}</td>
+                            <td class="flex"><a href="{{ url_for('programs.projectBudget', id=project.ProjectId) }}" class="btn btn-success me-2 px-2 py-1 rounded">View</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td class="font-bold" colspan="3" style="padding: 0.75rem!important;">Total</td>
-                            <td class="font-bold" id="total-proposed" style="padding: 0.75rem!important;"></td>
+                            <td class="font-bold" colspan="2" style="padding: 0.75rem!important;">Total</td>
                             <td class="font-bold" id="total-approved" style="padding: 0.75rem!important;"></td>
                             <td></td>
                         </tr>
@@ -73,14 +72,11 @@
         });
         
         function computeTotal() {
-            // Format float_total_proposed to display two decimal places
-            float_total_proposed = float_total_proposed.toFixed(2);
-            $('#total-proposed').text(float_total_proposed)
-    
             var float_total_approved = 0.00
             $(".approved").each(function( index ) {
                 float_total_approved = float_total_approved + parseFloat($( this ).text())
             });
+            
             // Format float_total_approved to display two decimal places
             float_total_approved = float_total_approved.toFixed(2);
             $('#total-approved').text(float_total_approved)

@@ -15,8 +15,14 @@ from ..decorators.decorators import login_required
 @bp.route('/questions')
 @login_required(role=["Admin", "Faculty"])
 def questions():
-    mandatory_questions = Question.query.filter_by(State = 1, Required = 1).all()
-    optional_questions = Question.query.filter_by(State = 1, Required = 0).all()
+    mandatory_questions = None
+    optional_questions = None
+    if current_user.Role.RoleName == "Admin":
+        mandatory_questions = Question.query.filter_by(State = 1, Required = 1).all()
+        optional_questions = Question.query.filter_by(State = 1, Required = 0).all()
+    else:
+        mandatory_questions = Question.query.filter_by(State = 1, Required = 1, CreatorId=current_user.User[0].UserId).all()
+        optional_questions = Question.query.filter_by(State = 1, Required = 0, CreatorId=current_user.User[0].UserId).all()
 
     return render_template('evaluation/questions.html', mandatory_questions=mandatory_questions, optional_questions=optional_questions)
 
@@ -58,10 +64,11 @@ def addQuestions():
             return render_template("evaluation/add_question.html")
         
         try:
-            question_to_add = Question(Text=question_text, State=1, Type=question_type, Required=required, Responses=str(responses))
+            question_to_add = Question(Text=question_text, State=1, Type=question_type, Required=required, Responses=str(responses), CreatorId=current_user.User[0].UserId)
             db.session.add(question_to_add)
             db.session.commit()
             flash('Your question has been successfully added to the pool.', category='success')
+            return redirect(url_for('evaluation.questions'))
         except:
             flash('An error occured whilst adding your question to the pool. Please try again later.', category='error')
     return render_template("evaluation/add_question.html")
@@ -73,23 +80,12 @@ def evaluations():
     active_evaluations = None
     inactive_evaluations = None
 
-    if current_user.Role.RoleId == 1:
+    if current_user.Role.RoleName == "Admin":
         active_evaluations = Evaluation.query.filter_by(State = 1).all()
         inactive_evaluations = Evaluation.query.filter_by(State = 0).all()
     else:
-        list_activities = [r.Project.Activity for r in Registration.query.filter_by(UserId=current_user.User[0].UserId).all()]
-        # Initialize an empty list to store the ActivityIds
-        list_activity_ids = []
-        
-        # Iterate through the outer list
-        for sublist in list_activities:
-            # Iterate through the inner list
-            for activity in sublist:
-                list_activity_ids.append(activity.ActivityId)  
-        
-        active_evaluations = Evaluation.query.filter(Evaluation.ActivityId.in_(list_activity_ids)).filter_by(State = 1).all()
-        inactive_evaluations = Evaluation.query.filter(Evaluation.ActivityId.in_(list_activity_ids)).filter_by(State = 0).all()
-
+        active_evaluations = Evaluation.query.filter_by(State = 1, CreatorId=current_user.User[0].UserId).all()
+        inactive_evaluations = Evaluation.query.filter_by(State = 0, CreatorId=current_user.User[0].UserId).all()
     return render_template("evaluation/evaluations.html", active_evaluations=active_evaluations, inactive_evaluations=inactive_evaluations)
 
 
@@ -108,10 +104,11 @@ def addEvaluation():
             flash('Please complete all required fields.', category='error')
 
         try:
-            evaluation_to_add = Evaluation(EvaluationName=evaluation_name, ActivityId=evaluation_activity, State=1, Questions=str(evaluation_questions))
+            evaluation_to_add = Evaluation(EvaluationName=evaluation_name, ActivityId=evaluation_activity, State=1, Questions=str(evaluation_questions), CreatorId=current_user.User[0].UserId)
             db.session.add(evaluation_to_add)
             db.session.commit()
             flash('Evaluation is successfully created.', category='success')
+            return redirect(url_for('evaluation.evaluations'))
         except:
             flash('An error occured whilst creating your evaluation. Please try again later.', category='error')
 

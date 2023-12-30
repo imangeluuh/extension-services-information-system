@@ -6,7 +6,9 @@
 	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
 	<!--Responsive Extension Datatables CSS-->
 	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-{% endblock %}
+    <!-- Multiple Select -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/multiple-select.css')}}">
+    {% endblock %}
 
 {% block content %}
 <!--Container-->
@@ -36,17 +38,19 @@
                 <div class="row d-flex align-items-center mb-3">
                     <label class="col-auto col-md-3">Evaluation name</label>
                     <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">* required</span>
-                    <input name="name" class="col-auto col-md-6 p-2 text-secondary bg-secondary-subtle rounded border border-secondary-subtle" placeholder="Evaluation name" required>
+                    <input name="name" class="col-auto col-md-6 p-2 text-secondary rounded border border-secondary-subtle" placeholder="Evaluation name" required>
                 </div>
                 <div class="row d-flex align-items-center mb-3">
                     <label class="col-auto col-md-3">Activity</label>
                     <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">* required</span>
-                    <select class="col-auto col-md-6 p-2 text-secondary bg-secondary-subtle rounded border border-secondary-subtle" name="activity" required>
-                        <option selected disabled>Please select an activity...</option>
-                        {% for activity in activities %}
-                        <option value="{{activity.ActivityId}}">{{ activity.ActivityName }}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="form-group col-auto col-md-6 p-0 ">
+                        <select id="activity" name="activity" class="p-2 text-secondary bg-secondary-subtle rounded border border-secondary-subtle" required hidden>
+                            <option value="" selected disabled>Please select an activity...</option>
+                            {% for activity in activities %}
+                            <option value="{{activity.ActivityId}}">{{ activity.ActivityName }} - <span id="activity-project">{{activity.Project.Title}}</span></option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
                 <br>
                 <div class="row mb-3">
@@ -60,7 +64,7 @@
                 <div class="row mb-3">
                     <label class="col-auto col-md-3"></label>
                     <div class="col-auto col-md-6">
-                        <input name="questions" type="checkbox" value="{{ question.QuestionId }}"> {{ question.Text }} ({% if question.Type == 1 %}Text{% else %}MCQ{% endif %}{% if not question.Required %} - Optional{% endif %})</input>
+                        <input name="questions" type="checkbox" value="{{ question.QuestionId }}"> {{ question.Text }} ({% if question.Type == 1 %}MCQ{% else %}Text{% endif %}{% if not question.Required %} - Optional{% endif %})</input>
                     </div>
                 </div>
                 {% endfor %}
@@ -82,9 +86,11 @@
 {% endblock %}
 
 {% block script %}
+<script src="{{ url_for('static', filename='js/multiple-select.js')}}"></script>
 <script>
-    $(document).ready(function() {
-        $('select').select2({placeholder: 'Please select an activity...', allowClear: true});
-    });
+
+    new MultipleSelect('#activity', {
+        placeholder: 'Please select an activity...'
+    })
 </script>
 {% endblock %}

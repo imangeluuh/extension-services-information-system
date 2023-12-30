@@ -34,7 +34,10 @@
                         <th data-priority="1" class="text-start">Name</th>
                         <th data-priority="2" class="text-start">Activity</th>
                         <th data-priority="3" class="text-start">Created</th>
-                        <th data-priority="4"></th>
+                        {% if current_user.Role.RoleName == 'Admin'%}
+                        <th data-priority="4" class="text-start">Creator</th>
+                        {% endif %}
+                        <th data-priority="5"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,9 +46,12 @@
                         <td>{{ evaluation.EvaluationName }}</td>
                         <td>{{ evaluation.Activity.ActivityName }}</td>
                         <td>{{ evaluation.CreatedAt.strftime("%d/%m/%Y %H:%M") }}</td>
+                        {% if current_user.Role.RoleName == 'Admin'%}
+                        <td>{{ evaluation.Creator.FirstName ~ ' ' ~ evaluation.Creator.LastName }}</td>
+                        {% endif %}
                         <td>
-                            <a href="{{ url_for('evaluation.closeEvaluation', id=evaluation.EvaluationId)}}" class="text-white bg-danger rounded-2 p-2 text-center mt-5r">
-                                <iconify-icon icon="subway:error" class="mr-1"></iconify-icon> Close
+                            <a href="{{ url_for('evaluation.closeEvaluation', id=evaluation.EvaluationId)}}" class="btn btn-danger rounded-2 text-center d-flex align-items-center" style="width: fit-content;">
+                                <iconify-icon icon="subway:error" class="me-2"></iconify-icon> Close
                             </a>
                         </td>
                     </tr>
@@ -67,7 +73,10 @@
                         <th data-priority="1" class="text-start">Name</th>
                         <th data-priority="2" class="text-start">Activity</th>
                         <th data-priority="3" class="text-start">Created</th>
-                        <th data-priority="4"></th>
+                        {% if current_user.Role.RoleName == 'Admin'%}
+                        <th data-priority="4" class="text-start">Creator</th>
+                        {% endif %}
+                        <th data-priority="5"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -76,9 +85,12 @@
                         <td>{{ evaluation.EvaluationName }}</td>
                         <td>{{ evaluation.Activity.ActivityName }}</td>
                         <td>{{ evaluation.CreatedAt.strftime("%d/%m/%Y %H:%M") }}</td>
+                        {% if current_user.Role.RoleName == 'Admin'%}
+                        <td>{{ evaluation.Creator.FirstName ~ ' ' ~ evaluation.Creator.LastName }}</td>
+                        {% endif %}
                         <td>
-                            <a href="{{url_for('evaluation.results', id=evaluation.EvaluationId)}}" class="d-flex align-items-center bg-primary rounded-2 p-2 text-center" >
-                                <iconify-icon icon="teenyicons:pie-chart-solid" class="mr-1"></iconify-icon> View Results</a>
+                            <a href="{{url_for('evaluation.results', id=evaluation.EvaluationId)}}" class="btn btn-primary d-flex align-items-center rounded-2" style="width: fit-content;" >
+                                <iconify-icon icon="teenyicons:pie-chart-solid" class="me-2"></iconify-icon> View Results</a>
                             </td>
                     </tr>
                     {% endfor %}
