@@ -67,7 +67,7 @@
                                 {{activity.Date.strftime('%b %d')}}
                             </div>
                             <div class="col-12 col-md-7 d-flex flex-column justify-content-center ">
-                                <a href="#" class="fw-semibold fs-2 text-decoration-underline  mb-1" style="color: #D99923">{{activity.ActivityName}}</a>
+                                <a href="{{url_for('programs.activity', id=activity.ActivityId)}}" class="fw-semibold fs-2 text-decoration-underline  mb-1" style="color: #D99923">{{activity.ActivityName}}</a>
                                 <span> {{ activity.StartTime.strftime('%I:%M %p') }} - {{ activity.EndTime.strftime('%I:%M %p') }}</span>
                             </div>
                         {% endfor %}
