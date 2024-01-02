@@ -41,7 +41,8 @@ body {
 #multistepsform input.input,
 #multistepsform select,
 #multistepsform textarea,
-#multiple-select-container-1 button {
+#multiple-select-container-1 button,
+#multiple-select-container-2 button {
   padding: 15px;
   border: 1px solid #ccc;
   border-radius: 3px;
@@ -160,7 +161,8 @@ body {
 
 input[type="file"],
 input[type="file"]::-webkit-file-upload-button,
-#multiple-select-container-1 button {
+#multiple-select-container-1 button,
+#multiple-select-container-2 button {
     height:51.1px!important;
 }
 
@@ -359,6 +361,23 @@ input[type="file"]::-webkit-file-upload-button,
                                     {% endfor %}
                                 </ul>
                             </div>
+                            <div class="col-12 col-md-6">
+                                <label for="approved_budget" class="text-start">Budget Amount</label>
+                                <input type="number" name="approved_budget" class="input" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="fund_type" class="text-start">Fund Type</label>
+                                <select name="fund_type" id="fund_type" class="input" required>
+                                    <option value="Internal">Internal</option>
+                                    <option value="External">External</option>
+                                </select>
+                            </div>
+                            <div id="add-item-col" class="col-12 d-flex justify-content-start">
+                                <button type="button"  id="add-item-button" class="bg-transparent text-primary border-0" style="width: fit-content;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon p-0 me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                                    Add budget
+                                </button>
+                            </div>
                             <div class="col-auto col-md-6 text-start d-flex flex-column">
                                 <!-- image -->
                                 {{ form.project.image.label }}
@@ -430,14 +449,12 @@ input[type="file"]::-webkit-file-upload-button,
                     </div>
                     <div class="col-12 col-md-6 text-start d-flex flex-column">
                         <!-- speaker-->
-                        <div class="form-group">
-                            {{ form.activity.speaker.label}}
-                            <select id="{{form.activity.speaker.id}}" name="{{form.activity.speaker.name}}" class="input" multiple="" hidden>
-                                {% for option in form.activity.speaker %}
-                                    {{ option }}
-                                {% endfor %}
-                            </select>
-                        </div>
+                        {{ form.activity.speaker.label}}
+                        <select id="{{form.activity.speaker.id}}" name="{{form.activity.speaker.name}}" class="input" multiple="" hidden>
+                            {% for option in form.activity.speaker %}
+                                {{ option }}
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="col-12 col-md-6  text-start d-flex flex-column">
                         <!-- lcoation -->
@@ -485,6 +502,28 @@ input[type="file"]::-webkit-file-upload-button,
 <!-- Multiple Select -->
 <script src="{{ url_for('static', filename='js/multiple-select.js')}}"></script>
 
+
+<script id="item-template" type="text/template">
+    <div class="col-12 budget">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <label for="approved_budget" >Budget Amount</label>
+                <input type="number" name="approved_budget" class="input" required>
+            </div>
+            <div class="col-12 col-md-5">
+                <label for="fund_type" >Fund Type</label>
+                <select name="fund_type" id="fund_type" class="input" required>
+                    <option value="Internal">Internal</option>
+                    <option value="External">External</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-1 d-flex align-items-end justify-content-center">
+                <button type="button" class="btn bg-transparent border-0 text-danger remove-item p-0 fs-1 pb-3"><iconify-icon icon="ion:trash-outline"></iconify-icon></button>
+            </div>
+        </div>
+    </div>
+</script>
+
 <script>
     new MultipleSelect('#project-project_team', {
         placeholder: 'Select Faculty'
@@ -498,6 +537,21 @@ input[type="file"]::-webkit-file-upload-button,
 </script>
 
 <script>
+    // Adding more budget
+    $(document).ready(function() {
+    var itemCount = 1; // Keep track of the number of forms
+
+    $('#add-item-button').click(function() {
+        itemCount++;
+        var newForm = $('#item-template').html().replace(/__prefix__/g, itemCount); // Replace placeholders
+        $('#add-item-col').before(newForm);
+    });
+    // Delete the added template
+    $('body').on('click', '.remove-item', function() {
+        $(this).closest('.budget').remove();
+    });
+    });
+
 var current_fs, next_fs, previous_fs;
 var left, opacity, scale;
 var animating;

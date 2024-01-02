@@ -116,6 +116,26 @@ def insertExtensionProgram():
             if os.path.exists(imagepath):
                 os.remove(imagepath)
 
+        # Insert project
+        str_image_url = None
+        str_image_file_id = None
+        if form.project.image.data is not None:
+            # Get the input image path
+            imagepath = os.path.join(
+                    current_app.config["UPLOAD_FOLDER"], secure_filename(form.project.image.data.filename)
+                )
+            # Save image
+            status = saveImage(form.project.image.data, imagepath)
+            if status.error is not None:
+                flash("Project image upload failed", category="error")
+                return redirect(url_for('programs.addProgram'))
+            else:
+                str_image_url = status.url
+                str_image_file_id = status.file_id
+            # Delete file from local storage
+            if os.path.exists(imagepath):
+                os.remove(imagepath)
+
         str_proposal_url = None
         str_proposal_file_id = None
 
@@ -135,8 +155,7 @@ def insertExtensionProgram():
         if os.path.exists(imagepath):
             os.remove(imagepath)
 
-
-        lead_proponent = current_user.User[0]
+        lead_proponent = current_user.User[0]            
         project_team = getProjectTeamInput(form.project.project_team.data, form.project.project_team.choices)
 
         project_to_add = Project(Title = form.project.title.data,
@@ -148,9 +167,6 @@ def insertExtensionProgram():
                                 ProjectType = form.project.project_type.data,
                                 StartDate = form.project.start_date.data,
                                 EndDate = form.project.end_date.data,
-                                ProposedBudget = form.project.proposed_budget.data,
-                                ApprovedBudget = form.project.approved_budget.data,
-                                FundType = form.project.fund_type.data,
                                 ImpactStatement = form.project.impact_statement.data,
                                 Objectives = form.project.objectives.data,
                                 Status = form.project.status.data,
@@ -160,8 +176,22 @@ def insertExtensionProgram():
                                 ProjectProposalFileId = str_proposal_file_id,
                                 ExtensionProgramId = int_program_id)
         db.session.add(project_to_add)
+        
+        # Get the id of the recently added project
         db.session.flush()
         int_project_id = project_to_add.ProjectId
+
+        # Add budget of the project
+        approved_budgets = request.form.getlist('approved_budget')
+        fund_types = request.form.getlist('fund_type')
+        budget_data = zip(approved_budgets, fund_types)
+        for approved_budget, fund_type in budget_data:
+            budget_to_add = Budget(FundType=fund_type,
+                                    Amount=approved_budget,
+                                    ProjectId=int_project_id,
+                                    CollaboratorId=form.collaborator.data if fund_type=='External' else None)
+            db.session.add(budget_to_add)
+
         # Insert Activity
         str_image_url = None
         str_image_file_id = None
@@ -260,7 +290,7 @@ def deleteExtensionProgram(id):
         db.session.delete(extension_program)
         db.session.commit()
         flash('Extension program is successfully deleted.', category='success')
-    except:
+    except Exception as e:
         flash('There was an issue deleting the extension program.', category='error')
 
     return redirect(url_for('programs.programs'))
