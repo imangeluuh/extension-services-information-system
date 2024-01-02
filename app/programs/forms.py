@@ -4,7 +4,7 @@ from flask_ckeditor import CKEditorField
 from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField
 from wtforms.validators import DataRequired, Optional
 from flask_wtf.file import FileField, FileAllowed
-from ..models import Agenda, Program, Collaborator, Activity
+from ..models import Agenda, Program, Collaborator, Activity, Location
 import requests
 
 faculty_names = []
@@ -111,11 +111,17 @@ class ActivityForm(FlaskForm):
     date = DateField("Date", validators=[DataRequired()])
     start_time = TimeField("Start Time", format='%H:%M', validators=[DataRequired()])
     end_time = TimeField('End Time', format='%H:%M', validators=[DataRequired()])
-    location = StringField("Location", validators=[DataRequired()])
+    location = SelectField('Location', validators=[DataRequired()])
     activity_description =  CKEditorField("Description", validators=[DataRequired()])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
     speaker = SelectMultipleField('Speaker', choices=faculty_names, validators=[DataRequired()])
     save = SubmitField("Save Activity") 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        with current_app.app_context():
+            self.location.choices = [(location.LocationId, location.LocationName) for location in Location.query.all()]
 
 class CombinedForm(FlaskForm):
     extension_program = FormField(ProgramForm)

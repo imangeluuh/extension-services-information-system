@@ -219,7 +219,7 @@ def insertExtensionProgram():
                                         StartTime=form.activity.start_time.data,
                                         EndTime=form.activity.end_time.data,
                                         Description=form.activity.activity_description.data,
-                                        Location=form.activity.location.data,
+                                        LocationId=form.activity.location.data,
                                         Speaker=speakers,
                                         ProjectId= int_project_id,
                                         ImageUrl=str_image_url,
@@ -291,7 +291,7 @@ def deleteExtensionProgram(id):
         db.session.commit()
         flash('Extension program is successfully deleted.', category='success')
     except Exception as e:
-        flash('There was an issue deleting the extension program.', category='error')
+        flash(f'There was an issue deleting the extension program. {e}', category='error')
 
     return redirect(url_for('programs.programs'))
 
@@ -580,7 +580,7 @@ def insertActivity(id):
                                         StartTime=form.start_time.data,
                                         EndTime=form.end_time.data,
                                         Description=form.activity_description.data,
-                                        Location=form.location.data,
+                                        LocationId=form.location.data,
                                         Speaker=speakers,
                                         ProjectId=id,
                                         ImageUrl=str_image_url,
@@ -635,7 +635,7 @@ def updateActivity(id):
         activity.StartTime=form.start_time.data
         activity.EndTime=form.end_time.data
         activity.Description=form.activity_description.data
-        activity.Location=form.location.data
+        activity.LocationId=form.location.data
 
         db.session.commit()
         flash('Activity is successfully updated.', category='success')

@@ -26,7 +26,7 @@
             <span class="fs-5">
                 {{ event.StartTime.strftime('%I:%M %p') }} to {{ event.EndTime.strftime('%I:%M %p') }}
             </span>
-            <p>{{ event.Location }}</p>
+            <p>{{ event.Location.LocationName }}</p>
             <small class="text-secondary text-truncate">{{ event.Project.Title }}</small>
         </div>
     </div>

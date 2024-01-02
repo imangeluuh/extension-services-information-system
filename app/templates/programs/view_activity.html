@@ -1,4 +1,4 @@
-<div class="modal modal-blur" id="view-activity" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal modal-blur" id="view-activity-{{activity.ActivityId}}" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -29,7 +29,7 @@
                             <span class="datagrid-content">{{activity.StartTime.strftime('%I:%M %p') if activity.StartTime}} - {{activity.EndTime.strftime('%I:%M %p') if activity.EndTime}}</span>
                         </div>
                     </div>
-                    <div class="col-auto col-md-6">
+                    <div class="col-auto col-md-8">
                         <div class="mb-3 d-flex flex-column">
                             <!-- speaker-->
                             <span class="datagrid-title">Speakers</span>
@@ -42,11 +42,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-auto col-md-6">
+                    <div class="col-auto col-md-4">
                         <div class="mb-3 d-flex flex-column">
                             <!-- location -->
                             <span class="datagrid-title">Location</span>
-                            <span class="datagrid-content">{{ activity.Location }}</span>
+                            <span class="datagrid-content">{{ activity.Location.LocationName }}</span>
                         </div>
                     </div>
                     <div class="col-12">

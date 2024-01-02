@@ -48,7 +48,7 @@
                             <!-- speaker-->
                             <div class="form-group">
                                 {{ activity_form.speaker.label(class="form-label")}}
-                                <select id="{{activity_form.speaker.id}}1" name="{{activity_form.speaker.name}}" multiple="" hidden>
+                                <select id="{{activity_form.speaker.id~activity.ActivityId}}" name="{{activity_form.speaker.name}}" multiple="" hidden>
                                     {% for option in activity_form.speaker.choices %}
                                     <option value="{{ option[0] }}" {{'selected' if option[0] in my_list}}>{{ option[1] }}</option>
                                     {% endfor %}
@@ -59,8 +59,12 @@
                     <div class="col-auto col-md-6">
                         <div class="mb-3">
                             <!-- location -->
-                            {{ activity_form.location.label(class="form-label") }}
-                            {{ activity_form.location(class="form-control", value=activity.Location)}}
+                            {{activity_form.location.label(class="form-label")}}
+                            <select id="{{activity_form.location.id}}1" name="{{activity_form.location.name}}" class="form-select">
+                                {% for option in activity_form.location.choices %}
+                                <option value="{{ option[0] }}" {{'selected' if option[0] == activity.Location.LocationId}}>{{ option[1] }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="col-12">

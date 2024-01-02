@@ -226,18 +226,28 @@ class Activity(db.Model):
     ActivityId = db.Column(db.Integer, primary_key=True)
     ActivityName = db.Column(db.String(255), nullable=False)
     Date = db.Column(db.Date, index=True, nullable=False)
-    StartTime = db.Column(db.Time)
-    EndTime = db.Column(db.Time)
+    StartTime = db.Column(db.Time, nullable=False)
+    EndTime = db.Column(db.Time, nullable=False)
     Description = db.Column(db.Text, nullable=False)
-    Location = db.Column(db.String(255))
     ImageUrl = db.Column(db.Text)
     ImageFileId = db.Column(db.Text)
-    ProjectId = db.Column(db.Integer, db.ForeignKey('Project.ProjectId', ondelete='CASCADE'), nullable=False)
     Speaker = db.Column(db.JSON, nullable=False)
+    LocationId = db.Column(db.Integer, db.ForeignKey('Location.LocationId'))
+    ProjectId = db.Column(db.Integer, db.ForeignKey('Project.ProjectId', ondelete='CASCADE'), nullable=False)
     Project = db.relationship('Project', back_populates='Activity')
+    Location = db.relationship('Location', back_populates='Activity', passive_deletes='all')
     Evaluation = db.relationship("Evaluation", back_populates='Activity', cascade='all, delete-orphan', lazy=True)
     Attendance = db.relationship('Attendance', back_populates='Activity', cascade='all, delete-orphan')
     Item = db.relationship('Item', back_populates='Activity', cascade='all, delete-orphan')
+
+class Location(db.Model):
+    __tablename__ = 'Location'
+
+    LocationId = db.Column(db.Integer, primary_key=True)
+    LocationName = db.Column(db.String(55), nullable=False)
+    Longitude = db.Column(db.String(55), nullable=False)
+    Latitude = db.Column(db.String(55), nullable=False)
+    Activity = db.relationship('Activity', back_populates='Location')
 
 class Speaker(db.Model):
     __tablename__ = 'Speaker'
