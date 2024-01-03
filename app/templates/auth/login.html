@@ -30,15 +30,15 @@
                 </a>
                 {% else %}
                 <header><strong>PUPQC-ESIS</strong> {{ current_url_path.split('/')[2] | capitalize }} Module</header>
-                <span class="bg-danger-subtle p-3 rounded-2 mb-2" id="manyAttempt" style="display: none; color: #8B0000;">Many incorrect attempt... Please wait for <span id="countdownDisplay" style="font-size: 14px;"></span>before trying again.</span>
+                <span class="bg-danger-subtle p-3 rounded-2 mb-2" id="manyAttempt" style="display: none; color: #8B0000;">Too many incorrect attempts... Please wait for <span id="countdownDisplay" style="font-size: 14px;"></span>before trying again.</span>
                 <form id="loginForm" method="POST">
                     {{ form.hidden_tag() }}
                     <div class="input-field">
-                        {{ form.email(id="email", class="input focus:ring-0 focus:ring-offset-0 bg-transparent p-0") }}
+                        {{ form.email(id="email", class="input bg-transparent p-0") }}
                         {{ form.email.label(class="label") }}
                     </div> 
                     <div class="input-field">
-                        {{ form.password(id="password", class="input focus:ring-0 focus:ring-offset-0 bg-transparent p-0") }}
+                        {{ form.password(id="password", class="input bg-transparent p-0") }}
                         {{ form.password.label(class="label") }}
                     </div> 
                     <div class="input-field">
@@ -48,11 +48,18 @@
                 <div class="my-3 d-flex justify-content-center">
                     <a href="{{ url_for('auth.resetPasswordRequest') }}" class="text-black ">Forgot password?</a>
                 </div>
-                {% if current_url_path != url_for('auth.facultyLogin') %}
-                    <div class="signin pb-3">
-                        <span>Don't have an account yet? <a href="{{ url_for('auth.beneficiarySignup') if current_url_path == url_for('auth.beneficiaryLogin') else url_for('auth.studentSignup') }}">Register here</a></span>
-                    </div>
-                {% endif %}
+                <div class="signin pb-3">
+                    <span>Don't have an account yet? <a href="
+                        {% if current_url_path == url_for('auth.beneficiaryLogin') %}
+                            {{ url_for('auth.beneficiarySignup') }}
+                        {% elif current_url_path == url_for('auth.studentLogin') %}
+                            {{ url_for('auth.studentSignup') }}
+                        {% else %}
+                            {{ url_for('auth.facultySignup') }}
+                        {% endif %}
+                        ">Register here</a>
+                    </span>
+                </div>
                 {% endif %}
             </div>  
         </div>

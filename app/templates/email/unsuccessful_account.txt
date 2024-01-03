@@ -1,0 +1,20 @@
+Hi,
+
+We're sorry to inform you that there was a problem creating/approving your account.
+
+Here are some possible reasons why this might have happened:
+
+Your email address is already associated with an existing account.
+There was a problem with the email you provided.
+There was a technical issue on our end.
+
+Please try the following:
+
+If you already have an account, please try logging in.
+If you don't have an account, please make sure you have an existing account in PUPQC Faculty Information System.
+If you're still having trouble, please contact us for assistance.
+
+We apologize for any inconvenience this may have caused.
+
+Sincerely,
+The PUPQC-ESIS Team

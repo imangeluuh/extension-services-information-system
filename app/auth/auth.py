@@ -1,12 +1,12 @@
 from app.auth import bp
-from flask import render_template, url_for, request, redirect, flash, session
+from flask import render_template, url_for, request, redirect, flash, session, current_app
 from .forms import BeneficiaryRegisterForm, StudentRegisterForm, LoginForm, ResetPasswordRequestForm, ResetPasswordForm
 from ..models import Login, User, Beneficiary, Student
 from app import db
 from flask_login import login_user, logout_user, current_user
 from datetime import timedelta
-import uuid
-from .email import sendPasswordResetEmail
+import uuid, requests
+from .email import sendPasswordResetEmail, requestAccount
 
 lockout_duration = timedelta(minutes=1)
 headers = {"Content-Type": "application/json"}
@@ -124,6 +124,14 @@ def facultyLogin():
             for err_msg in form.errors.values():
                 flash(err_msg, category='error')
     return render_template('auth/login.html', form=form, current_url_path=current_url_path)
+
+@bp.route('/faculty/signup', methods=['GET', 'POST'])
+def facultySignup():
+    if request.method == "POST":
+        email = request.form.get('email')
+        requestAccount(email)
+        flash('We have received your account request.  We\'re reviewing your account request and you\'ll hear back from us soon via email. Please check your inbox (including spam folder) for further instructions.', category='info')
+    return render_template('auth/faculty_signup.html')
         
 @bp.route('/logout')
 def logout():
