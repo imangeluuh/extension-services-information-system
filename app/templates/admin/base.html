@@ -20,13 +20,15 @@
         
         {% endblock %}
         <style>
-            ul.nav-sidebar .nav-link.active {
+            /* ul.nav-sidebar .nav-link.active {
                 background-color: #800000!important;
             }
 
-            ul.nav-treeview .nav-link.active {
+            a.dropdown-item.active,
+            a.dropdown-item:active {
                 background-color: #EAECED!important;
-            }
+                border-radius: 2px;
+            } */
         </style>
     </head>
     <body class="sidebar-mini layout-fixed layout-navbar-fixed bg-secondary-subtle">
@@ -69,18 +71,18 @@
             var url = window.location;
             
             // for sidebar menu entirely but not cover treeview
-            $('ul.nav-sidebar a').filter(function() {
-                if (this.href) {
-                    return this.href == url || url.href.indexOf(this.href) == 0;
-                }
-            }).addClass('active');
+            // $('ul.nav-sidebar a').filter(function() {
+            //     if (this.href) {
+            //         return this.href == url || url.href.indexOf(this.href) == 0;
+            //     }
+            // }).addClass('active');
             
-            // for the treeview
-            $('ul.nav-treeview a').filter(function() {
-                if (this.href) {
-                    return this.href == url || url.href.indexOf(this.href) == 0;
-                }
-            }).parentsUntil(".nav-sidebar > .nav-treeview").addClass('menu-open').prev('a').addClass('active');
+            // // for the treeview
+            // $('li.dropdown .dropdown-menu a.dropdown-item').filter(function() {
+            //     if (this.href) {
+            //         return this.href == url || url.href.indexOf(this.href) == 0;
+            //     }
+            // }).parentsUntil(".nav-sidebar > .nav-treeview").prev('a').addClass('active');
         </script>
     </body>
 </html>

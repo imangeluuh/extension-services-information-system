@@ -1,3 +1,5 @@
+
+
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-light-primary elevation-4">
     <!-- Brand Logo -->
@@ -88,37 +90,45 @@
         </ul>
         {% if current_user.Role.RoleName == 'Admin' %}
         <ul class="nav nav-pills nav-sidebar flex-column border-top border-dark " data-widget="treeview" role="menu" data-accordion="false">
-            <li class="nav-item mt-2">
-                <a href="#" class="nav-link">
-                    <svg class="nav-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                        <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-                    </svg>
-                    <p>
-                        Users
-                        <i class="right fas fa-angle-left"></i>
-                    </p>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <svg class="nav-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                  <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
+              </svg>
+              <p>
+                  Users
+                  <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ url_for('admin.faculty') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Faculty</p>
                 </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a href="{{ url_for('admin.faculty') }}" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>Faculty</p>
-                        </a>
-                    </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('admin.beneficiaries') }}" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Beneficiaries</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('admin.students') }}" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Students</p>
-                    </a>
-                </li>
-                </ul>
-            </li>
+              </li>
+              <li class="nav-item">
+                <a href="{{ url_for('admin.beneficiaries') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Beneficiaries</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ url_for('admin.beneficiaries') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Beneficiaries</p>
+                  </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url_for('admin.collaborators') }}" class="nav-link">
+              <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9L8.5 5.5L12 2l3.5 3.5zM1 20v-4q0-.85.588-1.425T3 14h3.275q.5 0 .95.25t.725.675q.725.975 1.788 1.525T12 17q1.225 0 2.288-.55t1.762-1.525q.325-.425.763-.675t.912-.25H21q.85 0 1.425.575T23 16v4h-7v-2.275q-.875.625-1.888.95T12 19q-1.075 0-2.1-.337T8 17.7V20zm3-7q-1.25 0-2.125-.875T1 10q0-1.275.875-2.137T4 7q1.275 0 2.138.863T7 10q0 1.25-.862 2.125T4 13m16 0q-1.25 0-2.125-.875T17 10q0-1.275.875-2.137T20 7q1.275 0 2.138.863T23 10q0 1.25-.862 2.125T20 13"/></svg>
+              <p>
+                Collaborators
+              </p>
+            </a>
+          </li>
         </ul>
         {% endif %}
       </nav>

@@ -1,0 +1,66 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>PUPQC-ESIS Collaborators</title>
+    <!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
+{% endblock %}
+
+{% block content %}
+        <!--Container-->
+        <div class="container w-100 mx-auto p-3">
+            <!--Title-->
+            <h1 class="d-flex align-items-center fw-semibold px-2 py-4 fs-1">
+                Collaborators
+            </h1>
+            <!--Card-->
+            <div class="p-3 mt-3 rounded shadow bg-white">
+                <table id="collaborators" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th class="text-start">ID</th>
+                            <th class="text-start">Organization</th>
+                            <th class="text-start">Location</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for collaborator in collaborators %}
+                        <tr>
+                            <td>{{ collaborator.CollaboratorId }}</td>
+                            <td>{{ collaborator.Organization }}</td>
+                            <td>{{ collaborator.Location }}</td>
+                            <td class="flex"><a href="#" class="btn btn-success rounded">View</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!--/Card-->
+        </div>
+	    <!--/container-->
+{% endblock %}
+
+{% block script %}
+	<!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+        var table = $('#collaborators').DataTable({
+                responsive: true,
+                "columns": [
+                    null,
+                    null,
+                    null,
+                    { "width": "10%" },
+                ]
+            })
+            .responsive.recalc()
+        });
+    </script>
+{% endblock %}
