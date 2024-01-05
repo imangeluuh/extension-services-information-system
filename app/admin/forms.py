@@ -28,3 +28,8 @@ class ProjectForm(FlaskForm):
     project_scope = TextAreaField("Scope of Project", validators=[DataRequired()])
     extension_program = HiddenField()
     submit = SubmitField("Save Project") 
+
+class CollaboratorForm(FlaskForm):
+    organization = StringField("Organization", validators=[DataRequired()])
+    location = StringField("Location", validators=[DataRequired()])
+    signed_moa = FileField("Signed MOU/MOA", validators=[FileAllowed(['jpg', 'png', 'jpeg', 'pdf', 'docs', 'docx'])])

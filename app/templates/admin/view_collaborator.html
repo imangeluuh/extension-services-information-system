@@ -1,0 +1,92 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>{{ collaborator.Organization }}'s Information</title>
+    <!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
+{% endblock %}
+
+{% block content %}
+        <!--Container-->
+        <div class="container w-100 mx-auto py-5">
+            <!--Card-->
+            <div class="rounded shadow bg-white">
+                <h1 class="d-flex align-items-center fw-semibold px-4 py-4 fs-1">
+                    {{ collaborator.Organization }}'s Information
+                </h1>
+                <!-- Tabs -->
+                <div class="card mx-3 shadow-none  ">
+                    <div class="card-body">
+                        <div class="row mb-5">
+                            <div class="col-12 col-sm-2">
+                                <div class="mb-3 d-flex flex-column">
+                                    <span class="datagrid-title">Collaborator ID</span>
+                                    <span class="datagrid-content">{{ collaborator.CollaboratorId }}</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-3">
+                                <div class="mb-3 d-flex flex-column">
+                                    <span class="datagrid-title">Organization</span>
+                                    <span class="datagrid-content">{{ collaborator.Organization }}</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                <div class="mb-3 d-flex flex-column">
+                                    <span class="datagrid-title">Location</span>
+                                    <span class="datagrid-content">{{ collaborator.Location }}</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-3">
+                                <a href="{{collaborator.SignedMOAUrl}}" target="_blank" class="btn btn-info">View Signed MOU/MOA</a>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <span class="fs-2 fw-semibold">Projects</span>
+                        </div>
+                        <table id="projects-table" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                            <thead>
+                                <tr>
+                                    <th data-priority="1" class="text-start">Project Name</th>
+                                    <th data-priority="2" class="text-start">Extension Program</th>
+                                    <th data-priority="3" class="text-start">Lead Proponent</th>
+                                    <th data-priority="4" class="text-start">Status</th>
+                                    <th data-priority="5" class="text-start">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in collaborator.Projects %}
+                                <tr>
+                                    <td>{{ project.Title }}</td>
+                                    <td>{{ project.ExtensionProgram.Name }}</td>
+                                    <td>{{ project.LeadProponent.FirstName ~ ' ' ~ project.LeadProponent.LastName }}</td>
+                                    <td>{{ project.Status }}</td>
+                                    <td><a href="{{ url_for('programs.viewProject', id=project.ProjectId) }}" class="btn btn-success">View</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!--/Card-->
+        </div>
+	    <!--/container-->
+{% endblock %}
+
+{% block script %}
+    <!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script>
+        $(document).ready(function() {
+        var table = $('#projects-table').DataTable({
+                responsive: true
+            })
+            .columns.adjust()
+            .responsive.recalc()
+        });
+    </script>
+{% endblock %}
