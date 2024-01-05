@@ -14,9 +14,9 @@ from ..Api.resources import ExtensionProgramListApi
 from sqlalchemy import func
 from fillpdf import fillpdfs
 
-url = 'https://pupqcfis-com.onrender.com/api/all/Faculty_Profile'
+url = current_app.config['API_URL']
 
-api_key = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiIzM2Y0ZWI4NWNjNDQ0MTQzOWFkMzMwYWUzMzJiNmYwYyJ9.5pjwXdaIIZf6Jm9zb26YueCPQhj6Tc18bbZ0vnX4S9M'
+api_key = current_app.config['API_KEY']
 
 # Set up headers with the API key in the 'API Key' authorization header
 headers = {
@@ -291,6 +291,7 @@ def deleteExtensionProgram(id):
         db.session.commit()
         flash('Extension program is successfully deleted.', category='success')
     except Exception as e:
+        print(e)
         flash(f'There was an issue deleting the extension program. {e}', category='error')
 
     return redirect(url_for('programs.programs'))
