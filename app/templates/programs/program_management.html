@@ -37,7 +37,7 @@
                     <div class="col-md-6 col-lg-4">
                         <div class="card">
                             <!-- Photo -->
-                            <img src="{{ program['ImageUrl'] if program['ImageUrl'] }}" height="200px" class="card-img-top object-fit-cover"></img>
+                            <img src="{{ program.ImageUrl if program.ImageUrl }}" height="200px" class="card-img-top object-fit-cover"></img>
                             <div class="card-body">
                                 <h3 class="card-title">{{ program.Name }}</h3><br>
                                 <div class="tags-list">
@@ -48,10 +48,10 @@
                             <!-- Card footer -->
                             <div class="card-footer">
                                 <div class="d-flex justify-content-between ">
-                                    <button  data-bs-toggle="modal" data-bs-target="#deleteModal{{ program['ExtensionProgramId'] }}"class="fw-semibold fs-2 text-danger bg-transparent border-0">
+                                    <button  data-bs-toggle="modal" data-bs-target="#deleteModal{{ program.ExtensionProgramId }}"class="fw-semibold fs-2 text-danger bg-transparent border-0">
                                         <iconify-icon icon="ion:trash-outline"></iconify-icon>
                                     </button>
-                                    <a href="{{url_for('programs.viewExtensionProgram', id=program['ExtensionProgramId'])}}" class="btn btn-primary fs-4">View Extension Program</a>
+                                    <a href="{{url_for('programs.viewExtensionProgram', id=program.ExtensionProgramId)}}" class="btn btn-primary fs-4">View Extension Program</a>
                                 </div>
                             </div>
                         </div>
