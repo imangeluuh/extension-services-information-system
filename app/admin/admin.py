@@ -2,7 +2,7 @@ from app.admin import bp
 from flask import render_template, url_for, request, redirect, flash, session
 from flask_login import current_user, login_user, login_required, logout_user
 from .forms import LoginForm
-from ..models import Login, Beneficiary, Project, Student, Registration, User, Faculty, ExtensionProgram
+from ..models import Login, Beneficiary, Project, Student, Registration, User, Faculty, ExtensionProgram, Collaborator
 from ..Api.resources import AdminLoginApi
 from ..decorators.decorators import login_required
 from app import db, api
@@ -95,3 +95,8 @@ def dashboard():
 
     return render_template('admin/dashboard.html', programs_participants=programs_participants)
     
+@bp.route('/collaborators')
+@login_required(role=["Admin"])
+def collaborators():
+    collaborators = Collaborator.query.all()
+    return render_template('admin/collaborators.html', collaborators=collaborators)
