@@ -13,10 +13,15 @@ from ..decorators.decorators import login_required
 from ..Api.resources import ExtensionProgramListApi
 from sqlalchemy import func
 from fillpdf import fillpdfs
+from dotenv import load_dotenv
+from pathlib import Path
+import os
 
-url = current_app.config['API_URL']
+env_path = Path(".") / ".env"
+load_dotenv(dotenv_path=env_path)
 
-api_key = current_app.config['API_KEY']
+url = os.getenv('API_URL')
+api_key = os.getenv('API_KEY')
 
 # Set up headers with the API key in the 'API Key' authorization header
 headers = {
