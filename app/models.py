@@ -155,7 +155,7 @@ class ExtensionProgram(db.Model):
     ProgramId = db.Column(db.Integer, db.ForeignKey('Program.ProgramId', ondelete='CASCADE'), nullable=False)
     Agenda = db.relationship("Agenda", back_populates='ExtensionPrograms', lazy=True, passive_deletes=True)
     Program = db.relationship("Program", back_populates='ExtensionPrograms', lazy=True, passive_deletes=True)
-    Projects = db.relationship("Project", back_populates='ExtensionProgram', lazy=True)
+    Projects = db.relationship("Project", back_populates='ExtensionProgram', cascade='all, delete-orphan')
 
 
 class Project(db.Model):
@@ -184,7 +184,7 @@ class Project(db.Model):
     ExtensionProgram = db.relationship("ExtensionProgram", back_populates='Projects', lazy=True, passive_deletes=True)
     Registration = db.relationship('Registration', backref='Project', cascade='all, delete-orphan', passive_deletes=True)
     Certificate = db.relationship('Certificate', back_populates='Project')
-    Activity = db.relationship("Activity", back_populates="Project", passive_deletes=True)
+    Activity = db.relationship("Activity", back_populates="Project", cascade='all, delete-orphan')
     Budget = db.relationship('Budget', back_populates='Project', cascade='all, delete-orphan')
 
     def totalBudget(self):
@@ -234,7 +234,7 @@ class Activity(db.Model):
     Speaker = db.Column(db.JSON, nullable=False)
     LocationId = db.Column(db.Integer, db.ForeignKey('Location.LocationId'))
     ProjectId = db.Column(db.Integer, db.ForeignKey('Project.ProjectId', ondelete='CASCADE'), nullable=False)
-    Project = db.relationship('Project', back_populates='Activity')
+    Project = db.relationship('Project', back_populates='Activity', passive_deletes='all')
     Location = db.relationship('Location', back_populates='Activity', passive_deletes='all')
     Evaluation = db.relationship("Evaluation", back_populates='Activity', cascade='all, delete-orphan', lazy=True)
     Attendance = db.relationship('Attendance', back_populates='Activity', cascade='all, delete-orphan')

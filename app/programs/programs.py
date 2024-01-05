@@ -85,7 +85,7 @@ def insertExtensionProgram():
             status = saveImage(form.extension_program.image.data, imagepath)
             if status.error is not None:
                 flash("Extension program image upload failed", category="error")
-                return url_for('programs.addProgram')
+                return url_for(request.referrer)
             else:
                 str_image_url = status.url
                 str_image_file_id = status.file_id
@@ -101,25 +101,6 @@ def insertExtensionProgram():
         db.session.add(program_to_add)
         db.session.flush()
         int_program_id = program_to_add.ExtensionProgramId
-        # Insert project
-        str_image_url = None
-        str_image_file_id = None
-        if form.project.image.data is not None:
-            # Get the input image path
-            imagepath = os.path.join(
-                    current_app.config["UPLOAD_FOLDER"], secure_filename(form.project.image.data.filename)
-                )
-            # Save image
-            status = saveImage(form.project.image.data, imagepath)
-            if status.error is not None:
-                flash("Project image upload failed", category="error")
-                return redirect(url_for('programs.addProgram'))
-            else:
-                str_image_url = status.url
-                str_image_file_id = status.file_id
-            # Delete file from local storage
-            if os.path.exists(imagepath):
-                os.remove(imagepath)
 
         # Insert project
         str_image_url = None
@@ -133,7 +114,7 @@ def insertExtensionProgram():
             status = saveImage(form.project.image.data, imagepath)
             if status.error is not None:
                 flash("Project image upload failed", category="error")
-                return redirect(url_for('programs.addProgram'))
+                return redirect(url_for(request.referrer))
             else:
                 str_image_url = status.url
                 str_image_file_id = status.file_id
@@ -148,11 +129,13 @@ def insertExtensionProgram():
         imagepath = os.path.join(
                 current_app.config["UPLOAD_FOLDER"], secure_filename(form.project.project_proposal.data.filename)
             )
+        
         # Save project proposal to local and upload to cloud 
         status = saveImage(form.project.project_proposal.data, imagepath)
+        
         if status.error is not None:
             flash("Project proposal upload failed", category="error")
-            return redirect(url_for('programs.addProgram'))
+            return redirect(url_for(request.referrer))
         else:
             str_proposal_url = status.url
             str_proposal_file_id = status.file_id
@@ -209,7 +192,7 @@ def insertExtensionProgram():
             status = saveImage(form.activity.image.data, imagepath)
             if status.error is not None:
                 flash("Activity image upload failed", category="error")
-                return redirect(url_for('programs.addProgram'))
+                return redirect(url_for(request.referrer))
             else:
                 str_image_url = status.url
                 str_image_file_id = status.file_id
@@ -257,7 +240,7 @@ def updateExtensionProgram(id):
             # Save image
             status = saveImage(form.image.data, imagepath)
             if status.error is not None:
-                flash("File Upload Error")
+                flash("File Upload Error", category='error')
                 return redirect(url_for('programs.programs'))
             else:
                 extension_program.ImageUrl = status.url
@@ -280,7 +263,7 @@ def updateExtensionProgram(id):
     
     if form.errors != {}: # If there are errors from the validations
         for err_msg in form.errors.values():
-            flash(err_msg)
+            flash(err_msg, category='error')
 
     return redirect(url_for('programs.programs'))
 
@@ -288,7 +271,7 @@ def updateExtensionProgram(id):
 @bp.route('/extension-program/delete/<int:id>', methods=['POST'])
 @login_required(role=["Admin", "Faculty"])
 def deleteExtensionProgram(id):
-    extension_program = ExtensionProgram.query.get_or_404(id)
+    extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
     try:
         if extension_program.ImageFileId is not None:
             status = purgeImage(extension_program.ImageFileId)
@@ -320,7 +303,7 @@ def insertProject():
                 status = saveImage(form.image.data, imagepath)
                 if status.error is not None:
                     flash("Project image upload failed", category="error")
-                    return redirect(url_for('programs.addProgram'))
+                    return redirect(url_for(request.referrer))
                 else:
                     str_image_url = status.url
                     str_image_file_id = status.file_id
@@ -339,7 +322,7 @@ def insertProject():
             status = saveImage(form.project_proposal.data, imagepath)
             if status.error is not None:
                 flash("Project proposal upload failed", category="error")
-                return redirect(url_for('programs.addProgram'))
+                return redirect(url_for(request.referrer))
             else:
                 str_proposal_url = status.url
                 str_proposal_file_id = status.file_id
@@ -440,7 +423,7 @@ def updateProject(id):
             # Save image
             status = saveImage(form.image.data, imagepath)
             if status.error is not None:
-                flash("File Upload Error")
+                flash("File Upload Error", category='error')
                 return redirect(url_for('programs.programs'))
             else:
                 extension_project.ImageUrl = status.url
@@ -463,7 +446,7 @@ def updateProject(id):
             # Save image
             status = saveImage(form.project_proposal.data, filepath)
             if status.error is not None:
-                flash("File Upload Error")
+                flash("File Upload Error", category='error')
                 return redirect(url_for('programs.programs'))
             else:
                 extension_project.ProjectProposalUrl = status.url
@@ -565,7 +548,7 @@ def insertActivity(id):
             # Save image
             status = saveImage(form.image.data, imagepath)
             if status.error is not None:
-                flash("File Upload Error")
+                flash("File Upload Error", category='error')
                 return redirect(url_for('programs.viewProject', id=form.project.data))
             else:
                 str_image_url = status.url
@@ -618,7 +601,7 @@ def updateActivity(id):
             # Save image
             status = saveImage(form.image.data, imagepath)
             if status.error is not None:
-                flash("File Upload Error")
+                flash("File Upload Error", category='error')
                 return redirect(url_for('programs.viewProject', id=activity.ProjectId))
             else:
                 activity.ImageUrl = status.url
@@ -791,7 +774,7 @@ def uploadReceipt(id):
     # Save receipt
     status = saveImage(form.receipt.data, imagepath)
     if status.error is not None:
-        flash("File Upload Error")
+        flash("File Upload Error", category='error')
         return redirect(request.referrer)
     else:
         item.ReceiptUrl = status.url
