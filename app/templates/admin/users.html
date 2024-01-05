@@ -42,7 +42,7 @@
                             <td>{{ user.User.MiddleName if user.User.MiddleName else 'N/A' }}</td>
                             <td>{{ user.User.LastName }}</td>
                             <td>{{ user.User.Login.Email }}</td>
-                            <td class="flex"><a href="{{ url_for('admin.viewUser', id=user.User.UserId) }}" class="bg-success rounded px-2 py-1">View</a></td>
+                            <td><a href="{{ url_for('admin.viewUser', id=user.User.UserId) }}" class="btn btn-success">View</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
