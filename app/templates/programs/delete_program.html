@@ -11,7 +11,7 @@
       </div>
       <div class="modal-footer bg-light">
         <div class="w-100">
-          <form action="{{ url_for('programs.deleteExtensionProgram', id={{program.ExtensionProgramId}}) }}" method="POST">
+          <form action="{{ url_for('programs.deleteExtensionProgram', id=program.ExtensionProgramId) }}" method="POST">
           <div class="row">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <div class="col">
