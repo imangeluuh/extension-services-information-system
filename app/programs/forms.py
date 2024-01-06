@@ -2,17 +2,15 @@ from flask import current_app
 from flask_wtf import FlaskForm
 from flask_ckeditor import CKEditorField
 from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField
-from wtforms.validators import DataRequired, Optional
+from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed
-from ..models import Agenda, Program, Collaborator, Activity, Location
+from ..models import Agenda, Program, Collaborator, Activity, Location, Login
 import requests
 
-faculty_names = []
-try:
-    url = 'https://pupqcfis-com.onrender.com/api/all/Faculty_Profile'
-
-    api_key = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiIzM2Y0ZWI4NWNjNDQ0MTQzOWFkMzMwYWUzMzJiNmYwYyJ9.5pjwXdaIIZf6Jm9zb26YueCPQhj6Tc18bbZ0vnX4S9M'
-
+def getFacultyNames():
+    faculty_names = []
+    url = current_app.config['API_URL']
+    api_key = current_app.config['API_KEY']
     # Set up headers with the API key in the 'API Key' authorization header
     headers = {
         'Authorization': 'API Key',
@@ -35,31 +33,7 @@ try:
             faculty_info = api_data['Faculties'][faculty_id]
             faculty_name = faculty_info['name']
             faculty_names.append((faculty_id, faculty_name))
-
-except:
-    # Sample only
-    faculty_names = [
-        ('1', 'Monika Shin'),
-        ('2', 'John Doe'),
-        ('3', 'Alice Johnson'),
-        ('4', 'Michael Smith'),
-        ('5', 'Emily Davis'),
-        ('6', 'Daniel Brown'),
-        ('7', 'Sophia Martinez'),
-        ('8', 'William Taylor'),
-        ('9', 'Olivia Miller'),
-        ('10', 'Ethan Anderson'),
-        ('11', 'Grace White'),
-        ('12', 'Matthew Lee'),
-        ('13', 'Ava Robinson'),
-        ('14', 'Jacob Wright'),
-        ('15', 'Lily Thomas'),
-        ('16', 'Christopher Hall'),
-        ('17', 'Emma Turner'),
-        ('18', 'Alexander Carter'),
-        ('19', 'Chloe Harris'),
-        ('20', 'Benjamin Clark'),
-    ]
+    return faculty_names
 
 class ProgramForm(FlaskForm):
     program_name = StringField('Extension Program Name', validators=[DataRequired()])
@@ -80,7 +54,7 @@ class ProjectForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
     implementer = StringField("Implementer", default="Polytechnic Unversity of the Philippines, Quezon City  Branch", validators=[DataRequired()])
     collaborator = SelectField('Collaborator', validators=[DataRequired()])
-    project_team = SelectMultipleField('Project Team', choices=faculty_names, validators=[DataRequired()])
+    project_team = SelectMultipleField('Project Team', validators=[DataRequired()])
     target_group = StringField("Target Group", validators=[DataRequired()])
     project_type = SelectField("Project Type", choices=[('Need-Based', 'Need-Based'),
                                                             ('Quick Response', 'Quick Response'),
@@ -104,7 +78,10 @@ class ProjectForm(FlaskForm):
         
         with current_app.app_context():
             self.collaborator.choices = [(collaborator.CollaboratorId, collaborator.Organization) for collaborator in Collaborator.query.all()]
-
+            try:
+                self.project_team.choices = getFacultyNames()
+            except:
+                self.project_team.choices = [(faculty.User[0].UserId, faculty.User[0].FirstName + ' ' + faculty.User[0].LastName) for faculty in Login.query.filter(Login.RoleId.in_([1,4])).all()]
 
 class ActivityForm(FlaskForm):
     activity_name = StringField("Activity Name", validators=[DataRequired()])
@@ -114,7 +91,7 @@ class ActivityForm(FlaskForm):
     location = SelectField('Location', validators=[DataRequired()])
     activity_description =  CKEditorField("Description", validators=[DataRequired()])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
-    speaker = SelectMultipleField('Speaker', choices=faculty_names, validators=[DataRequired()])
+    speaker = SelectMultipleField('Speaker', validators=[DataRequired()])
     save = SubmitField("Save Activity") 
 
     def __init__(self, *args, **kwargs):
@@ -122,7 +99,10 @@ class ActivityForm(FlaskForm):
         
         with current_app.app_context():
             self.location.choices = [(location.LocationId, location.LocationName) for location in Location.query.all()]
-
+            try:
+                self.speaker.choices = getFacultyNames()
+            except:
+                self.speaker.choices = [(faculty.User[0].UserId, faculty.User[0].FirstName + ' ' + faculty.User[0].LastName) for faculty in Login.query.filter(Login.RoleId.in_([1,4])).all()]
 class CombinedForm(FlaskForm):
     extension_program = FormField(ProgramForm)
     project = FormField(ProjectForm)

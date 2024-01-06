@@ -58,6 +58,13 @@ user_model = api.model("User", {
     # "UserLogin": fields.Nested(login_model)
 })
 
+location_model = api.model("Location", {
+    "LocationId": fields.Integer,
+    "LocationName": fields.String,
+    "Longitude": fields.String,
+    "Latitude": fields.String,
+})
+
 activity_model = api.model("Activity", {
     "ActivityId": fields.Integer,
     "ActivityName": fields.String,
@@ -65,9 +72,9 @@ activity_model = api.model("Activity", {
     # "StartTime": fields.DateTime(dt_format='%H:%M:%S'),
     # "EndTime": fields.DateTime(dt_format='%H:%M:%S'),
     "Description": fields.String,
-    "Location": fields.String,
     "ImageUrl": fields.String,
     "Speaker": fields.Raw,
+    "Location": fields.Nested(location_model),
 })
 
 agenda_model = api.model("Agenda", {
@@ -101,7 +108,7 @@ extension_project_model = api.model("ExtensionProject", {
     "ProjectProposalUrl": fields.String,
     "LeadProponent": fields.Nested(user_model),
     "Collaborator": fields.Nested(collaborator_model),
-    "Activity": fields.Nested(activity_model),
+    "Activity": fields.List(fields.Nested(activity_model)),
 })
 
 program_model = api.model("Program", {
