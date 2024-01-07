@@ -85,7 +85,7 @@ def insertExtensionProgram():
             status = saveImage(form.extension_program.image.data, imagepath)
             if status.error is not None:
                 flash("Extension program image upload failed", category="error")
-                return url_for(request.referrer)
+                return redirect(request.referrer)
             else:
                 str_image_url = status.url
                 str_image_file_id = status.file_id
@@ -114,7 +114,7 @@ def insertExtensionProgram():
             status = saveImage(form.project.image.data, imagepath)
             if status.error is not None:
                 flash("Project image upload failed", category="error")
-                return redirect(url_for(request.referrer))
+                return redirect(request.referrer)
             else:
                 str_image_url = status.url
                 str_image_file_id = status.file_id
@@ -135,7 +135,7 @@ def insertExtensionProgram():
         
         if status.error is not None:
             flash("Project proposal upload failed", category="error")
-            return redirect(url_for(request.referrer))
+            return redirect(request.referrer)
         else:
             str_proposal_url = status.url
             str_proposal_file_id = status.file_id
@@ -192,7 +192,7 @@ def insertExtensionProgram():
             status = saveImage(form.activity.image.data, imagepath)
             if status.error is not None:
                 flash("Activity image upload failed", category="error")
-                return redirect(url_for(request.referrer))
+                return redirect(request.referrer)
             else:
                 str_image_url = status.url
                 str_image_file_id = status.file_id
@@ -303,7 +303,7 @@ def insertProject():
                 status = saveImage(form.image.data, imagepath)
                 if status.error is not None:
                     flash("Project image upload failed", category="error")
-                    return redirect(url_for(request.referrer))
+                    return redirect(request.referrer)
                 else:
                     str_image_url = status.url
                     str_image_file_id = status.file_id
@@ -322,7 +322,7 @@ def insertProject():
             status = saveImage(form.project_proposal.data, imagepath)
             if status.error is not None:
                 flash("Project proposal upload failed", category="error")
-                return redirect(url_for(request.referrer))
+                return redirect(request.referrer)
             else:
                 str_proposal_url = status.url
                 str_proposal_file_id = status.file_id
