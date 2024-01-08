@@ -65,3 +65,4 @@ urllib3
 Werkzeug
 wrapt
 WTForms
+folium
