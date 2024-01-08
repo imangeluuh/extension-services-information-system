@@ -54,9 +54,6 @@ def beneficiarySignup():
             db.session.add(beneficiary_to_create)
             db.session.commit()
             return redirect(url_for('auth.beneficiaryLogin'))
-        if form.errors != {}: # If there are errors from the validations
-            for err_msg in form.errors.values():
-                flash(err_msg, category='error')
     return render_template('auth/beneficiary_signup.html', form=form, current_url_path=current_url_path)
 
 @bp.route('/student', methods=['GET', 'POST'])
@@ -97,9 +94,6 @@ def studentSignup():
             db.session.add(student_to_create)
             db.session.commit()
             return redirect(url_for('auth.studentLogin'))
-        if form.errors != {}: # If there are errors from the validations
-            for err_msg in form.errors.values():
-                flash(err_msg, category='error')
     return render_template('auth/student_signup.html', form=form, current_url_path=current_url_path)
 
 @bp.route('/faculty', methods=['GET', 'POST'])

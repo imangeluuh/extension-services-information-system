@@ -1,149 +1,148 @@
 {% extends 'base.html' %}
 
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/signup_style.css') }}">
-    <title>PUPQC-ESIS Beneficiary Signup</title>
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/signup_style.css') }}"> -->
+    <title>PUP-ESIS Beneficiary Signup</title>
     <script src="{{ url_for('static', filename='js/index.js')}}"></script>
 {% endblock %}
 
 {% block content %}
-<div class="container-main min-vh-100 d-flex align-items-center">
-    <div class="container mx-auto my-auto">
-        <div class="right mx-auto mh-100 overflow-x-hidden">
-            <header class="m-0 mb-2 mt-md-3 fs-2 text-center">Create account</header>
-            <form id="signupForm" action="" method="post" class="row px-md-3 mt-2 mh-100">
-                {{ form.hidden_tag() }}
-                <div class="input-field col-auto col-md-4">
-                    {{ form.first_name(id="f-name", class="input bg-transparent p-0") }}
-                    {{ form.first_name.label(class="label") }}
+<div class="page page-center d-flex align-items-center vh-100">
+    <div class="container container-xl py-4">
+        <div class="text-center mb-4">
+            <span class="navbar-brand navbar-brand-autodark">
+                <img src="{{url_for('static', filename='images/PUPLogo.png')}}" width="110" height="32" alt="PUPQC-ESIS" class="navbar-brand-image me-2">
+                Extension Services Information System
+            </span>
+        </div>
+        <form id="signupForm"  class="card card-md" action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="card-body row">
+                <h2 class="card-title text-center mb-4">Create new account</h2>
+                <div class="mb-2 col-12 col-md-4">
+                    {{ form.first_name.label(class="form-label") }}
+                    {{ form.first_name(id="first_name", class="form-control") }}
                     <ul>
                         {% for error in form.first_name.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="input-field col-auto col-md-4">
-                    {{ form.middle_name(id="md-name", class="md-name-input bg-transparent p-0", placeholder=" ") }}
-                    {{ form.middle_name.label(class="md-name-label") }}
+                <div class="mb-2 col-12 col-md-4">
+                    {{ form.middle_name.label(class="form-label") }}
+                    {{ form.middle_name(id="middle_name", class="form-control") }}
                     <ul>
                         {% for error in form.middle_name.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="input-field col-auto col-md-4">
-                    {{ form.last_name(id="l-name", class="input bg-transparent p-0") }}
-                    {{ form.last_name.label(class="label") }}
+                <div class="mb-2 col-12 col-md-4">
+                    {{ form.last_name.label(class="form-label") }}
+                    {{ form.last_name(id="last_name", class="form-control") }}
                     <ul>
                         {% for error in form.last_name.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="input-field col-auto col-md-4">
-                    {{ form.contact_details(id="contact", class="input bg-transparent p-0") }}
-                    {{ form.contact_details.label(class="label") }}
+                <div class="mb-2 col-12 col-md-4">
+                    {{ form.contact_details.label(class="form-label") }}
+                    {{ form.contact_details(id="contact_details", class="form-control") }}
                     <ul>
                         {% for error in form.contact_details.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="input-field col-auto col-md-4">
-                    {{ form.birthdate(id="birthdate", class="input bg-transparent p-0") }}
-                    {{ form.birthdate.label(class="label") }}
+                <div class="mb-2 col-12 col-md-4">
+                    {{ form.birthdate.label(class="form-label") }}
+                    {{ form.birthdate(id="birthdate", class="form-control") }}
                     <ul>
                         {% for error in form.birthdate.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="input-field col-auto col-md-4">
-                    <select name="gender" id="gender" class="form-select shadow-none bg-transparent p-0">
-                    {% for option in form.gender %}
-                        {% if loop.first %}
-                            <option value="" disabled selected>Gender</option>
-                        {% endif %}
+                <div class="mb-2 col-12 col-md-4">
+                    {{ form.gender.label(class="form-label") }}
+                    <select name="gender" id="gender" class="form-select">
+                        <option value="" disabled selected></option>
+                        {% for option in form.gender %}
                         {{ option }}
-                    {% endfor %}
+                        {% endfor %}
                     </select>
-                    {{ form.gender.label(class="gender-label") }}
                     <ul>
                         {% for error in form.gender.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="input-field col-12">
-                    {{ form.address(id="address", class="input bg-transparent p-0") }}
-                    {{ form.address.label(class="label") }}
+                <div class="mb-2 col-12">
+                    {{ form.address.label(class="form-label") }}
+                    {{ form.address(id="address", class="form-control") }}
                     <ul>
                         {% for error in form.address.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
-                </div>
-                <div class="input-field col-12">
-                    {{ form.email(id="email", class="input bg-transparent p-0") }}
-                    {{ form.email.label(class="label") }}
+                </div> 
+                <div class="mb-2 col-12">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(id="email", class="form-control") }}
                     <ul>
                         {% for error in form.email.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="input-field col-auto col-md-6">
-                    {{ form.password1(class="input bg-transparent p-0") }}
-                    {{ form.password1.label(class="label") }}
+                <div class="mb-2 col-12 col-md-6">
+                    {{ form.password1.label(class="form-label") }}
+                    {{ form.password1(class="form-control") }}
                     <ul>
                         {% for error in form.password1.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="input-field col-auto col-md-6">
-                    {{ form.password2(class="input  bg-transparent p-0") }}
-                    {{ form.password2.label(class="label") }}
+                <div class="mb-2 col-auto col-md-6">
+                    {{ form.password2.label(class="form-label") }}
+                    {{ form.password2(class="form-control") }}
                     <ul>
-                        {% for error in form.password1.errors %}
+                        {% for error in form.password2.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="input-field col-12">
-                    {{ form.signup(class="submit")}}
-                </div> 
-            </form>
-            <div class="signin pb-4">
-                <span>Already have an account? <a href="{{ url_for('auth.beneficiaryLogin') }}">Log in here</a></span>
+                <div class="form-footer">
+                    {{form.signup(class="btn btn-primary w-100")}}
+                </div>
             </div>
+        </form>
+        <div class="text-center text-secondary mt-3">
+            Already have account? <a href="{{ url_for('auth.beneficiaryLogin') }}" tabindex="-1">Sign in</a>
         </div>
     </div>
 </div>
 {% include 'auth/review_modal.html' %}
+
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-    // Initialize  Modal object and set options
-    const $targetEl = document.getElementById('reviewModal'); 
-    const options = {
-        placement: 'center', 
-        backdrop: 'dynamic', 
-        backdropClasses: 'bg-gray-900 bg-opacity-50 fixed inset-0 z-40',
-        closable: true, 
-    };
-    const modal = new Modal($targetEl, options);
     // Get a reference to the signup form
     const signupForm = document.getElementById('signupForm');
+
+    // Get a reference to the review modal
+    const reviewModal = document.getElementById('reviewModal');
 
     // Define the handleSubmit function
     function handleSubmit(e) {
         e.preventDefault(); // Prevent default form submission
         
         // Get form input values
-        const first_name = document.getElementById('f-name').value;
-        const middle_name = document.getElementById('md-name').value;
-        const last_name = document.getElementById('l-name').value;
-        const contact_details = document.getElementById('contact').value;
+        const first_name = document.getElementById('first_name').value;
+        const middle_name = document.getElementById('middle_name').value;
+        const last_name = document.getElementById('last_name').value;
+        const contact_details = document.getElementById('contact_details').value;
         const birthdate = document.getElementById('birthdate').value;
         const gender = document.getElementById('gender').value;
         const address = document.getElementById('address').value;
@@ -160,26 +159,43 @@
         document.getElementById('reviewEmail').textContent = email;
 
         // Show the review modal
-        modal.show()
+        reviewModal.classList.add("show");
+
+        // Remove aria-hidden attribute
+        reviewModal.removeAttribute('aria-hidden');
+
+        // Add aria-modal attribute with value true
+        reviewModal.setAttribute('aria-modal', 'true');
+
+        reviewModal.style.display = "block";
     }
     
-   // Add the form submit event listener
-    signupForm.addEventListener('submit', handleSubmit);
-
     // Handle the click event of the Save button in the modal
     document.getElementById('saveButton').addEventListener('click', function () {
-        // Hide the review modal
-        modal.hide()
         
         // Remove the form submit event listener and submit the form
         signupForm.removeEventListener('submit', handleSubmit);
         signupForm.submit();
     });
 
+    // Handle the click event of the cancel button in the modal
     document.getElementById('cancelButton').addEventListener('click', function () {
+        // Re-add the form submit event listener
+        signupForm.addEventListener('submit', handleSubmit);
+
         // Hide the review modal
-        modal.hide()
+        reviewModal.classList.remove("show");
+        
+        // Remove aria-modal attribute
+        reviewModal.removeAttribute('aria-modal');
+        
+        // Add aria-hidden attribute with value true
+        reviewModal.setAttribute('aria-hidden', 'true');
+        
+        reviewModal.style.display = "none";
     });
-});
+
+    // Add the form submit event listener
+    signupForm.addEventListener('submit', handleSubmit);
 </script>
 {% endblock %}

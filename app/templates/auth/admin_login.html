@@ -1,38 +1,48 @@
 {% extends 'admin/base.html' %}
 
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style.css') }}">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style.css') }}"> -->
     <title>PUPQC-ESIS Login</title>
 {% endblock %}
 
 {% block content %}
-<div class="overflow-hidden container-main">
-    <div class="row">
-        <div class="col-auto col-sm-7 col-md-8 side-image d-block d-md-hidden p-0">
-            <!------------- empty ------------->
-        </div>
-        <div class="col-auto col-sm-5 col-md-4 right d-flex align-items-center">
-            <div class="input-box">
-                <div class="d-flex justify-content-center">
-                    <img src="{{ url_for('static', filename='images/PUPLogo.png')}}" alt="" class="mb-4" width="100rem">
+<div class="page page-center d-flex align-items-center vh-100">
+    <div class="container container-tight py-4">
+    <div class="text-center mb-4">
+        <span class="navbar-brand navbar-brand-autodark">
+            <img src="{{url_for('static', filename='images/PUPLogo.png')}}" width="110" height="32" alt="PUPQC-ESIS" class="navbar-brand-image me-2">
+            Extension Services Information System
+        </span>
+    </div>
+    <div class="card card-md">
+    <div class="card-body">
+        <h2 class="h2 text-center mb-4"><strong>PUPQC-ESIS</strong> Admin Module</h2>
+        <!-- <span class="bg-danger-subtle p-3 rounded-2 mb-2" id="manyAttempt" style="display: none; color: #8B0000;">Too many incorrect attempts... Please wait for <span id="countdownDisplay" style="font-size: 14px;"></span>before trying again.</span> -->
+        <form id="loginForm" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(id="email", class="form-control") }}
+            </div> 
+            <div class="mb-2">
+                <label class="form-label">
+                    {{ form.password.label }}
+                </label>
+                <div class="input-group input-group-flat">
+                {{ form.password(id="password", class="form-control") }}
+                <!-- <span class="input-group-text">
+                    <a href="#" class="link-secondary" title="Show password" data-bs-toggle="tooltip">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+                    </a>
+                </span> -->
                 </div>
-                <header><strong>PUPQC-ESIS</strong> Admin Module</header>
-                <form action="" method="post" class="mt-6">
-                    {{ form.hidden_tag() }}
-                    <div class="input-field">
-                        {{ form.email(class="input bg-transparent p-0") }}
-                        {{ form.email.label(class="label fw-normal") }}
-                    </div> 
-                    <div class="input-field">
-                        {{ form.password(class="input bg-transparent p-0") }}
-                        {{ form.password.label(class="label fw-normal") }}
-                    </div> 
-                    <div class="input-field">
-                        {{ form.submit(class="submit") }}
-                    </div> 
-                </form>
-            </div>  
-        </div>
+            </div> 
+            <div class="form-footer">
+                {{ form.submit(class="btn btn-primary w-100") }}
+            </div>
+        </form>
+    </div>
+    </div>
     </div>
 </div>
 {% endblock %}

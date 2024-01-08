@@ -1,71 +1,86 @@
 {% extends 'base.html' %}
 
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/signin_style.css') }}">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/signin_style.css') }}"> -->
     <title>PUPQC-ESIS Login</title>
 {% endblock %}
 
 {% block content %}
-<div class="overflow-hidden container-main">
-    <div class="row vh-100">
-        <div class="col-auto col-sm-7 col-md-8 side-image d-block d-md-hidden p-0">
-            <!------------- empty ------------->
-        </div>
-        <div class="col-auto col-sm-5 col-md-4 right d-flex align-items-center">
-            <div class="input-box">
-                <div class="d-flex justify-content-center">
-                    <img src="{{ url_for('static', filename='images/PUPLogo.png')}}" alt="" class="mb-4" width="100rem">
-                </div>
-                {% if current_url_path == url_for('auth.login') %}
-                <h1 class="mb-2 fw-semibold d-flex justify-content-center">Hi, PUPian!</h1>
-                <small class="mb-2 d-flex justify-content-center">Please click or tap your destination</small>
-                <a href="{{ url_for('auth.beneficiaryLogin') }}" class="text-decoration-none ">
-                    <div class="d-flex justify-content-center mb-2 p-2 bg-primary text-white">Beneficiary</div>
-                </a>
-                <a href="{{ url_for('auth.studentLogin') }}" class="text-decoration-none ">
-                    <div class="d-flex justify-content-center mb-2 p-2 bg-yellow text-white">Student</div>
-                </a>
-                <a href="{{ url_for('auth.facultyLogin') }}" class="text-decoration-none ">
-                    <div class="d-flex justify-content-center mb-2 p-2 bg-danger text-white">Faculty</div>
-                </a>
-                {% else %}
-                <header><strong>PUPQC-ESIS</strong> {{ current_url_path.split('/')[2] | capitalize }} Module</header>
-                <span class="bg-danger-subtle p-3 rounded-2 mb-2" id="manyAttempt" style="display: none; color: #8B0000;">Too many incorrect attempts... Please wait for <span id="countdownDisplay" style="font-size: 14px;"></span>before trying again.</span>
-                <form id="loginForm" method="POST">
-                    {{ form.hidden_tag() }}
-                    <div class="input-field">
-                        {{ form.email(id="email", class="input bg-transparent p-0") }}
-                        {{ form.email.label(class="label") }}
-                    </div> 
-                    <div class="input-field">
-                        {{ form.password(id="password", class="input bg-transparent p-0") }}
-                        {{ form.password.label(class="label") }}
-                    </div> 
-                    <div class="input-field">
-                        {{ form.submit(class="submit") }}
-                    </div> 
-                </form>
-                <div class="my-3 d-flex justify-content-center">
-                    <a href="{{ url_for('auth.resetPasswordRequest') }}" class="text-black ">Forgot password?</a>
-                </div>
-                <div class="signin pb-3">
-                    <span>Don't have an account yet? <a href="
-                        {% if current_url_path == url_for('auth.beneficiaryLogin') %}
-                            {{ url_for('auth.beneficiarySignup') }}
-                        {% elif current_url_path == url_for('auth.studentLogin') %}
-                            {{ url_for('auth.studentSignup') }}
-                        {% else %}
-                            {{ url_for('auth.facultySignup') }}
-                        {% endif %}
-                        ">Register here</a>
+<div class="page page-center d-flex align-items-center vh-100">
+    <div class="container container-tight py-4">
+    <div class="text-center mb-4">
+        <span class="navbar-brand navbar-brand-autodark">
+            <img src="{{url_for('static', filename='images/PUPLogo.png')}}" width="110" height="32" alt="PUPQC-ESIS" class="navbar-brand-image me-2">
+            Extension Services Information System
+        </span>
+    </div>
+    <div class="card card-md">
+    <div class="card-body">
+    {% if current_url_path == url_for('auth.login') %}
+        <h2 class="h2 text-center mb-3">Hi, PUPian!</h2>
+        <small class="mb-2 d-flex justify-content-center">Please click or tap your destination</small>
+        <a href="{{ url_for('auth.beneficiaryLogin') }}" class="text-decoration-none ">
+            <div class="d-flex justify-content-center mb-2 btn btn-primary">Beneficiary</div>
+        </a>
+        <a href="{{ url_for('auth.studentLogin') }}" class="text-decoration-none ">
+            <div class="d-flex justify-content-center mb-2 btn btn-primary">Student</div>
+        </a>
+        <a href="{{ url_for('auth.facultyLogin') }}" class="text-decoration-none ">
+            <div class="d-flex justify-content-center mb-2 btn btn-primary">Faculty</div>
+        </a>
+    </div>
+    </div>
+    {% else %}
+        <h2 class="h2 text-center mb-4"><strong>PUPQC-ESIS</strong> {{ current_url_path.split('/')[2] | capitalize }} Module</h2>
+        <!-- <span class="bg-danger-subtle p-3 rounded-2 mb-2" id="manyAttempt" style="display: none; color: #8B0000;">Too many incorrect attempts... Please wait for <span id="countdownDisplay" style="font-size: 14px;"></span>before trying again.</span> -->
+        <form id="loginForm" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(id="email", class="form-control") }}
+            </div> 
+            <div class="mb-2">
+                <label class="form-label">
+                    {{ form.password.label }}
+                    <span class="form-label-description">
+                        <a href="{{ url_for('auth.resetPasswordRequest') }}">I forgot password</a>
                     </span>
+                </label>
+                <div class="input-group input-group-flat">
+                {{ form.password(id="password", class="form-control") }}
+                <!-- <span class="input-group-text">
+                    <a href="#" class="link-secondary" title="Show password" data-bs-toggle="tooltip">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+                    </a>
+                </span> -->
                 </div>
-                {% endif %}
-            </div>  
-        </div>
+            </div> 
+            <div class="mb-2">
+                <label class="form-check">
+                <input type="checkbox" class="form-check-input"/>
+                <span class="form-check-label">Remember me on this device</span>
+                </label>
+            </div>
+            <div class="form-footer">
+                {{ form.submit(class="btn btn-primary w-100") }}
+            </div>
+        </form>
+    </div>
+    </div>
+    <div class="text-center text-secondary mt-3">
+        Don't have account yet? <a href="
+        {% if current_url_path == url_for('auth.beneficiaryLogin') %}
+            {{ url_for('auth.beneficiarySignup') }}
+        {% elif current_url_path == url_for('auth.studentLogin') %}
+            {{ url_for('auth.studentSignup') }}
+        {% else %}
+            {{ url_for('auth.facultySignup') }}
+        {% endif %}
+        " tabindex="-1">Sign up</a>
+    </div>
+    {% endif %}
     </div>
 </div>
-
 {% endblock %}
 
 {% block script %}
