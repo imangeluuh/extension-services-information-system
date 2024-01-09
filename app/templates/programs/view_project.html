@@ -161,7 +161,7 @@ object-fit: cover;">
                                     <td>{{ user.User.Role.RoleName }}</td>
                                     {% if current_user.Role.RoleName == 'Admin' %}
                                     <td class="d-flex">
-                                        <a href="{{ url_for('admin.viewUser', id=user.User.UserId) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">View</a>
+                                        <a href="{{ url_for('admin.viewUser', id=user.User.UserNumber) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">View</a>
                                         {% if user.User.Role.RoleName == 'Student' %}
                                         <form action="{{ url_for('programs.assignStudent')}}" method="post">
                                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
