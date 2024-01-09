@@ -81,7 +81,7 @@ class ProjectForm(FlaskForm):
             try:
                 self.project_team.choices = getFacultyNames()
             except:
-                self.project_team.choices = [(faculty.User[0].UserId, faculty.User[0].FirstName + ' ' + faculty.User[0].LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
+                self.project_team.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
 
 class ActivityForm(FlaskForm):
     activity_name = StringField("Activity Name", validators=[DataRequired()])
