@@ -5,8 +5,10 @@ from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaFi
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed
 from ..models import Agenda, Program, Collaborator, Activity, Location, User
+from app import cache
 import requests
 
+@cache.cached(timeout=1800, key_prefix='getFacultyNames')
 def getFacultyNames():
     faculty_names = []
     url = current_app.config['API_URL']

@@ -12,6 +12,7 @@ from flask_restx import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_mail import Mail
+from flask_caching import Cache
 from config import Config
 import os
 
@@ -23,6 +24,7 @@ csrf = CSRFProtect()
 bcrypt = Bcrypt()
 ckeditor = CKEditor()
 mail = Mail()
+cache = Cache()
 api = Api(doc='/docs', decorators=[csrf.exempt])
 
 def create_app(config_class=Config):
@@ -36,6 +38,9 @@ def create_app(config_class=Config):
     bcrypt.init_app(app)
     ckeditor.init_app(app)
     mail.init_app(app)
+    
+    app.config['CACHE_TYPE'] = 'simple'
+    cache.init_app(app)
 
     CORS(app)
 

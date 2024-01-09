@@ -5,7 +5,7 @@ from ..models import Project, ExtensionProgram, Program, Registration, Agenda, E
 from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm
 import calendar
 from datetime import datetime
-from app import db, api
+from app import db, cache
 from ..store import uploadImage, purgeImage
 from werkzeug.utils import secure_filename
 import os, requests
@@ -20,15 +20,21 @@ import os
 env_path = Path(".") / ".env"
 load_dotenv(dotenv_path=env_path)
 
-url = os.getenv('API_URL')
-api_key = os.getenv('API_KEY')
 
-# Set up headers with the API key in the 'API Key' authorization header
-headers = {
-    'Authorization': 'API Key',
-    'token': api_key,  # 'token' key with the API key value
-    'Content-Type': 'application/json'  # Adjust content type as needed
-}
+@cache.cached(timeout=1800, key_prefix='getFacultyData')
+def getFacultyData():
+    url = os.getenv('API_URL')
+    api_key = os.getenv('API_KEY')
+
+    # Set up headers with the API key in the 'API Key' authorization header
+    headers = {
+        'Authorization': 'API Key',
+        'token': api_key,  # 'token' key with the API key value
+        'Content-Type': 'application/json'  # Adjust content type as needed
+    }
+    response = requests.get(url, headers=headers)
+    return response
+
 
 # ============== Admin/Faculty views ===========================
 
@@ -901,7 +907,7 @@ def extensionProgram(id):
         faculty_team.update(project.ProjectTeam)
 
     # Make a GET request to the API with the API key in the headers
-    response = requests.get(url, headers=headers)
+    response = getFacultyData()
 
     if response.status_code == 200:
         # Process the API response data
@@ -933,7 +939,7 @@ def project(id):
     current_date = datetime.utcnow().date()
 
     # Make a GET request to the API with the API key in the headers
-    response = requests.get(url, headers=headers)
+    response = getFacultyData()
 
     if response.status_code == 200:
         # Process the API response data
