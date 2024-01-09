@@ -1,7 +1,7 @@
 from app.evaluation import bp
 from flask import render_template, url_for, request, redirect, flash, current_app
 from flask_login import current_user
-from ..models import Registration, Activity, Question, Evaluation, Response, Beneficiary
+from ..models import Registration, Activity, Question, Evaluation, Response, Project
 from app import db
 from ..store import uploadImage, purgeImage
 from werkzeug.utils import secure_filename
@@ -101,7 +101,7 @@ def addEvaluation():
         activities = Activity.query.all()
     # If user is faculty, get only the activities for their project/s
     else:
-        activities = Activity.query.filter(Activity.Project.LeadProponentId==current_user.UserId).all()
+        activities = Activity.query.join(Project).filter(Project.LeadProponentId == current_user.UserId).all()
 
     if request.method == "POST":
 
