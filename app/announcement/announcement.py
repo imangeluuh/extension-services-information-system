@@ -1,14 +1,15 @@
 from app.announcement import bp
-from flask import render_template, url_for, request, redirect, flash, session
-from flask_login import login_user, logout_user, current_user
+from flask import render_template, url_for, request, redirect, flash, session, current_app
+from flask_login import current_user
 from ..decorators.decorators import login_required
 from ..models import Project, ExtensionProgram, Program, Announcement, Registration, User
 from .forms import AnnouncementForm
 from ..email import sendEmail
-import string
-from datetime import datetime
-from sqlalchemy import desc
+import string, os
 from app import db
+from ..programs.programs import saveImage
+from ..store import uploadImage, purgeImage
+from werkzeug.utils import secure_filename
 
 
 def generateSlug(title, separator='-', lower=True):
@@ -31,7 +32,11 @@ def extensionProgram():
 def project():
     ext_program_id = request.args.get('extension-program')
     ext_program = ExtensionProgram.query.filter_by(ExtensionProgramId=ext_program_id).first()
-    projects = [project for project in ext_program.Projects]
+    projects = None
+    if current_user.RoleId == 1:
+        projects = [project for project in ext_program.Projects]
+    else:
+        projects = [project for project in Project.query.filter_by(ExtensionProgramId=ext_program_id, LeadProponentId=current_user.UserId).all()]
     return render_template('announcement/project_options.html', projects=projects)
 
 @bp.route('filter/announcement')
@@ -39,18 +44,36 @@ def project():
 def filterAnnouncement():
     project_id = request.args.get('project')
     if project_id:
-        published_announcements = Announcement.query.filter_by(IsLive=True, ProjectId=project_id).order_by(Announcement.Updated.desc()).all()
-        draft_announcements = Announcement.query.filter_by(IsLive=False, ProjectId=project_id).order_by(Announcement.Updated.desc()).all()
+        if current_user.RoleId == 4:
+            published_announcements = Announcement.query.join(Project) \
+                                                        .filter(Announcement.IsLive==True
+                                                                , Announcement.ProjectId==project_id
+                                                                , Project.LeadProponentId==current_user.UserId).order_by(Announcement.Updated.desc()).all()
+            draft_announcements = Announcement.query.join(Project) \
+                                                        .filter(Announcement.IsLive==False
+                                                                , Announcement.ProjectId==project_id
+                                                                , Project.LeadProponentId==current_user.UserId).order_by(Announcement.Updated.desc()).all()
+        else:
+            published_announcements = Announcement.query.filter_by(IsLive=True, ProjectId=project_id).order_by(Announcement.Updated.desc()).all()
+            draft_announcements = Announcement.query.filter_by(IsLive=False, ProjectId=project_id).order_by(Announcement.Updated.desc()).all()
     else:
-        published_announcements = Announcement.query.filter_by(IsLive=True).order_by(Announcement.Updated.desc()).all()
-        draft_announcements = Announcement.query.filter_by(IsLive=False).order_by(Announcement.Updated.desc()).all()
+        if current_user.RoleId == 4:
+            published_announcements = Announcement.query.join(Project) \
+                                                        .filter(Announcement.IsLive==True
+                                                                , Project.LeadProponentId==current_user.UserId).order_by(Announcement.Updated.desc()).all()
+            draft_announcements = Announcement.query.join(Project) \
+                                                        .filter(Announcement.IsLive==False
+                                                                , Project.LeadProponentId==current_user.UserId).order_by(Announcement.Updated.desc()).all()
+        else:
+            published_announcements = Announcement.query.filter_by(IsLive=True).order_by(Announcement.Updated.desc()).all()
+            draft_announcements = Announcement.query.filter_by(IsLive=False).order_by(Announcement.Updated.desc()).all()
 
     return render_template('announcement/announcements_list.html', published_announcements=published_announcements, draft_announcements=draft_announcements)
 # End: Announcement filter
 
 @bp.route('/announcements/<string:project>')
 @bp.route('/announcements', defaults={'project': None})
-@login_required(role=["Admin"])
+@login_required(role=["Admin", "Faculty"])
 def manageAnnouncements(project):    
     programs = Program.query.all()
     return render_template('announcement/announcement_management.html', programs=programs)
@@ -61,6 +84,26 @@ def createAnnouncement():
     form = AnnouncementForm()
     if request.method == "POST":
         if form.validate_on_submit():
+            str_image_url = None
+            str_image_id = None
+            print(form.image.data)
+            if form.image.data is not None:
+                # Get the input image path
+                imagepath = os.path.join(
+                        current_app.config["UPLOAD_FOLDER"], secure_filename(form.image.data.filename)
+                    )
+                # Save image
+                status = saveImage(form.image.data, imagepath)
+                if status.error is not None:
+                    flash("File Upload Error", category='error')
+                    return redirect(request.referrer)
+                else:
+                    str_image_url = status.url
+                    str_image_id = status.file_id
+                # Delete file from local storage
+                if os.path.exists(imagepath):
+                    os.remove(imagepath)
+
             if 'publish' in request.form:
                 if not all(request.form.values()):
                     # Save the input to session
@@ -76,6 +119,8 @@ def createAnnouncement():
                                                 CreatorId=current_user.UserId,
                                                 IsLive=is_live,
                                                 Slug=generateSlug(form.title.data),
+                                                ImageUrl=str_image_url,
+                                                ImageId=str_image_id,
                                                 ProjectId=form.project.data)
             db.session.add(announcement_to_create)
             db.session.commit()
@@ -113,11 +158,15 @@ def createAnnouncement():
         if form.errors != {}: # If there are errors from the validations
             for err_msg in form.errors.values():
                 flash(err_msg, category='error')
+    faculty_projects = None
+    # If current user is faculty, get their project only
+    if current_user.RoleId == 4:
+        faculty_projects = [(project.ProjectId, project.Title) for project in Project.query.filter_by(LeadProponentId=current_user.UserId).all()]
     if 'announcement_title' in session:
         form.title.data = session['announcement_title']
     if 'announcement_body' in session:
         form.content.data = session['announcement_body']
-    return render_template('announcement/announcement_form.html', form=form)
+    return render_template('announcement/announcement_form.html', form=form, faculty_projects=faculty_projects)
 
 @bp.route('/announcement/<int:id>/<string:slug>')
 def viewAnnouncement(id, slug):
@@ -126,7 +175,7 @@ def viewAnnouncement(id, slug):
     return render_template('announcement/view_announcement.html', announcement=announcement)
 
 @bp.route('/unpublish/announcement/<int:id>', methods=['POST'])
-@login_required(role=["Admin"])
+@login_required(role=["Admin", "Faculty"])
 def unpublishAnnouncement(id):
     announcement = Announcement.query.get_or_404(id)
     announcement.IsLive = 0
@@ -139,7 +188,7 @@ def unpublishAnnouncement(id):
     return redirect(url_for('announcement.manageAnnouncements'))
 
 @bp.route('/delete/announcement/<int:id>', methods=['POST'])
-@login_required(role=["Admin"])
+@login_required(role=["Admin", "Faculty"])
 def deleteAnnouncement(id):
     announcement = Announcement.query.get_or_404(id)
     try:

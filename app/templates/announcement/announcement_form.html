@@ -21,15 +21,33 @@
             </div>
         </div>
     </div>  
-    <form action="" method="post" class="mt-4">
+    <form action="" method="post" enctype="multipart/form-data" class="mt-4">
         <div class="d-flex flex-column p-4 bg-white">
             {{ form.hidden_tag() }}
             {{ form.title.label(class="mb-2 form-label") }}
             {{ form.title(class="form-control")}}
             {{ form.content.label(class="mt-4 mb-2 form-label") }}
             {{ form.content(class="form-control")}}
-            {{ form.project.label(class="mt-4  mb-2 form-label") }}
-            {{ form.project(class="form-select")}}
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    {{ form.project.label(class="mt-4  mb-2 form-label") }}
+                    <select name="{{form.project.name}}" id="{{form.project.id}}" class="form-select">
+                        {% if faculty_projects %}
+                            {% for project in faculty_projects %}
+                            <option value="{{project[0]}}">{{project[1]}}</option>
+                            {% endfor %}
+                        {% else %}
+                            {% for option in form.project %}
+                                {{option}}
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-6">
+                    {{form.image.label(class="mt-4 mb-2 form-label")}}
+                    {{form.image(class="form-control")}}
+                </div>
+            </div>
             <div class="row mt-4">
                 <div class="col-auto col-md-6 d-flex flex-column">
                     {{ form.medium.label(class="form-label") }}

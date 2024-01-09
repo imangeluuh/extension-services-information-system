@@ -53,7 +53,8 @@ def beneficiarySignup():
                 createUser(form, 2)
                 db.session.commit()
                 flash('You have successfully created your account!', category='success')
-            except:
+            except Exception as e:
+                print(e)
                 flash('There was an issue creating your account. Please try again later.', category='error')
             return redirect(url_for('auth.beneficiaryLogin'))
     return render_template('auth/signup.html', form=form, current_url_path=current_url_path)
@@ -94,7 +95,8 @@ def studentSignup():
                 createUser(form, 3)
                 db.session.commit()
                 flash('You have successfully created your account!', category='success')
-            except:
+            except Exception as e:
+                print(e)
                 flash('There was an issue creating your account. Please try again later.', category='error')
             return redirect(url_for('auth.studentLogin'))
     return render_template('auth/signup.html', form=form, current_url_path=current_url_path)

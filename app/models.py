@@ -230,6 +230,8 @@ class Announcement(db.Model):
     Slug = db.Column(db.String(255), nullable=False)
     Created = db.Column(db.DateTime, default=datetime.utcnow, index=True, nullable=False)
     Updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, index=True, nullable=False)
+    ImageUrl = db.Column(db.Text)
+    ImageId = db.Column(db.Text)
     ProjectId = db.Column(db.Integer, db.ForeignKey('Project.ProjectId', ondelete='CASCADE'), nullable=False)
     Project = db.relationship('Project', backref='Announcement')
     Creator = db.relationship('User', backref='Announcement')

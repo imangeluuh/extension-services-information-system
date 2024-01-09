@@ -58,12 +58,16 @@
     <div class="carousel-inner">
         {% for announcement in latest_announcements %}
         <div class="carousel-item {{'active' if loop.first}}">
-            <div class="card">
-                <div class="img-wrapper"><img src="..." class="d-block w-100" alt="..."> </div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ announcement.Title }}</h5>
-                    <p class="card-text text-trun" style="max-width:30px;">{{ announcement.Content|safe }}</p>
-                    <a href="{{url_for('announcement.viewAnnouncement', id=announcement.AnnouncementId, slug=announcement.Slug)}}" class="btn btn-primary">View announcement</a>
+            <div class="card" style="height: 400px;">
+                <div class="img-wrapper"><img src="{{announcement.ImageUrl if announcement.ImageUrl else url_for('static', filename='images/announcement.png')}}" class="d-block w-100 object-fit-cover " alt="..."> </div>
+                <div class="card-body d-flex flex-column justify-content-between  ">
+                    <div>
+                      <h5 class="card-title mb-2">{{ announcement.Title }}</h5>
+                      <div class="card-text d-inline-block text-wrap text-truncate " style="max-height: 100px;" >
+                        {{ announcement.Content|safe }}
+                      </div>
+                    </div>
+                    <a href="{{url_for('announcement.viewAnnouncement', id=announcement.AnnouncementId, slug=announcement.Slug)}}" class="btn btn-primary self" style="width: fit-content;">View announcement</a>
                 </div>
             </div>
         </div>
