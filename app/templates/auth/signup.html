@@ -75,7 +75,7 @@
                 </div> 
                 <div class="mb-2 col-12 col-md-3">
                     {{ form.gender.label(class="form-label") }}
-                    <select name="gender" id="gender" class="form-select">
+                    <select name="gender" id="gender" class="form-select" required>
                         <option value="" disabled selected></option>
                         {% for option in form.gender %}
                         {{ option }}
