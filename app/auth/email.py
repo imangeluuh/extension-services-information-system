@@ -1,5 +1,5 @@
 from flask import render_template, current_app, url_for
-from ..models import Login, User
+from ..models import User
 from app.email import sendEmail
 from app import db
 import random, string, requests, uuid
@@ -38,7 +38,7 @@ def sendAccountEmail(app, email, login_url):
                 for faculty_id in faculty_account_ids:
                     if email == api_data['Faculties'][faculty_id]['email']:
                         # Check if email is not connected to an existing account
-                        if not Login.query.filter_by(Email=email).first():
+                        if not User.query.filter_by(Email=email).first():
                             success = True
                             faculty_info = api_data['Faculties'][faculty_id]
                         break
@@ -49,23 +49,21 @@ def sendAccountEmail(app, email, login_url):
             # Generates a random 8-character string containing uppercase, lowercase, and numbers.
             chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
             temp_password = ''.join(random.choice(chars) for _ in range(8))
-            str_login_uuid = uuid.uuid4()
-            faculty_login = Login(LoginId=str_login_uuid,
-                        Email=faculty_info['email'],
-                        password_hash=temp_password,
-                        RoleId=4)
             # Parse the date string using strptime with the appropriate format code
             birthdate = datetime.strptime(faculty_info['birth_date'], '%a, %d %b %Y %H:%M:%S %Z')
-            faculty_to_create = User(UserId=faculty_info['faculty_account_id'],
-                                        FirstName=faculty_info['first_name'],
-                                        MiddleName=faculty_info['middle_name'],
-                                        LastName=faculty_info['last_name'],
-                                        ContactDetails='0'+faculty_info['PDS_Contact_Details']['mobile_number'],
-                                        Birthdate=birthdate.strftime('%Y-%m-%d'),
-                                        Gender=faculty_info['PDS_Personal_Details']['sex'],
-                                        Address=faculty_info['PDS_Contact_Details']['perm_address'],
-                                        LoginId=str_login_uuid)
-            db.session.add(faculty_login)
+            faculty_to_create = User(UserId=uuid.uuid4(),
+                                    UserNumber=faculty_info['faculty_account_id'],
+                                    FirstName=faculty_info['first_name'],
+                                    MiddleName=faculty_info['middle_name'],
+                                    LastName=faculty_info['last_name'],
+                                    Email=faculty_info['email'],
+                                    password_hash=temp_password,
+                                    MobileNumber='0'+faculty_info['PDS_Contact_Details']['mobile_number'],
+                                    DateOfBirth=birthdate.strftime('%Y-%m-%d'),
+                                    PlaceOfBirth=faculty_info['PDS_Contact_Details']['perm_city'],
+                                    Gender=faculty_info['PDS_Personal_Details']['sex'],
+                                    ResidentialAddress=faculty_info['PDS_Contact_Details']['perm_address'],
+                                    RoleId=4)
             db.session.add(faculty_to_create)
             db.session.commit()
             sendEmail('[PUPQC-ESIS] Account Creation Request',

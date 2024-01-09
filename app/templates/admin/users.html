@@ -38,11 +38,11 @@
                     <tbody>
                         {% for user in users %}
                         <tr>
-                            <td>{{ user.User[0].FirstName }}</td>
-                            <td>{{ user.User[0].MiddleName if user.User[0].MiddleName else 'N/A' }}</td>
-                            <td>{{ user.User[0].LastName }}</td>
+                            <td>{{ user.FirstName }}</td>
+                            <td>{{ user.MiddleName if user.MiddleName else 'N/A' }}</td>
+                            <td>{{ user.LastName }}</td>
                             <td>{{ user.Email }}</td>
-                            <td><a href="{{ url_for('admin.viewUser', id=user.User[0].UserId) }}" class="btn btn-success">View</a></td>
+                            <td><a href="{{ url_for('admin.viewUser', id=user.UserNumber) }}" class="btn btn-success">View</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>

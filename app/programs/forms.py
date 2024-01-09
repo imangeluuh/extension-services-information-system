@@ -4,7 +4,7 @@ from flask_ckeditor import CKEditorField
 from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed
-from ..models import Agenda, Program, Collaborator, Activity, Location, Login
+from ..models import Agenda, Program, Collaborator, Activity, Location, User
 import requests
 
 def getFacultyNames():
@@ -81,7 +81,7 @@ class ProjectForm(FlaskForm):
             try:
                 self.project_team.choices = getFacultyNames()
             except:
-                self.project_team.choices = [(faculty.User[0].UserId, faculty.User[0].FirstName + ' ' + faculty.User[0].LastName) for faculty in Login.query.filter(Login.RoleId.in_([1,4])).all()]
+                self.project_team.choices = [(faculty.User[0].UserId, faculty.User[0].FirstName + ' ' + faculty.User[0].LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
 
 class ActivityForm(FlaskForm):
     activity_name = StringField("Activity Name", validators=[DataRequired()])
@@ -102,7 +102,7 @@ class ActivityForm(FlaskForm):
             try:
                 self.speaker.choices = getFacultyNames()
             except:
-                self.speaker.choices = [(faculty.User[0].UserId, faculty.User[0].FirstName + ' ' + faculty.User[0].LastName) for faculty in Login.query.filter(Login.RoleId.in_([1,4])).all()]
+                self.speaker.choices = [(faculty.User[0].UserId, faculty.User[0].FirstName + ' ' + faculty.User[0].LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
 class CombinedForm(FlaskForm):
     extension_program = FormField(ProgramForm)
     project = FormField(ProjectForm)

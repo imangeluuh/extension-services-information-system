@@ -2,7 +2,7 @@
 
 {% block head %}
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/signup_style.css') }}"> -->
-    <title>PUP-ESIS Student Signup</title>
+    <title>PUP-ESIS Signup</title>
     <script src="{{ url_for('static', filename='js/index.js')}}"></script>
 {% endblock %}
 
@@ -46,7 +46,7 @@
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="mb-2 col-12 col-md-4">
+                <div class="mb-2 col-12 col-md-3">
                     {{ form.contact_details.label(class="form-label") }}
                     {{ form.contact_details(id="contact_details", class="form-control") }}
                     <ul>
@@ -55,7 +55,7 @@
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="mb-2 col-12 col-md-4">
+                <div class="mb-2 col-12 col-md-3">
                     {{ form.birthdate.label(class="form-label") }}
                     {{ form.birthdate(id="birthdate", class="form-control") }}
                     <ul>
@@ -64,7 +64,16 @@
                         {% endfor %}
                     </ul>
                 </div> 
-                <div class="mb-2 col-12 col-md-4">
+                <div class="mb-2 col-12 col-md-3">
+                    {{ form.birthplace.label(class="form-label") }}
+                    {{ form.birthplace(id="birthplace", class="form-control") }}
+                    <ul>
+                        {% for error in form.birthplace.errors %}
+                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+                <div class="mb-2 col-12 col-md-3">
                     {{ form.gender.label(class="form-label") }}
                     <select name="gender" id="gender" class="form-select">
                         <option value="" disabled selected></option>
@@ -83,15 +92,6 @@
                     {{ form.address(id="address", class="form-control") }}
                     <ul>
                         {% for error in form.address.errors %}
-                        <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div> 
-                <div class="mb-2 col-12">
-                    {{ form.skills_interest.label(class="form-label") }}
-                    {{ form.skills_interest(id="skills_interest", class="form-control") }}
-                    <ul>
-                        {% for error in form.skills_interest.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
                         {% endfor %}
                     </ul>
@@ -129,7 +129,7 @@
             </div>
         </form>
         <div class="text-center text-secondary mt-3">
-            Already have account? <a href="{{ url_for('auth.studentLogin') }}" tabindex="-1">Sign in</a>
+            Already have account? <a href="{{ url_for('auth.beneficiaryLogin') if request.url == url_for('auth.beneficiarySignup', _external=True) else url_for('auth.studentLogin') }}" tabindex="-1">Sign in</a>
         </div>
     </div>
 </div>
@@ -153,9 +153,9 @@
         const last_name = document.getElementById('last_name').value;
         const contact_details = document.getElementById('contact_details').value;
         const birthdate = document.getElementById('birthdate').value;
+        const birthplace = document.getElementById('birthplace').value;
         const gender = document.getElementById('gender').value;
         const address = document.getElementById('address').value;
-        const skills = document.getElementById('skills_interest').value;
         const email = document.getElementById('email').value;
 
         // Display the inputted values in the modal
@@ -164,9 +164,9 @@
         document.getElementById('reviewLastName').textContent = last_name;
         document.getElementById('reviewContact').textContent = contact_details;
         document.getElementById('reviewBirthdate').textContent = birthdate;
+        document.getElementById('reviewBirthplace').textContent = birthplace;
         document.getElementById('reviewGender').textContent = gender;
         document.getElementById('reviewAddress').textContent = address;
-        document.getElementById('reviewSkills').textContent = skills;
         document.getElementById('reviewEmail').textContent = email;
 
         // Show the review modal

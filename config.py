@@ -21,6 +21,8 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_USE_TLS = False
     MAIL_USE_SSL = True
+    API_URL = os.environ.get('API_URL')
+    API_KEY = os.environ.get('API_KEY')
     
 
 

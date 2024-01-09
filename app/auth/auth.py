@@ -1,11 +1,11 @@
 from app.auth import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
-from .forms import BeneficiaryRegisterForm, StudentRegisterForm, LoginForm, ResetPasswordRequestForm, ResetPasswordForm
-from ..models import Login, User, Beneficiary, Student
+from .forms import RegisterForm, LoginForm, ResetPasswordRequestForm, ResetPasswordForm
+from ..models import User, Beneficiary
 from app import db
 from flask_login import login_user, logout_user, current_user
 from datetime import timedelta
-import uuid, requests
+import uuid, datetime
 from .email import sendPasswordResetEmail, requestAccount
 
 lockout_duration = timedelta(minutes=1)
@@ -28,7 +28,7 @@ def beneficiaryLogin():
 
     if request.method == "POST":
         if form.validate_on_submit():
-            attempted_user = Login.query.filter_by(Email=form.email.data).first()
+            attempted_user = User.query.filter_by(Email=form.email.data).first()
             if attempted_user and attempted_user.RoleId == 2:
                 if attempted_user.check_password_correction(attempted_password=form.password.data):
                     login_user(attempted_user, remember=True)
@@ -45,16 +45,18 @@ def beneficiaryLogin():
 @bp.route('/beneficiary/signup', methods=['GET', 'POST'])
 def beneficiarySignup():
     current_url_path = request.path
-    form = BeneficiaryRegisterForm()    
+    form = RegisterForm()    
     current_url_path = request.path
     if request.method == "POST":
         if form.validate_on_submit():
-            str_user_id = createUser(form, 2)
-            beneficiary_to_create = Beneficiary(BeneficiaryId = str_user_id)
-            db.session.add(beneficiary_to_create)
-            db.session.commit()
+            try:
+                createUser(form, 2)
+                db.session.commit()
+                flash('You have successfully created your account!', category='success')
+            except:
+                flash('There was an issue creating your account. Please try again later.', category='error')
             return redirect(url_for('auth.beneficiaryLogin'))
-    return render_template('auth/beneficiary_signup.html', form=form, current_url_path=current_url_path)
+    return render_template('auth/signup.html', form=form, current_url_path=current_url_path)
 
 @bp.route('/student', methods=['GET', 'POST'])
 def studentLogin():
@@ -67,7 +69,7 @@ def studentLogin():
 
     if request.method == "POST":
         if form.validate_on_submit():
-            attempted_user = Login.query.filter_by(Email=form.email.data).first()
+            attempted_user = User.query.filter_by(Email=form.email.data).first()
             if attempted_user and attempted_user.RoleId == 3:
                 if attempted_user.check_password_correction(attempted_password=form.password.data):
                     login_user(attempted_user, remember=True)
@@ -84,17 +86,18 @@ def studentLogin():
 @bp.route('/student/signup', methods=['GET', 'POST'])
 def studentSignup():
     current_url_path = request.path
-    form = StudentRegisterForm()    
+    form = RegisterForm()    
     current_url_path = request.path
     if request.method == "POST":
         if form.validate_on_submit():
-            str_user_id = createUser(form, 3)
-            student_to_create = Student(StudentId = str_user_id,
-                                        SkillsInterest = form.skills_interest.data)
-            db.session.add(student_to_create)
-            db.session.commit()
+            try:
+                createUser(form, 3)
+                db.session.commit()
+                flash('You have successfully created your account!', category='success')
+            except:
+                flash('There was an issue creating your account. Please try again later.', category='error')
             return redirect(url_for('auth.studentLogin'))
-    return render_template('auth/student_signup.html', form=form, current_url_path=current_url_path)
+    return render_template('auth/signup.html', form=form, current_url_path=current_url_path)
 
 @bp.route('/faculty', methods=['GET', 'POST'])
 def facultyLogin():
@@ -105,7 +108,7 @@ def facultyLogin():
     form = LoginForm()
     if request.method == "POST":
         if form.validate_on_submit():
-            attempted_user = Login.query.filter_by(Email=form.email.data).first()
+            attempted_user = User.query.filter_by(Email=form.email.data).first()
             if attempted_user and attempted_user.RoleId == 4:
                 if attempted_user.check_password_correction(attempted_password=form.password.data):
                     login_user(attempted_user, remember=True)
@@ -133,25 +136,33 @@ def logout():
     return redirect(url_for('home')) # temp route
 
 def createUser(form, role):
-    str_login_uuid = uuid.uuid4()
-    user_login = Login(LoginId=str_login_uuid,
-                        Email=form.email.data,
-                        password_hash=form.password1.data,
-                        RoleId=role)
-    str_user_id = uuid.uuid4()
-    user_to_create = User(UserId=str_user_id,
+    # Generate student/faculty/beneficiary number
+    last_user = User.query.filter_by(RoleId=role).order_by(User.UserNumber.desc()).first()
+    middle_digits = '00001'
+    if last_user:
+        last_user_number = last_user.UserNumber # Get the last student/faculty/beneficiary number
+        middle_digits = int(last_user_number[5:10]) # Extract characters from index 5 to 9 (inclusive)
+        middle_digits = str(middle_digits + 1).zfill(5) # Increment and zero-pad to 5 digits
+    year = str(datetime.datetime.now().year ) # Get current year
+    last_chars = "-CM-1"
+    if role == 3:
+        last_chars = "-CM-0"
+    user_number = year+"-"+middle_digits+last_chars
+    user_to_create = User(UserId=uuid.uuid4(),
+                            UserNumber = user_number,
                             FirstName=form.first_name.data,
                             MiddleName=form.middle_name.data,
                             LastName=form.last_name.data,
-                            ContactDetails=form.contact_details.data,
-                            Birthdate=form.birthdate.data,
+                            Email=form.email.data,
+                            password_hash=form.password1.data,
+                            RoleId=role,
+                            MobileNumber=form.contact_details.data,
+                            DateOfBirth=form.birthdate.data,
+                            PlaceOfBirth=form.birthplace.data,
                             Gender=form.gender.data,
-                            Address=form.address.data,
-                            LoginId=str_login_uuid)
-    db.session.add(user_login)
+                            ResidentialAddress=form.address.data)
     db.session.add(user_to_create)
     db.session.commit()
-    return str_user_id
 
 @bp.route('/reset_password_request', methods=['GET', 'POST'])
 def resetPasswordRequest():
@@ -160,7 +171,7 @@ def resetPasswordRequest():
     form = ResetPasswordRequestForm()
     if request.method == "POST":
         if form.validate_on_submit():
-            user = Login.query.filter_by(Email=form.email.data).first()
+            user = User.query.filter_by(Email=form.email.data).first()
             if user:
                 sendPasswordResetEmail(user)
                 flash('Check your email for the instructions to reset your password', category='info')
@@ -171,7 +182,7 @@ def resetPasswordRequest():
 def resetPassword(token):
     if current_user.is_authenticated:
         return redirect(url_for('home'))  # Temp route
-    user = Login.verify_reset_password_token(token)
+    user = User.verify_reset_password_token(token)
     if not user:
         return redirect(url_for('home'))
     form = ResetPasswordForm()

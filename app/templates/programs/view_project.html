@@ -64,6 +64,7 @@ object-fit: cover;">
                             <h4 class="pb-2">Details</h4>
                         </div>
                         <div class="col-auto col-md-4 d-flex justify-content-md-end " id="details-buttons">
+                            {% if project.LeadProponentId == current_user.UserId %}
                             <button type="button" data-bs-toggle="modal" data-bs-target="#edit-project" class="btn btn-primary rounded-2 d-flex align-items-center me-2 py-1 px-2">
                                 <iconify-icon class="me-2" icon="bx:edit"></iconify-icon>
                                 Edit
@@ -74,6 +75,7 @@ object-fit: cover;">
                             </button>
                             {% include 'programs/edit_project_modal.html' %}
                             {% include 'programs/delete_project.html' %}
+                            {% endif %}
                         </div>
                         <div class="col-auto col-md-2">
                             <div class="datagrid-title">Extension Project ID</div>
@@ -156,11 +158,11 @@ object-fit: cover;">
                                     <td>{{ user.User.FirstName }}</td>
                                     <td>{{ user.User.MiddleName if user.User.MiddleName else 'N/A' }}</td>
                                     <td>{{ user.User.LastName }}</td>
-                                    <td>{{ user.User.Login.Role.RoleName }}</td>
+                                    <td>{{ user.User.Role.RoleName }}</td>
                                     {% if current_user.Role.RoleName == 'Admin' %}
                                     <td class="d-flex">
                                         <a href="{{ url_for('admin.viewUser', id=user.User.UserId) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">View</a>
-                                        {% if user.User.Login.Role.RoleName == 'Student' %}
+                                        {% if user.User.Role.RoleName == 'Student' %}
                                         <form action="{{ url_for('programs.assignStudent')}}" method="post">
                                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
                                             <input type="hidden" name="id" value="{{user.RegistrationId}}">
@@ -181,11 +183,13 @@ object-fit: cover;">
                 <div class="tab-pane" id="tabs-activity">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4>Activity tab</h4>
+                        {% if project.LeadProponentId == current_user.UserId %}
                         <button type="button" data-bs-toggle="modal" data-bs-target="#add-activity" class="btn btn-primary rounded-2 d-flex align-items-center me-2 py-1 px-2">
                             <iconify-icon class="w-3 h-3 mr-2" icon="ic:baseline-plus"></iconify-icon>
                             Add Activity
                         </button>
                         {% include 'programs/add_activity.html' %}
+                        {% endif %}
                     </div>
                     {% if project.Activity %}
                     <div class="row">
@@ -208,6 +212,7 @@ object-fit: cover;">
                                             </div>
                                         </div>
                                     </div>
+                                    {% if project.LeadProponentId == current_user.UserId %}
                                     <div class="col-auto col-md-2">
                                         <div class="d-flex">
                                             <button type="button" data-bs-toggle="modal" data-bs-target="#edit-activity-{{activity.ActivityId}}" class="btn bg-transparent border-0 shadown-none d-flex align-items-center me-2 py-1 px-2">
@@ -218,11 +223,14 @@ object-fit: cover;">
                                             </button>
                                         </div>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% include 'programs/view_activity.html' %}
+                            {% if project.LeadProponentId == current_user.UserId %}
                             {% include 'programs/edit_activity.html' %}
                             {% include 'programs/delete_activity.html' %}
+                            {% endif %}
                             {% endfor %}
                         </div>
                         <div class="col-auto col-md-4 ">

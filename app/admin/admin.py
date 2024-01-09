@@ -2,7 +2,7 @@ from app.admin import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
 from flask_login import current_user, login_user, login_required, logout_user
 from .forms import LoginForm, CollaboratorForm
-from ..models import Login, Beneficiary, Project, Student, Registration, User, Faculty, ExtensionProgram, Collaborator, Location, Activity
+from ..models import Beneficiary, Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity
 from ..Api.resources import AdminLoginApi
 from ..decorators.decorators import login_required
 from app import db, api
@@ -29,11 +29,11 @@ def adminLogin():
         return redirect(url_for('programs.programs')) 
     if request.method == "POST":
         if form.validate_on_submit():
-            attempted_user = Login.query.filter_by(Email=form.email.data).first()
+            attempted_user = User.query.filter_by(Email=form.email.data).first()
             if attempted_user and attempted_user.RoleId == 1: 
                 if attempted_user.check_password_correction(attempted_password=form.password.data):
                     login_user(attempted_user, remember=True)
-                    return redirect(url_for('programs.programs')) 
+                    return redirect(url_for('admin.dashboard')) 
                 else:
                     flash('The password you\'ve entered is incorrect.', category='error')
             else:
@@ -49,34 +49,34 @@ def logout():
 @bp.route('/beneficiaries')
 @login_required(role=["Admin"])
 def beneficiaries():
-    users = Login.query.filter_by(RoleId=2).all()
+    users = User.query.filter_by(RoleId=2).all()
     current_url_path = request.path
     return render_template('admin/users.html', users=users,current_url_path=current_url_path)
 
 @bp.route('/students')
 @login_required(role=["Admin"])
 def students():
-    users = Login.query.filter_by(RoleId=3).all()
+    users = User.query.filter_by(RoleId=3).all()
     current_url_path = request.path
     return render_template('admin/users.html', users=users,current_url_path=current_url_path)
 
 @bp.route('/faculty')
 @login_required(role=["Admin"])
 def faculty():
-    users = Login.query.filter_by(RoleId=4).all()
+    users = User.query.filter_by(RoleId=4).all()
     current_url_path = request.path
     return render_template('admin/users.html', users=users,current_url_path=current_url_path)
 
 @bp.route('/beneficiaries/<string:id>')
 @login_required(role=["Admin"])
 def viewUser(id):
-    user = User.query.filter_by(UserId=id).first()
-    if user.Login.Role.RoleName in ["Beneficiary", "Student"]:
+    user = User.query.filter_by(UserNumber=id).first()
+    if user.Role.RoleName in ["Beneficiary", "Student"]:
         user_projects = (
         Project.query
         .join(Registration, Registration.ProjectId == Project.ProjectId)
         .join(User, User.UserId == Registration.UserId)
-        .filter(User.UserId == id)
+        .filter(User.UserId == user.UserId)
         .all()
         )
     else:

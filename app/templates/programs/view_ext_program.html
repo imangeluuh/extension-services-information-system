@@ -76,7 +76,7 @@
         {% for project in ext_program.Projects %}
         <div class="list-group-item">
             {% if current_user.Role.RoleName == "Faculty" %}
-                {% if project.LeadProponentId == current_user.User[0].UserId %}
+                {% if project.LeadProponentId == current_user.UserId %}
                 <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}">
                     <div class="row">
                         <div class="col-auto">

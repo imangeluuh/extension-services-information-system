@@ -2,7 +2,7 @@ from app.announcement import bp
 from flask import render_template, url_for, request, redirect, flash, session
 from flask_login import login_user, logout_user, current_user
 from ..decorators.decorators import login_required
-from ..models import Project, ExtensionProgram, Program, Announcement, Registration, User, Login
+from ..models import Project, ExtensionProgram, Program, Announcement, Registration, User
 from .forms import AnnouncementForm
 from ..email import sendEmail
 import string
@@ -71,10 +71,9 @@ def createAnnouncement():
                 is_live = 1
             elif 'draft' in request.form:
                 is_live = 0
-            admin_login = current_user.User[0]
             announcement_to_create = Announcement(Title=form.title.data,
                                                 Content=form.content.data,
-                                                CreatorId=admin_login.UserId,
+                                                CreatorId=current_user.UserId,
                                                 IsLive=is_live,
                                                 Slug=generateSlug(form.title.data),
                                                 ProjectId=form.project.data)
@@ -92,9 +91,8 @@ def createAnnouncement():
                         User.query
                         .join(Registration)
                         .join(Project)
-                        .join(Login, User.LoginId == Login.LoginId)
                         .filter(Project.ProjectId == 10)
-                        .with_entities(Login.Email)
+                        .with_entities(User.Email)
                         .all()
                     )
                 else:
@@ -102,9 +100,8 @@ def createAnnouncement():
                         User.query
                         .join(Registration)
                         .join(Project)
-                        .join(Login, User.LoginId == Login.LoginId)
-                        .filter(Project.ProjectId == 10, Login.RoleId == form.recipient.data[0])
-                        .with_entities(Login.Email)
+                        .filter(Project.ProjectId == 10, User.RoleId == form.recipient.data[0])
+                        .with_entities(User.Email)
                         .all()
                     )
                 # Extract the emails from the query result

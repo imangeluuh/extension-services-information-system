@@ -142,13 +142,12 @@ def insertExtensionProgram():
         # Delete file from local storage
         if os.path.exists(imagepath):
             os.remove(imagepath)
-
-        lead_proponent = current_user.User[0]            
+     
         project_team = getProjectTeamInput(form.project.project_team.data, form.project.project_team.choices)
 
         project_to_add = Project(Title = form.project.title.data,
                                 Implementer = form.project.implementer.data,
-                                LeadProponentId = lead_proponent.UserId,
+                                LeadProponentId = current_user.UserId,
                                 CollaboratorId = form.project.collaborator.data,
                                 ProjectTeam = project_team,
                                 TargetGroup = form.project.target_group.data,
@@ -329,13 +328,12 @@ def insertProject():
             # Delete file from local storage
             if os.path.exists(imagepath):
                 os.remove(imagepath)
-
-            lead_proponent = current_user.User[0]            
+      
             project_team = getProjectTeamInput(form.project_team.data, form.project_team.choices)
 
             project_to_add = Project(Title = form.title.data,
                                     Implementer = form.implementer.data,
-                                    LeadProponentId = lead_proponent.UserId,
+                                    LeadProponentId = current_user.UserId,
                                     CollaboratorId = form.collaborator.data,
                                     ProjectTeam = project_team,
                                     TargetGroup = form.target_group.data,
@@ -369,7 +367,7 @@ def insertProject():
 
             db.session.commit()
             flash('Extension project is successfully inserted.', category='success')
-            return redirect(url_for('programs.programs'))
+            return redirect(request.referrer)
         if form.errors != {}: # If there are errors from the validations
             for err_msg in form.errors:
                 flash(err_msg, category='error')
@@ -667,7 +665,7 @@ def calendar():
 def budgetAllocation():
     projects = None 
     if current_user.Role.RoleName == "Faculty":
-        projects = Project.query.filter_by(LeadProponentId= current_user.User[0].UserId).all()
+        projects = Project.query.filter_by(LeadProponentId= current_user.UserId).all()
     else:
         projects = Project.query.all()
     return render_template('programs/budget_allocation.html', projects=projects)
@@ -930,7 +928,7 @@ def project(id):
     events = [activity for activity in activities if activity.Date > datetime.utcnow().date()]
     # arrange upcoming activities in ascending order
     events.reverse()
-    user_id = current_user.User[0].UserId if current_user.is_authenticated else None
+    user_id = current_user.UserId if current_user.is_authenticated else None
     registration = Registration.query.filter_by(ProjectId=id, UserId=user_id).first()
     current_date = datetime.utcnow().date()
 
@@ -941,7 +939,7 @@ def project(id):
         # Process the API response data
         api_data = response.json()
         
-        faculty_profile = {project.LeadProponentId:'https://drive.google.com/uc?export=view&id='+api_data['Faculties'][project.LeadProponentId]['profile_pic']}
+        faculty_profile = {project.LeadProponentId:'https://drive.google.com/uc?export=view&id='+api_data['Faculties'][project.LeadProponent.UserNumber]['profile_pic']}
         # RETURNING SPECIFIC DATA FROM ALL FACULTIES
         for faculty in project.ProjectTeam.items():
             faculty_info = api_data['Faculties'][faculty[0]]
@@ -951,7 +949,7 @@ def project(id):
 @bp.route('/registration/<int:project_id>', methods=['POST'])
 @login_required(role=["Beneficiary", "Student"])
 def registration(project_id):
-    user_id = current_user.User[0].UserId
+    user_id = current_user.UserId
     registration_to_create = Registration(ProjectId = project_id,
                                         UserId=user_id)
     try:
@@ -966,7 +964,7 @@ def registration(project_id):
 @bp.route('/registration/cancel/<int:project_id>', methods=['POST'])
 @login_required(role=["Beneficiary", "Student"])
 def cancelRegistration(project_id):
-    user_id = current_user.User[0].UserId if current_user.is_authenticated else None
+    user_id = current_user.UserId if current_user.is_authenticated else None
     registration = Registration.query.filter_by(ProjectId=project_id, UserId=user_id).first()
 
     try:
@@ -991,7 +989,7 @@ def activity(id):
     suggestions = Activity.query.filter(Activity.Date > current_date,
                                         Activity.ProjectId==activity.ProjectId,
                                         Activity.ActivityId!=activity.ActivityId ).order_by(func.random()).limit(3).all()
-    user_id = current_user.User[0].UserId if current_user.is_authenticated else None
+    user_id = current_user.UserId if current_user.is_authenticated else None
     evaluation_id = activity.Evaluation[0].EvaluationId if activity.Evaluation else None
     bool_is_evaluation_taken = True if Response.query.filter_by(BeneficiaryId=user_id, EvaluationId=evaluation_id).first() else False
     return render_template('programs/activity.html', activity=activity, suggestions=suggestions, current_date=current_date, bool_is_evaluation_taken=bool_is_evaluation_taken)
@@ -1013,7 +1011,7 @@ def manageAttendance(project_id, activity_id):
     students = []
 
     for user in registered_users:
-        if user.User.Login.Role.RoleName == "Student":
+        if user.User.Role.RoleName == "Student":
             if user.User.UserId in attendance:
                 students.append([user, 1])
             else:

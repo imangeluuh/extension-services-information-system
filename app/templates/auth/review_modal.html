@@ -10,57 +10,55 @@
                 <div class="row">
                     <div class=" col-auto col-md-4">
                         <div class="mb-3">
-                            {{ form.first_name.label(class="font-medium") }}
+                            {{ form.first_name.label(class="fw-semibold") }}
                             <p id="reviewFirstName"></p>
                         </div>
                     </div>
                     <div class=" col-auto col-md-4">
                         <div class="mb-3">
-                            {{ form.middle_name.label(class="font-medium") }}
+                            {{ form.middle_name.label(class="fw-semibold") }}
                             <p id="reviewMiddleName"></p>
                         </div>
                     </div>
                     <div class=" col-auto col-md-4">
                         <div class="mb-3">
-                            {{ form.last_name.label(class="font-medium") }}
+                            {{ form.last_name.label(class="fw-semibold") }}
                             <p id="reviewLastName"></p>
                         </div>
                     </div>
-                    <div class=" col-auto col-md-4">
+                    <div class=" col-auto col-md-3">
                         <div class="mb-3">
-                            {{ form.contact_details.label(class="font-medium") }}
+                            {{ form.contact_details.label(class="fw-semibold") }}
                             <p id="reviewContact"></p>
                         </div>
                     </div>
-                    <div class=" col-auto col-md-4">
+                    <div class=" col-auto col-md-3">
                         <div class="mb-3">
-                            {{ form.birthdate.label(class="font-medium") }}
+                            {{ form.birthdate.label(class="fw-semibold") }}
                             <p id="reviewBirthdate"></p>
                         </div>
                     </div>
-                    <div class=" col-auto col-md-4">
+                    <div class=" col-auto col-md-3">
                         <div class="mb-3">
-                            {{ form.gender.label(class="font-medium") }}
+                            {{ form.birthplace.label(class="fw-semibold") }}
+                            <p id="reviewBirthplace"></p>
+                        </div>
+                    </div>
+                    <div class=" col-auto col-md-3">
+                        <div class="mb-3">
+                            {{ form.gender.label(class="fw-semibold") }}
                             <p id="reviewGender"></p>
                         </div>
                     </div>
                     <div class="col-auto col-12">
                         <div class="mb-3">
-                            {{ form.address.label(class="font-medium") }}
+                            {{ form.address.label(class="fw-semibold") }}
                             <p id="reviewAddress"></p>
                         </div>
                     </div>
-                    {% if current_url_path == url_for('auth.studentSignup') %}
                     <div class="col-auto col-12">
                         <div class="mb-3">
-                            {{ form.skills_interest.label(class="font-medium") }}
-                            <p id="reviewSkills"></p>>
-                        </div>
-                    </div>
-                    {% endif %}
-                    <div class="col-auto col-12">
-                        <div class="mb-3">
-                            {{ form.email.label(class="font-medium") }}
+                            {{ form.email.label(class="fw-semibold") }}
                             <p id="reviewEmail"></p>
                         </div>
                     </div>

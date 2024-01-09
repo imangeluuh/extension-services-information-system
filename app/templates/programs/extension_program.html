@@ -56,6 +56,7 @@
                         </div>
                     </div>
                 </section>
+                {% if projects %}
                 <section id="projects" class="mt-4">
                     <div class="card">
                         <div class="card-header">
@@ -89,6 +90,7 @@
                         </div>
                     </div>
                 </section>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -122,6 +124,7 @@
             </div>
         </div>
     </section>
+    {% if events %}
     <section id="upcoming-activities" class="container-xl d-flex justify-content-center mt-4">
         <div class="w-50">
             <span class="fs-1 fw-bold">Upcoming Activities</span>
@@ -131,6 +134,8 @@
             {% endfor %}
         </div>
     </section>
+    {% endif %}
+    {% if projects %}
     <section id="faculty-staff" class="bg-white d-flex justify-content-center mt-4">
     <div class="container-xl py-5 px-0 w-100">
         <div class="card-header">
@@ -152,6 +157,7 @@
         </div>
     </div>
     </section>
+    {% endif %}
 </div>
 {% endblock %}
 

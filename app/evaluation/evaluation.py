@@ -21,8 +21,8 @@ def questions():
         mandatory_questions = Question.query.filter_by(State = 1, Required = 1).all()
         optional_questions = Question.query.filter_by(State = 1, Required = 0).all()
     else:
-        mandatory_questions = Question.query.filter_by(State = 1, Required = 1, CreatorId=current_user.User[0].UserId).all()
-        optional_questions = Question.query.filter_by(State = 1, Required = 0, CreatorId=current_user.User[0].UserId).all()
+        mandatory_questions = Question.query.filter_by(State = 1, Required = 1, CreatorId=current_user.UserId).all()
+        optional_questions = Question.query.filter_by(State = 1, Required = 0, CreatorId=current_user.UserId).all()
 
     return render_template('evaluation/questions.html', mandatory_questions=mandatory_questions, optional_questions=optional_questions)
 
@@ -64,7 +64,7 @@ def addQuestions():
             return render_template("evaluation/add_question.html")
         
         try:
-            question_to_add = Question(Text=question_text, State=1, Type=question_type, Required=required, Responses=str(responses), CreatorId=current_user.User[0].UserId)
+            question_to_add = Question(Text=question_text, State=1, Type=question_type, Required=required, Responses=str(responses), CreatorId=current_user.UserId)
             db.session.add(question_to_add)
             db.session.commit()
             flash('Your question has been successfully added to the pool.', category='success')
@@ -84,16 +84,25 @@ def evaluations():
         active_evaluations = Evaluation.query.filter_by(State = 1).all()
         inactive_evaluations = Evaluation.query.filter_by(State = 0).all()
     else:
-        active_evaluations = Evaluation.query.filter_by(State = 1, CreatorId=current_user.User[0].UserId).all()
-        inactive_evaluations = Evaluation.query.filter_by(State = 0, CreatorId=current_user.User[0].UserId).all()
+        active_evaluations = Evaluation.query.filter_by(State = 1, CreatorId=current_user.UserId).all()
+        inactive_evaluations = Evaluation.query.filter_by(State = 0, CreatorId=current_user.UserId).all()
     return render_template("evaluation/evaluations.html", active_evaluations=active_evaluations, inactive_evaluations=inactive_evaluations)
 
 
 @bp.route('/evaluations/add', methods=['GET', 'POST'])
 @login_required(role=["Admin", "Faculty"])
 def addEvaluation():
-    questions = Question.query.filter_by(State = 1).all()
-    activities = Activity.query.all()
+    questions = Question.query.filter_by(State = 1, CreatorId=current_user.UserId).all()
+    
+    # Get activities for evaluations
+    activities = None # Initialize activities
+    # If user is an admin, get all the activities
+    if current_user.Role.RoleName == "Admin":
+        activities = Activity.query.all()
+    # If user is faculty, get only the activities for their project/s
+    else:
+        activities = Activity.query.filter(Activity.Project.LeadProponentId==current_user.UserId).all()
+
     if request.method == "POST":
 
         evaluation_name = request.form["name"]
@@ -104,7 +113,7 @@ def addEvaluation():
             flash('Please complete all required fields.', category='error')
 
         try:
-            evaluation_to_add = Evaluation(EvaluationName=evaluation_name, ActivityId=evaluation_activity, State=1, Questions=str(evaluation_questions), CreatorId=current_user.User[0].UserId)
+            evaluation_to_add = Evaluation(EvaluationName=evaluation_name, ActivityId=evaluation_activity, State=1, Questions=str(evaluation_questions), CreatorId=current_user.UserId)
             db.session.add(evaluation_to_add)
             db.session.commit()
             flash('Evaluation is successfully created.', category='success')
@@ -135,7 +144,7 @@ def closeEvaluation(id):
 @login_required(["Admin", "Faculty"])
 def results(id):
 
-    list_activities = [r.Project.Activity for r in Registration.query.filter_by(UserId=current_user.User[0].UserId).all()]
+    list_activities = [r.Project.Activity for r in Registration.query.filter_by(UserId=current_user.UserId).all()]
     # Initialize an empty list to store the ActivityIds
     list_activity_ids = []
     
@@ -171,7 +180,7 @@ def results(id):
 def evaluation(id):
     
     #check whether user is registered in project and hasn't already taken evaluation
-    list_activities = [r.Project.Activity for r in Registration.query.filter_by(UserId=current_user.User[0].UserId).all()]
+    list_activities = [r.Project.Activity for r in Registration.query.filter_by(UserId=current_user.UserId).all()]
 
     # Initialize an empty list to store the ActivityIds
     list_activity_ids = []
@@ -191,7 +200,7 @@ def evaluation(id):
         flash('The evaluation you have requested does not exist. Please check if your link is correct.', category='error')
         return redirect(url_for('programs.activities'))
     
-    if Response.query.filter_by(EvaluationId=id, BeneficiaryId=current_user.User[0].UserId).first():
+    if Response.query.filter_by(EvaluationId=id, BeneficiaryId=current_user.UserId).first():
         evaluation_taken = True
         return render_template("evaluation/evaluation.html", evaluation=evaluation, evaluation_taken=evaluation_taken)
 
@@ -216,12 +225,12 @@ def evaluation(id):
 
             if not response is None and not response.isspace() and response != "":
                 if question.Type == 1:
-                    if not save_response(id, current_user.User[0].UserId, question.QuestionId, None, int(response)):
+                    if not save_response(id, current_user.UserId, question.QuestionId, None, int(response)):
                         error = 1
                         break
 
                 elif question.Type == 2:
-                    if not save_response(id, current_user.User[0].UserId, question.QuestionId, response, None):
+                    if not save_response(id, current_user.UserId, question.QuestionId, response, None):
                         error = 1
                         break
         if not error:
