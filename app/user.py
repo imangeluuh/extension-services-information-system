@@ -8,9 +8,9 @@ bp = Blueprint('user', __name__, template_folder="templates", static_folder="sta
 @bp.route('/profile')
 def profile():
     # Get all projects current user are registered
-    projects_id = [registration.ProjectId for registration in Registration.query.filter_by(UserId=current_user.User[0].UserId).all()]
+    projects_id = [registration.ProjectId for registration in Registration.query.filter_by(UserId=current_user.UserId).all()]
     user_projects = [Project.query.filter_by(ProjectId=project_id).first() for project_id in projects_id]
-    user_certificates = Certificate.query.filter_by(UserId=current_user.User[0].UserId).all()
+    user_certificates = Certificate.query.filter_by(UserId=current_user.UserId).all()
     
     # Create a list of project and certificate
     projects = []
