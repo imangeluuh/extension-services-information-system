@@ -44,10 +44,12 @@
                                 </div>
                             </div>
                             <div class="col-12 col-md-2 fs-2 mb-2 d-flex flex-column justify-content-center ">
+                                {% if current_user and current_user.RoleId == 2%}
                                 {% if activity.Evaluation and activity.Evaluation[0].State == 1 and (activity.Date.strftime('%Y-%m-%d') < current_date.strftime('%Y-%m-%d') and not bool_is_evaluation_taken ) %}
                                 <a href="{{ url_for('evaluation.evaluation', id=activity.Evaluation[0].EvaluationId)}}" class="btn w-fit text-white" style="background-color: #800000;">
                                     Take the evaluation
                                 </a>
+                                {% endif %}
                                 {% endif %}
                             </div>
                         </div>

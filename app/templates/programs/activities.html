@@ -21,18 +21,18 @@
     <div class="container-xl">
         {% for activity in activities %}
         <div class="card mb-4">
-            <div class="row row-0">
-                <div class="col-3">
+            <div class="row">
+                <div class="col-12 col-sm-3">
                     <!-- Photo -->
-                    <img src="{{activity.ImageUrl}}" class="w-100 h-100 object-cover card-img-start" alt="{{activity.ActivityName}}">
+                    <img src="{{activity.ImageUrl if activity.ImageUrl else url_for('static', filename='images/obelisk.webp')}}" height="180px" class="w-100 card-img-start object-fit-cover " alt="{{activity.ActivityName}}">
                 </div>
-                <div class="col">
+                <div class="col-12 col-sm-9">
                 <div class="card-body d-flex flex-column justify-content-between" style="max-height: 150px;">
                     <div>
                         <a href="{{url_for('programs.activity', id=activity.ActivityId)}}" class="text-black">
                             <h3 class="card-title mb-1">{{activity.ActivityName}}</h3>
                         </a>
-                        <div class="text-truncate text-" style="max-height: 50px;">
+                        <div class="text-truncate text-wrap" style="max-height: 100px;">
                             <p class="text-secondary">{{activity.Description|safe}}</p>
                         </div>
                     </div>

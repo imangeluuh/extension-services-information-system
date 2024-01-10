@@ -31,7 +31,7 @@ class User(db.Model, UserMixin):
     Gender = db.Column(db.String(20), nullable=False)
     DateOfBirth = db.Column(db.Date, nullable=False)
     PlaceOfBirth = db.Column(db.String(50), nullable=False)
-    ResidentialAddress = db.Column(db.String(50), nullable=False)
+    ResidentialAddress = db.Column(db.String(255), nullable=False)
     MobileNumber = db.Column(db.String(11), nullable=False)
     RoleId = db.Column(db.Integer, db.ForeignKey('Role.RoleId', ondelete='CASCADE'), nullable=False)
     Role = db.relationship("Role", back_populates='User', passive_deletes=True)

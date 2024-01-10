@@ -20,19 +20,19 @@
 <div class="page-body">
     <div class="container-xl">
         {% for project in projects %}
-        <div class="card mb-4">
-            <div class="row row-0">
-                <div class="col-3">
+        <div class="card mb-4 ">
+            <div class="row d-flex">
+                <div class="col-12 col-sm-3 pe-0">
                     <!-- Photo -->
-                    <img src="{{project.ImageUrl}}" class="w-100 h-100 object-cover card-img-start" alt="{{project.Title}}">
+                    <img src="{{project.ImageUrl if project.ImageUrl else url_for('static', filename='images/obelisk.webp')}}" height="180px" class="w-100 object-cover card-img-start" alt="{{project.Title}}">
                 </div>
-                <div class="col">
-                <div class="card-body">
-                    <a href="{{url_for('programs.project', id=project.ProjectId)}}" class="text-black">
-                        <h3 class="card-title">{{project.Title}}</h3>
-                    </a>
-                    <p class="text-secondary">{{project.ImpactStatement|safe}}</p>
-                </div>
+                <div class="col-12 col-sm-9">
+                    <div class="card-body">
+                        <a href="{{url_for('programs.project', id=project.ProjectId)}}" class="text-black">
+                            <h3 class="card-title">{{project.Title}}</h3>
+                        </a>
+                        <div class="d-block text-secondary text-wrap text-truncate m-0" style="max-height: 100px; ">{{project.ImpactStatement|safe}}</div>
+                    </div>
                 </div>
             </div>
         </div>
