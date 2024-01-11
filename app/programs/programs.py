@@ -907,17 +907,17 @@ def extensionProgram(id):
         faculty_team.update(project.ProjectTeam)
 
     # Make a GET request to the API with the API key in the headers
-    response = getFacultyData()
+    # response = getFacultyData()
 
-    if response.status_code == 200:
-        # Process the API response data
-        api_data = response.json()
+    # if response.status_code == 200:
+    #     # Process the API response data
+    #     api_data = response.json()
         
-        faculty_profile = {}
-        # RETURNING SPECIFIC DATA FROM ALL FACULTIES
-        for faculty in faculty_team.items():
-            faculty_info = api_data['Faculties'][faculty[0]]
-            faculty_profile[faculty[0]] = 'https://drive.google.com/uc?export=view&id='+faculty_info['profile_pic']
+    #     faculty_profile = {}
+    #     # RETURNING SPECIFIC DATA FROM ALL FACULTIES
+    #     for faculty in faculty_team.items():
+    #         faculty_info = api_data['Faculties'][faculty[0]]
+    #         faculty_profile[faculty[0]] = 'https://drive.google.com/uc?export=view&id='+faculty_info['profile_pic']
     
     return render_template('programs/extension_program.html', extension_program=extension_program, projects=projects, events=events, faculty_team=faculty_team, faculty_profile=faculty_profile)
 

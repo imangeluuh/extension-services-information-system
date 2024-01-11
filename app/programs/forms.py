@@ -80,10 +80,11 @@ class ProjectForm(FlaskForm):
         
         with current_app.app_context():
             self.collaborator.choices = [(collaborator.CollaboratorId, collaborator.Organization) for collaborator in Collaborator.query.all()]
-            try:
-                self.project_team.choices = getFacultyNames()
-            except:
-                self.project_team.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
+            # try:
+            #     self.project_team.choices = getFacultyNames()
+            # except:
+            #     self.project_team.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
+            self.project_team.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
 
 class ActivityForm(FlaskForm):
     activity_name = StringField("Activity Name", validators=[DataRequired()])
@@ -101,10 +102,11 @@ class ActivityForm(FlaskForm):
         
         with current_app.app_context():
             self.location.choices = [(location.LocationId, location.LocationName) for location in Location.query.all()]
-            try:
-                self.speaker.choices = getFacultyNames()
-            except:
-                self.speaker.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
+            # try:
+            #     self.speaker.choices = getFacultyNames()
+            # except:
+            #     self.speaker.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
+            self.speaker.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
 class CombinedForm(FlaskForm):
     extension_program = FormField(ProgramForm)
     project = FormField(ProjectForm)
