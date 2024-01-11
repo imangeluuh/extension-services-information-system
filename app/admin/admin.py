@@ -1,8 +1,8 @@
 from app.admin import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
 from flask_login import current_user, login_user, login_required, logout_user
-from .forms import LoginForm, CollaboratorForm
-from ..models import Beneficiary, Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity
+from .forms import LoginForm, CollaboratorForm, SpeakerForm
+from ..models import Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity, Speaker
 from ..Api.resources import AdminLoginApi
 from ..decorators.decorators import login_required
 from app import db, api
@@ -334,3 +334,11 @@ def deleteCollaborator(id):
         flash('There was an issue deleting the extension program.', category='error')
 
     return redirect(request.referrer)
+
+@bp.route('/speakers')
+@login_required(role=["Admin"])
+def speakers():
+    form = SpeakerForm()
+    speakers = Speaker.query.all()
+    return render_template('admin/speakers.html', speakers=speakers, form=form)
+

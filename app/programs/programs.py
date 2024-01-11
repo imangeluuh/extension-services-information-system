@@ -9,7 +9,7 @@ from app import db, cache
 from ..store import uploadImage, purgeImage
 from werkzeug.utils import secure_filename
 import os, requests
-from ..decorators.decorators import login_required
+from ..decorators.decorators import login_required, role_excluded
 from ..Api.resources import ExtensionProgramListApi
 from sqlalchemy import func
 from fillpdf import fillpdfs

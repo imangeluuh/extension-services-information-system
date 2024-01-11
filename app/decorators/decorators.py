@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import current_app
+from flask import current_app, redirect, url_for
 from flask_login import current_user
 
 def login_required(role=["ANY"]):
@@ -14,3 +14,13 @@ def login_required(role=["ANY"]):
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
+
+def role_excluded(role):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if current_user.is_authenticated and current_user.get_role() in role:  # Check for authentication and role
+                return redirect(url_for('programs.programs'))  # Forbidden for these roles
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator

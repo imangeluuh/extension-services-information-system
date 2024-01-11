@@ -33,3 +33,12 @@ class CollaboratorForm(FlaskForm):
     organization = StringField("Organization", validators=[DataRequired()])
     location = StringField("Location", validators=[DataRequired()])
     signed_moa = FileField("Signed MOU/MOA", validators=[FileAllowed(['jpg', 'png', 'jpeg', 'pdf', 'docs', 'docx'])])
+
+class SpeakerForm(FlaskForm):
+    first_name = StringField("First Name", validators=[DataRequired()])
+    middle_name = StringField("Middle Name")
+    last_name = StringField("Last Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    contact_details = StringField("Contact Details", validators=[DataRequired()])
+
+

@@ -1,4 +1,4 @@
-{% if current_user.is_authenticated and current_user.Role.RoleName ["Admin", "Faculty"] %}
+{% if current_user.is_authenticated and current_user.Role.RoleName in ["Admin", "Faculty"] %}
     {% extends 'admin/base.html' %}
 {% else %}
     {% extends 'base.html' %}
