@@ -1,7 +1,7 @@
 from app.auth import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
 from .forms import RegisterForm, LoginForm, ResetPasswordRequestForm, ResetPasswordForm
-from ..models import User, Beneficiary, Faculty
+from ..models import User, Beneficiary, Faculty, Student
 from app import db
 from flask_login import login_user, logout_user, current_user
 from datetime import timedelta
@@ -89,11 +89,20 @@ def studentLogin():
 
     if request.method == "POST":
         if form.validate_on_submit():
-            attempted_user = User.query.filter_by(Email=form.email.data).first()
-            if attempted_user and attempted_user.RoleId == 3:
-                if attempted_user.check_password_correction(attempted_password=form.password.data):
-                    login_user(attempted_user, remember=True)
-                    return redirect(url_for('home')) # temp route
+            attempted_user = Student.query.filter_by(Email=form.email.data).first()
+            if attempted_user: # Account existing in SPS
+                if not attempted_user.User:  # if SPS account not yet registered in ESISUser
+                    # Create row for SPS account in EISUser
+                    account_to_create = User(UserId=uuid.uuid4(),
+                                            RoleId=4,
+                                            FacultyId=attempted_user.FacultyId)
+                    db.session.add(account_to_create)
+                    db.session.commit()
+                # Login to system
+                if check_password_hash(attempted_user.Password, form.password.data):
+                    isRemember = True if request.form.get('remember') else False
+                    login_user(attempted_user.User[0], remember=isRemember)
+                    return redirect(url_for('home'))
                 else:
                     flash('The password you\'ve entered is incorrect.', category='error')
             else:
