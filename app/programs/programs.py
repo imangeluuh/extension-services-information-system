@@ -260,14 +260,12 @@ def updateExtensionProgram(id):
 def deleteExtensionProgram(id):
     extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
     try:
-        if extension_program.ImageFileId is not None:
-            status = purgeImage(extension_program.ImageFileId)
         db.session.delete(extension_program)
         db.session.commit()
         flash('Extension program is successfully deleted.', category='success')
     except Exception as e:
         print(e)
-        flash(f'There was an issue deleting the extension program. {e}', category='error')
+        flash('There was an issue deleting the extension program.', category='error')
 
     return redirect(url_for('programs.programs'))
 
@@ -658,20 +656,18 @@ def projectBudget(id):
     project = Project.query.filter_by(ProjectId=id).first()
     to_be_purchased_items = []
     purchased_items = []
-    if project.Activity:
-        for activity in project.Activity:
-            if activity.Item:
-                for item in activity.Item:
-                    if item.IsPurchased==0:
-                        to_be_purchased_items.append(item)
-                    else:
-                        purchased_items.append(item)
+    if project.Item:
+        for item in project.Item:
+            if item.IsPurchased==0:
+                to_be_purchased_items.append(item)
+            else:
+                purchased_items.append(item)
 
     if request.method == 'POST':
         if form.validate_on_submit():
             item_to_add = Item(ItemName=form.item.data,
                                 Amount=form.amount.data,
-                                ActivityId=form.activity.data)
+                                ProjectId=form.project.data)
             try:
                 db.session.add(item_to_add)
                 db.session.commit()
@@ -714,7 +710,7 @@ def updateItem(id):
     form = ItemForm()
     item = Item.query.filter_by(ItemId=id).first()
     item.ItemName = form.item.data
-    item.ActivityId = form.activity.data
+    item.ProjectId = form.project.data
     item.Amount = form.amount.data
     try:
         db.session.commit()

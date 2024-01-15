@@ -10,17 +10,10 @@
                 {{form.item(class="form-control", value=item.ItemName)}}
               </div>
               <div class="col-12 mb-3">
-                {{form.activity.label(class="form-label")}}
-                <select name="{{form.activity.name}}" id="{{form.activity.id}}" class="form-select">
-                  {% for activity in project.Activity %}
-                  <option value="{{activity.ActivityId}}" {{'selected' if activity.ActivityId==item.ActivityId}}>{{activity.ActivityName}}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="col-12 mb-3">
                 <label for="amount" class="form-label">Amount</label>
                 {{form.amount(class="form-control", value=item.Amount)}}
               </div>
+              {{form.project(value=project.ProjectId)}}
             </div>
           </div>
           <div class="modal-footer">

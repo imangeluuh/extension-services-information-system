@@ -114,7 +114,6 @@
                     <p class="id d-none">{{item.ItemId}}</p>
                     <p class="previous-status d-none">0</p>
                     <p class="item-name mb-2" draggable="true">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{item.Amount}}</span></p>
-                    <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
                   </div>
                   <div class="col-12 col-md-3 d-flex align-items-center">
                     <div class="row d-flex align-items-center">
@@ -191,17 +190,10 @@
               {{form.item(class="form-control")}}
           </div>
           <div class="col-12 mb-3">
-              {{form.activity.label(class="form-label")}}
-              <select name="{{form.activity.name}}" id="{{form.activity.id}}" class="form-select">
-                {% for activity in project.Activity %}
-                <option value="{{activity.ActivityId}}">{{activity.ActivityName}}</option>
-                {% endfor %}
-              </select>
-          </div>
-          <div class="col-12 mb-3">
             <label for="amount" class="form-label">Estimated Amount</label>
             {{form.amount(class="form-control")}}
           </div>
+          {{form.project(value=project.ProjectId)}}
         </div>
       </div>
       <div class="modal-footer">

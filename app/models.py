@@ -231,9 +231,10 @@ class Project(db.Model):
     Collaborator = db.relationship("Collaborator", back_populates='Projects', lazy=True)
     ExtensionProgram = db.relationship("ExtensionProgram", back_populates='Projects', lazy=True, passive_deletes=True)
     Registration = db.relationship('Registration', backref='Project', cascade='all, delete-orphan', passive_deletes=True)
-    Certificate = db.relationship('Certificate', back_populates='Project')
+    Certificate = db.relationship('Certificate', back_populates='Project', cascade='all, delete-orphan')
     Activity = db.relationship("Activity", back_populates="Project", cascade='all, delete-orphan')
     Budget = db.relationship('Budget', back_populates='Project', cascade='all, delete-orphan')
+    Item = db.relationship('Item', back_populates='Project', cascade='all, delete-orphan')
 
     def totalBudget(self):
         # Calculates and returns the total budget for the project.
@@ -299,7 +300,6 @@ class Activity(db.Model):
     Location = db.relationship('Location', back_populates='Activity', passive_deletes='all')
     Evaluation = db.relationship("Evaluation", back_populates='Activity', cascade='all, delete-orphan', lazy=True)
     Attendance = db.relationship('Attendance', back_populates='Activity', cascade='all, delete-orphan')
-    Item = db.relationship('Item', back_populates='Activity', cascade='all, delete-orphan')
 
 class Location(db.Model):
     __tablename__ = 'ESISLocation'
@@ -330,8 +330,8 @@ class Item(db.Model):
     DatePurchased = db.Column(db.DateTime)
     ReceiptUrl = db.Column(db.Text)
     ReceiptId = db.Column(db.Text)
-    ActivityId = db.Column(db.Integer, db.ForeignKey('ESISActivity.ActivityId', ondelete='CASCADE'), nullable=False)
-    Activity = db.relationship("Activity", back_populates="Item", passive_deletes=True)
+    ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), nullable=False)
+    Project = db.relationship("Project", back_populates="Item", passive_deletes=True)
 
 class Budget(db.Model):
     __tablename__ = 'ESISProjectBudget'
@@ -445,5 +445,5 @@ class Certificate(db.Model):
     UserId = db.Column(db.String(36), db.ForeignKey('ESISUser.UserId'), nullable=False)
     ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), nullable=False)
     User = db.relationship("User", back_populates="Certificate", passive_deletes=True)
-    Project = db.relationship("Project", back_populates="Certificate")
+    Project = db.relationship("Project", back_populates="Certificate", passive_deletes=True)
 
