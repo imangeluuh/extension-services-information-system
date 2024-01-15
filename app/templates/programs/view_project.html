@@ -91,7 +91,7 @@ object-fit: cover;">
                         </div>
                         <div class="col-auto col-md-4">
                             <div class="datagrid-title">Lead Proponent</div>
-                            <div class="datagrid-content">{{project.LeadProponent.FirstName}} {{project.LeadProponent.LastName}}</div>
+                            <div class="datagrid-content">{{project.LeadProponent.Faculty.FirstName}} {{project.LeadProponent.Faculty.LastName}}</div>
                         </div>
                         <div class="col-auto col-md-4">
                             <div class="datagrid-title">Collaborator</div>
@@ -115,11 +115,7 @@ object-fit: cover;">
                             <div class="datagrid-title">End Date</div>
                             <div class="datagrid-content">{{project.EndDate}}</div>
                         </div>
-                        <div class="col-auto col-md-2">
-                            <div class="datagrid-title">Status</div>
-                            <div class="datagrid-content">{{project.Status}}</div>
-                        </div>
-                        <div class="col-7">
+                        <div class="col-8">
                             <div class="datagrid-title">Target Group</div>
                             <div class="datagrid-content">{{project.TargetGroup}}</div>
                         </div>
@@ -155,14 +151,19 @@ object-fit: cover;">
                             <tbody>
                                 {% for user in registered %}
                                 <tr>
-                                    <td>{{ user.User.FirstName }}</td>
-                                    <td>{{ user.User.MiddleName if user.User.MiddleName else 'N/A' }}</td>
-                                    <td>{{ user.User.LastName }}</td>
+                                    <td>{{ user.User.Beneficiary.FirstName if user.User.Role.RoleName == "Beneficiary" else user.User.Student.FirstName }}</td>
+                                    <td>{% if user.User.Role.RoleName == "Beneficiary" %}
+                                        {{ user.User.Beneficiary.MiddleName if user.User.Beneficiary.MiddleName else 'N/A' }}
+                                        {% else %}
+                                        {{ user.User.Student.MiddleName if user.User.Student.MiddleName else 'N/A' }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.User.Beneficiary.LastName if user.User.Role.RoleName == "Beneficiary" else user.User.Student.LastName}}</td>
                                     <td>{{ user.User.Role.RoleName }}</td>
                                     {% if current_user.Role.RoleName == 'Admin' %}
                                     <td class="d-flex">
-                                        <a href="{{ url_for('admin.viewUser', id=user.User.UserNumber) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">View</a>
                                         {% if user.User.Role.RoleName == 'Student' %}
+                                        <a href="{{ url_for('admin.viewStudent', id=user.User.Student.StudentNumber) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">View</a>
                                         <form action="{{ url_for('programs.assignStudent')}}" method="post">
                                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
                                             <input type="hidden" name="id" value="{{user.RegistrationId}}">
@@ -170,6 +171,8 @@ object-fit: cover;">
                                             <input type="hidden" name="project_id" value="{{project.ProjectId}}">
                                             <input type="submit" value="{{'Assign' if user.IsAssigned == 0 else 'Unassign' }}" class="btn {{'btn-success' if user.IsAssigned == 0 else 'btn-danger'}} me-2 px-2 py-1 rounded-2">
                                         </form>
+                                        {% else %}
+                                        <a href="{{ url_for('admin.viewBeneficiary', id=user.User.Beneficiary.BeneficiaryId) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">View</a>
                                         {% endif %}
                                     </td>
                                     {% endif %}

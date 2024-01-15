@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, DateField, SelectField, TextAreaField, SubmitField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError, Regexp, Optional
-from ..models import User
+from ..models import Beneficiary
 from datetime import datetime, timedelta
 
 class RegisterForm(FlaskForm):
@@ -11,9 +11,9 @@ class RegisterForm(FlaskForm):
     contact_details = StringField(label="Contact Details", validators=[DataRequired(), Regexp(r'^09\d{9}$', message="Please match the contact number format. 09123456789- 11 numbers only")])
     birthdate = DateField(label="Date of Birth",  validators=[DataRequired()])
     birthplace = StringField(label="Place of Birth",  validators=[DataRequired()])
-    gender = SelectField(label="Gender", choices=[('Female', 'Female'),
-        ('Male', 'Male'),
-        ('Nonbinary', 'Nonbinary')], validators=[DataRequired()])
+    gender = SelectField(label="Gender", choices=[(1, 'Male'),
+        (2, 'Female'),
+        (3, 'Others')], validators=[DataRequired()])
     address = StringField(label="Home Address",  validators=[DataRequired()])
     email = StringField(label="Email", validators=[Email(), DataRequired()])
     password1 = PasswordField(label="Password", validators=[Length(min=6), DataRequired()])
@@ -21,7 +21,7 @@ class RegisterForm(FlaskForm):
     signup = SubmitField(label='Sign up')
 
     def validate_email(self, email):
-        existing_participant_email = User.query.filter_by(Email=email.data).first()
+        existing_participant_email = Beneficiary.query.filter_by(Email=email.data).first()
 
         if existing_participant_email:
             raise ValidationError("Email already exists. Please choose a different one.")

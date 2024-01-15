@@ -26,7 +26,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path></svg>
                                     Profile</a>
                             </li>
-                            {% if user.Role.RoleName != "Faculty" %}
+                            {# if user.User[0].RoleId != "Faculty" #}
                             <li class="nav-item" role="presentation">
                                 <a href="#tabs-home-3" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24"  viewBox="0 0 28 28"><path fill="currentColor" d="M6 12.5a2.5 2.5 0 1 1 5 0a2.5 2.5 0 0 1-5 0Zm2.5-1a1 1 0 1 0 0 2a1 1 0 0 0 0-2Zm0 5.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5Zm-1 2.5a1 1 0 1 1 2 0a1 1 0 0 1-2 0Zm5.5-7.25a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1-.75-.75Zm.75 6.25a.75.75 0 0 0 0 1.5h7.5a.75.75 0 0 0 0-1.5h-7.5ZM6 7.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 7.25ZM6.75 3A3.75 3.75 0 0 0 3 6.75v14.5A3.75 3.75 0 0 0 6.75 25h14.5A3.75 3.75 0 0 0 25 21.25V6.75A3.75 3.75 0 0 0 21.25 3H6.75ZM4.5 6.75A2.25 2.25 0 0 1 6.75 4.5h14.5a2.25 2.25 0 0 1 2.25 2.25v14.5a2.25 2.25 0 0 1-2.25 2.25H6.75a2.25 2.25 0 0 1-2.25-2.25V6.75Z"/></svg>
@@ -36,7 +36,7 @@
                                 <a href="#tabs-home-5" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 17h2.1l6-5.95l-2.15-2.15L7 14.85V17Zm8.8-6.65l1.05-1.1Q17 9.1 17 8.9t-.15-.35l-1.4-1.4Q15.3 7 15.1 7t-.35.15l-1.1 1.05l2.15 2.15ZM5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h4.2q.325-.9 1.088-1.45T12 1q.95 0 1.713.55T14.8 3H19q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21H5Zm0-2h14V5H5v14Zm7-14.75q.325 0 .538-.213t.212-.537q0-.325-.213-.537T12 2.75q-.325 0-.537.213t-.213.537q0 .325.213.538T12 4.25ZM5 19V5v14Z"/></svg> Attendance</a>
                             </li>
-                            {% endif %}
+                            {# endif #}
                         </ul>
                     </div>
                     <div class="card-body">
@@ -48,15 +48,23 @@
                                         <div class="mb-3 d-flex flex-column">
                                             <!-- user id -->
                                             <span class="datagrid-title">
-                                                {% if user.Role.RoleName == "Beneficiary"%}
+                                                {% if user.User[0].RoleId == 2 %}
                                                 Beneficiary
-                                                {% elif user.Role.RoleName == "Student" %}
+                                                {% elif user.User[0].RoleId == 3 %}
                                                 Student
                                                 {% else %}
                                                 Faculty
-                                                {% endif %} Number
+                                                {% endif %} ID
                                             </span>
-                                            <span class="datagrid-content">{{ user.UserNumber }}</span>
+                                            <span class="datagrid-content">
+                                                {% if user.User[0].RoleId == 2 %}
+                                                {{user.BeneficiaryId}}
+                                                {% elif user.User[0].RoleId == 3 %}
+                                                {{user.StudentNumber}}
+                                                {% else %}
+                                                {{user.FacultyId}}
+                                                {% endif %}
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="col-auto col-md-3">
@@ -84,9 +92,16 @@
                                         <div class="mb-3 d-flex flex-column">
                                             <!-- birthdate -->
                                             <span class="datagrid-title">Date of Birth</span>
-                                            <span class="datagrid-content">{{ user.DateOfBirth }}</span>
+                                            <span class="datagrid-content">
+                                                {% if user.User[0].RoleId == 4 %}
+                                                {{user.BirthDate}}
+                                                {% else %}
+                                                {{ user.DateOfBirth }}
+                                                {% endif %}
+                                            </span>
                                         </div>
                                     </div>
+                                    {% if user.User[0].RoleId != 4 %}
                                     <div class="col-auto col-md-3">
                                         <div class="mb-3 d-flex flex-column">
                                             <!-- birthdplace -->
@@ -94,11 +109,20 @@
                                             <span class="datagrid-content">{{ user.PlaceOfBirth }}</span>
                                         </div>
                                     </div>
+                                    {% endif %}
                                     <div class="col-auto col-md-3">
                                         <div class="mb-3 d-flex flex-column">
                                             <!-- gender-->
                                             <span class="datagrid-title">Gender</span>
-                                            <span class="datagrid-content"> {{ user.Gender }}</span>
+                                            <span class="datagrid-content">
+                                                {% if user.Gender == 1%}
+                                                Male
+                                                {% elif user.Gender == 2%}
+                                                Female
+                                                {% else%}
+                                                Others
+                                                {% endif%}
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="col-auto col-md-3">
@@ -108,7 +132,7 @@
                                             <span class="datagrid-content">{{ user.Email}}</span>
                                         </div>
                                     </div>
-                                    <div class="col-auto col-md-6">
+                                    <div class="col-auto col-md-3">
                                         <div class="mb-3 d-flex flex-column">
                                             <!-- contact -->
                                             <span class="datagrid-title">Mobile Number</span>
@@ -124,7 +148,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {% if user.Role.RoleName != "Faculty" %}
+                            
                             <div class="tab-pane" id="tabs-home-3" role="tabpanel">
                                 <div class="hidden p-4 rounded-3 " id="projects" role="tabpanel" aria-labelledby="projects-tab">
                                     <table id="projects-table" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
@@ -132,7 +156,7 @@
                                             <tr>
                                                 <th data-priority="1" class="text-start">Project Name</th>
                                                 <th data-priority="2" class="text-start">Extension Program</th>
-                                                {% if user.Role.RoleName != "Faculty" %}
+                                                {% if user.User[0].RoleId != 4 %}
                                                 <th data-priority="3" class="text-start">Lead Proponent</th>
                                                 {% endif %}
                                                 <th data-priority="4" class="text-start">Status</th>
@@ -142,12 +166,20 @@
                                         <tbody>
                                             {% for project in user_projects %}
                                             <tr>
-                                                <td>{{ project.Title }}</td>
+                                                <td class="text-truncate " style="max-width: 200px;">{{ project.Title }}</td>
                                                 <td>{{ project.ExtensionProgram.Name }}</td>
-                                                {% if user.Role.RoleName != "Faculty" %}
-                                                <td>{{ project.LeadProponent.FirstName ~ ' ' ~ project.LeadProponent.LastName }}</td>
+                                                {% if user.User[0].RoleId != 4 %}
+                                                <td>{{ project.LeadProponent.Faculty.FirstName ~ ' ' ~ project.LeadProponent.Faculty.LastName }}</td>
                                                 {% endif %}
-                                                <td>{{ project.Status }}</td>
+                                                <td>
+                                                    {% if project.EndDate < current_date  %}
+                                                    Finished
+                                                    {% elif project.StartDate > current_date %}
+                                                    Upcoming
+                                                    {% else %}
+                                                    Ongoing
+                                                    {% endif %}
+                                                </td>
                                                 <td><a href="{{ url_for('programs.viewProject', id=project.ProjectId) }}" class="btn btn-success">View</a></td>
                                             </tr>
                                             {% endfor %}
@@ -155,6 +187,7 @@
                                     </table>
                                 </div>
                             </div>
+                            {% if user.User[0].RoleId != 4 %}
                             <div class="tab-pane" id="tabs-home-5" role="tabpanel">
                                 <div class="accordion" id="project-accordion">
                                     <div class="accordion-item">

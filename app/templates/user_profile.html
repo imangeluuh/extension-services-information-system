@@ -1,4 +1,8 @@
+{% if current_user.RoleId in [2, 3] %}
 {% extends 'base.html' %}
+{% else %}
+{% extends 'admin/base.html' %}
+{% endif %}
 {% block head %}
     <title>Profile - PUPQC-ESIS</title>
     <!--Regular Datatables CSS-->
@@ -13,7 +17,15 @@
         <h2 class="page-title mb-3">Personal Data</h2>
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title text-uppercase text-danger fw-bolder">{{current_user.LastName}}, {{current_user.FirstName}} {{current_user.MiddleName if current_user.MiddleName}}</h3>
+                <h3 class="card-title text-uppercase text-danger fw-bolder">
+                    {% if current_user.RoleId == 2 %}
+                    {{current_user.Beneficiary.LastName}}, {{current_user.Beneficiary.FirstName}} {{current_user.Beneficiary.MiddleName if current_user.Beneficiary.MiddleName}}
+                    {% elif current_user.RoleId == 3 %}
+                    {{current_user.Student.LastName}}, {{current_user.Student.FirstName}} {{current_user.Student.MiddleName if current_user.Student.MiddleName}}
+                    {% else %}
+                    {{current_user.Faculty.LastName}}, {{current_user.Faculty.FirstName}} {{current_user.Faculty.MiddleName if current_user.Faculty.MiddleName}}
+                    {% endif %}
+                </h3>
             </div>
             <div class="card-body">
                 <div class="row gy-2">
@@ -21,31 +33,79 @@
                         <div class="datagrid-title">ID</div>
                     </div>
                     <div class="col-12 col-md-9 datagrid-item">
-                        <div class="datagrid-content fw-bold">{{current_user.UserId}}</div>
+                        <div class="datagrid-content fw-bold">
+                            {% if current_user.RoleId == 2 %}
+                            {{current_user.Beneficiary.BeneficiaryId}}
+                            {% elif current_user.RoleId == 3 %}
+                            {{current_user.Student.StudentId}}
+                            {% else %}
+                            {{current_user.Faculty.FacultyId}}
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="col-12 col-md-3 datagrid-item">
                         <div class="datagrid-title">Name</div>
                     </div>
                     <div class="col-12 col-md-9 datagrid-item">
-                        <div class="datagrid-content fw-bold text-uppercase ">{{current_user.LastName}}, {{current_user.FirstName}} {{current_user.MiddleName if current_user.MiddleName}}</div>
+                        <div class="datagrid-content fw-bold text-uppercase ">
+                            {% if current_user.RoleId == 2 %}
+                            {{current_user.Beneficiary.LastName}}, {{current_user.Beneficiary.FirstName}} {{current_user.Beneficiary.MiddleName if current_user.Beneficiary.MiddleName}}
+                            {% elif current_user.RoleId == 3 %}
+                            {{current_user.Student.LastName}}, {{current_user.Student.FirstName}} {{current_user.Student.MiddleName if current_user.Student.MiddleName}}
+                            {% else %}
+                            {{current_user.Faculty.LastName}}, {{current_user.Faculty.FirstName}} {{current_user.Faculty.MiddleName if current_user.Faculty.MiddleName}}
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="col-12 col-md-3 datagrid-item">
                         <div class="datagrid-title">Gender</div>
                     </div>
                     <div class="col-12 col-md-9 datagrid-item">
-                        <div class="datagrid-content fw-bold">{{current_user.Gender}}</div>
+                        <div class="datagrid-content fw-bold">
+                            {% if current_user.RoleId == 2 %}
+                            {% set gender = current_user.Beneficiary.Gender%}
+                            {% elif current_user.RoleId == 3 %}
+                            {% set gender = current_user.Student.Gender%}
+                            {% else %}
+                            {% set gender = current_user.Faculty.Gender%}
+                            {% endif %}
+
+                            {% if gender == 1%}
+                            Male
+                            {% elif gender == 2%}
+                            Female
+                            {% else %}
+                            Others
+                            {% endif%}
+                        </div>
                     </div>
                     <div class="col-12 col-md-3 datagrid-item">
                         <div class="datagrid-title">Date of Birth</div>
                     </div>
                     <div class="col-12 col-md-9 datagrid-item">
-                        <div class="datagrid-content fw-bold">{{current_user.Birthdate}}</div>
+                        <div class="datagrid-content fw-bold">
+                            {% if current_user.RoleId == 2 %}
+                            {{current_user.Beneficiary.DateOfBirth}}
+                            {% elif current_user.RoleId == 3 %}
+                            {{current_user.Student.DateOfBirth}}
+                            {% else %}
+                            {{current_user.Faculty.BirthDate}}
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="col-12 col-md-3 datagrid-item">
                         <div class="datagrid-title">Contact Details</div>
                     </div>
                     <div class="col-12 col-md-9 datagrid-item">
-                        <div class="datagrid-content fw-bold">{{current_user.ContactDetails}}</div>
+                        <div class="datagrid-content fw-bold">
+                            {% if current_user.RoleId == 2 %}
+                            {{current_user.Beneficiary.MobileNumber}}
+                            {% elif current_user.RoleId == 3 %}
+                            {{current_user.Student.MobileNumber}}
+                            {% else %}
+                            {{current_user.Faculty.MobileNumber}}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -69,11 +129,19 @@
                             <tr>
                                 <td>{{ project[0].Title}}</td>
                                 <td>{{ project[0].ExtensionProgram.Name }}</td>
-                                <td>{{ project[0].Status }}</td>
                                 <td>
-                                    <a href="{{url_for('programs.project', id=project[0].ProjectId)}}" class="btn text-white" style="background-color: #D99923;">View</a>
+                                    {% if project[0].EndDate < current_date  %}
+                                    Finished
+                                    {% elif project[0].StartDate > current_date %}
+                                    Upcoming
+                                    {% else %}
+                                    Ongoing
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{url_for('programs.project', id=project[0].ProjectId)}}" class="btn btn-success">View</a>
                                     {% if project[1] %}
-                                    <a href="{{project[1].CertificateUrl}}" class="btn text-white" style="background-color: #D99923;">Certificate</a>
+                                    <a href="{{project[1].CertificateUrl}}" class="btn btn-success">Certificate</a>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -94,7 +162,13 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var table = $('#projects').DataTable({
-                responsive: true
+                responsive: true,
+                "columns": [
+                    null,
+                    null,
+                    { "width": "10%" },
+                    { "width": "20%" },
+                ]
         })
     });
 </script>

@@ -28,6 +28,7 @@
 <div class="card mx-5 mb-5 mt-4">
     <div class="card-header">
         <h3 class="card-title">Details</h3>
+        {% if current_user.RoleId == 1 %}
         <div class="d-flex justify-content-end w-100">
             <a href="#" data-bs-toggle="modal" data-bs-target="#edit-ext-program" class="btn btn-primary d-flex align-items-center ">
                 <iconify-icon icon="bx:edit" class="fs-2 me-1"></iconify-icon>
@@ -35,6 +36,7 @@
             </a>
         </div>
         {% include 'programs/edit_ext_program_modal.html' %}
+        {% endif %}
     </div>
     <div class="card-body">
         <div class="row g-2">
@@ -48,7 +50,7 @@
             </div>
             <div class="col-auto col-md-5">
                 <div class="datagrid-title">Program</div>
-                <div class="datagrid-content">{{ext_program.Program.ProgramName}}</div>
+                <div class="datagrid-content">{{ext_program.Program.Name}}</div>
             </div>
             <div class="col-12">
                 <div class="datagrid-title">Rationale</div>
@@ -84,7 +86,7 @@
                         </div>
                         <div class="col text-truncate">
                             <span class="text-body d-block">{{project.Title}}</span>
-                            <div class="text-secondary text-truncate mt-n1">{{project.LeadProponent.FirstName}} {{project.LeadProponent.LastName}}</div>
+                            <div class="text-secondary text-truncate mt-n1">{{project.LeadProponent.Faculty.FirstName}} {{project.LeadProponent.Faculty.LastName}}</div>
                         </div>
                     </div>
                 </a>
@@ -97,7 +99,7 @@
                     </div>
                     <div class="col text-truncate">
                         <span class="text-body d-block">{{project.Title}}</span>
-                        <div class="text-secondary text-truncate mt-n1">{{project.LeadProponent.FirstName}} {{project.LeadProponent.LastName}}</div>
+                        <div class="text-secondary text-truncate mt-n1">{{project.LeadProponent.Faculty.FirstName}} {{project.LeadProponent.Faculty.LastName}}</div>
                     </div>
                 </div>
             </a>

@@ -89,7 +89,7 @@
                 </div> 
                 <div class="mb-2 col-12">
                     {{ form.address.label(class="form-label") }}
-                    {{ form.address(id="address", class="form-control") }}
+                    {{ form.address(id="address", class="form-control", maxlength="50") }}
                     <ul>
                         {% for error in form.address.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
@@ -154,7 +154,8 @@
         const contact_details = document.getElementById('contact_details').value;
         const birthdate = document.getElementById('birthdate').value;
         const birthplace = document.getElementById('birthplace').value;
-        const gender = document.getElementById('gender').value;
+        const selectGender = document.getElementById('gender');
+        const gender = selectGender.options[selectGender.selectedIndex].text;
         const address = document.getElementById('address').value;
         const email = document.getElementById('email').value;
 

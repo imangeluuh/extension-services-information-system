@@ -4,7 +4,7 @@ from flask_ckeditor import CKEditorField
 from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed
-from ..models import Agenda, Program, Collaborator, Activity, Location, User
+from ..models import Agenda, Collaborator, Activity, Location, User, Faculty, Course
 from app import cache
 import requests
 
@@ -50,7 +50,7 @@ class ProgramForm(FlaskForm):
         
         with current_app.app_context():
             self.agenda.choices = [(agenda.AgendaId, agenda.AgendaName) for agenda in Agenda.query.all()]
-            self.program.choices = [(program.ProgramId, program.ProgramName) for program in Program.query.all()]
+            self.program.choices = [(program.CourseId, program.Name) for program in Course.query.all()]
             
 class ProjectForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
@@ -66,10 +66,6 @@ class ProjectForm(FlaskForm):
     end_date = DateField("End Date", validators=[DataRequired()])
     impact_statement = CKEditorField("Impact Statement", validators=[DataRequired()])
     objectives = CKEditorField("Objective of the Project", validators=[DataRequired()])
-    status = SelectField('Status', choices=[('To be started', 'To be started'),
-                                        ('Ongoing', 'Ongoing'),
-                                        ('Finished', 'Finished')],
-                                        validators=[DataRequired()])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
     project_proposal = FileField('Project Proposal', validators=[FileAllowed(['docx', 'pdf', 'docs'])])
     extension_program = HiddenField()
@@ -80,11 +76,7 @@ class ProjectForm(FlaskForm):
         
         with current_app.app_context():
             self.collaborator.choices = [(collaborator.CollaboratorId, collaborator.Organization) for collaborator in Collaborator.query.all()]
-            # try:
-            #     self.project_team.choices = getFacultyNames()
-            # except:
-            #     self.project_team.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
-            self.project_team.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
+            self.project_team.choices = [(str(faculty.FacultyId), faculty.FirstName + ' ' + faculty.LastName) for faculty in Faculty.query.all()]
 
 class ActivityForm(FlaskForm):
     activity_name = StringField("Activity Name", validators=[DataRequired()])
@@ -102,11 +94,8 @@ class ActivityForm(FlaskForm):
         
         with current_app.app_context():
             self.location.choices = [(location.LocationId, location.LocationName) for location in Location.query.all()]
-            # try:
-            #     self.speaker.choices = getFacultyNames()
-            # except:
-            #     self.speaker.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
-            self.speaker.choices = [(faculty.UserId, faculty.FirstName + ' ' + faculty.LastName) for faculty in User.query.filter(User.RoleId.in_([1,4])).all()]
+            self.speaker.choices = [(str(faculty.FacultyId), faculty.FirstName + ' ' + faculty.LastName) for faculty in Faculty.query.all()]
+            
 class CombinedForm(FlaskForm):
     extension_program = FormField(ProgramForm)
     project = FormField(ProjectForm)

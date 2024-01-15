@@ -1,7 +1,7 @@
 from app.programs import bp
 from flask import render_template, url_for, request, redirect, flash, current_app
 from flask_login import current_user
-from ..models import Project, ExtensionProgram, Program, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance
+from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance, Course, Faculty
 from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm
 import calendar
 from datetime import datetime
@@ -19,22 +19,6 @@ import os
 
 env_path = Path(".") / ".env"
 load_dotenv(dotenv_path=env_path)
-
-
-@cache.cached(timeout=1800, key_prefix='getFacultyData')
-def getFacultyData():
-    url = os.getenv('API_URL')
-    api_key = os.getenv('API_KEY')
-
-    # Set up headers with the API key in the 'API Key' authorization header
-    headers = {
-        'Authorization': 'API Key',
-        'token': api_key,  # 'token' key with the API key value
-        'Content-Type': 'application/json'  # Adjust content type as needed
-    }
-    response = requests.get(url, headers=headers)
-    return response
-
 
 # ============== Admin/Faculty views ===========================
 
@@ -150,7 +134,6 @@ def insertExtensionProgram():
             os.remove(imagepath)
      
         project_team = getProjectTeamInput(form.project.project_team.data, form.project.project_team.choices)
-
         project_to_add = Project(Title = form.project.title.data,
                                 Implementer = form.project.implementer.data,
                                 LeadProponentId = current_user.UserId,
@@ -162,7 +145,6 @@ def insertExtensionProgram():
                                 EndDate = form.project.end_date.data,
                                 ImpactStatement = form.project.impact_statement.data,
                                 Objectives = form.project.objectives.data,
-                                Status = form.project.status.data,
                                 ImageUrl=str_image_url,
                                 ImageFileId=str_image_file_id,
                                 ProjectProposalUrl = str_proposal_url,
@@ -246,7 +228,7 @@ def updateExtensionProgram(id):
             status = saveImage(form.image.data, imagepath)
             if status.error is not None:
                 flash("File Upload Error", category='error')
-                return redirect(url_for('programs.programs'))
+                return redirect(request.referrer)
             else:
                 extension_program.ImageUrl = status.url
                 extension_program.ImageFileId = status.file_id
@@ -264,7 +246,7 @@ def updateExtensionProgram(id):
         except:
             flash('There was an issue updating the extension program.', category='error')
 
-        return redirect(url_for('programs.programs'))
+        return redirect(request.referrer)
     
     if form.errors != {}: # If there are errors from the validations
         for err_msg in form.errors.values():
@@ -334,7 +316,7 @@ def insertProject():
             # Delete file from local storage
             if os.path.exists(imagepath):
                 os.remove(imagepath)
-      
+
             project_team = getProjectTeamInput(form.project_team.data, form.project_team.choices)
 
             project_to_add = Project(Title = form.title.data,
@@ -348,7 +330,6 @@ def insertProject():
                                     EndDate = form.end_date.data,
                                     ImpactStatement = form.impact_statement.data,
                                     Objectives = form.objectives.data,
-                                    Status = form.status.data,
                                     ImageUrl=str_image_url,
                                     ImageFileId=str_image_file_id,
                                     ProjectProposalUrl = str_proposal_url,
@@ -375,9 +356,10 @@ def insertProject():
             flash('Extension project is successfully inserted.', category='success')
             return redirect(request.referrer)
         if form.errors != {}: # If there are errors from the validations
-            for err_msg in form.errors:
-                flash(err_msg, category='error')
-    return redirect(url_for('programs.programs'))
+            for field, error in form.errors.items():
+                flash(f"Field '{field}' has an error: {error}", category='error')
+    print('goodbye')
+    return redirect(url_for("programs.programs"))
 
 
 @bp.route('/project/<int:id>', methods=['GET', 'POST'])
@@ -393,7 +375,6 @@ def viewProject(id):
     
     form.title.data = project.Title
     form.implementer.data = project.Implementer
-    form.collaborator.data = project.Collaborator.CollaboratorId
     form.project_team.data = project.ProjectTeam
     form.target_group.data = project.TargetGroup
     form.project_type.data = project.ProjectType
@@ -401,7 +382,6 @@ def viewProject(id):
     form.end_date.data = project.EndDate
     form.impact_statement.data = project.ImpactStatement
     form.objectives.data = project.Objectives
-    form.status.data = project.Status
 
     return render_template('programs/view_project.html', project=project, form=form, activity_form=activity_form, registered=registered, events=events, project_budget=project_budget)
 
@@ -472,7 +452,6 @@ def updateProject(id):
         extension_project.EndDate = form.end_date.data
         extension_project.ImpactStatement = form.impact_statement.data
         extension_project.Objectives = form.objectives.data
-        extension_project.Status = form.status.data
 
         # Edit budget
         ids = request.form.getlist('id')
@@ -614,13 +593,8 @@ def updateActivity(id):
             if os.path.exists(imagepath):
                 os.remove(imagepath)
 
-        if form.speaker.data:
-            selected_values = form.speaker.data
-            speakers ={}
-            for choice in form.speaker.choices:
-                if choice[0] in selected_values:
-                    speakers[choice[0]] = choice[1]
-
+        if form.speaker.data:            
+            speakers =  getProjectTeamInput(form.speaker.data, form.speaker.choices)
             activity.Speaker = speakers
 
         activity.ActivityName=form.activity_name.data
@@ -635,6 +609,7 @@ def updateActivity(id):
         return redirect(url_for('programs.viewProject', id=activity.ProjectId))
     if form.errors != {}: # If there are errors from the validations
         for field, error in form.errors.items():
+            print(f"Field '{field}' has an error: {error}")
             flash(f"Field '{field}' has an error: {error}")
     return redirect(url_for('programs.viewProject', id=activity.ProjectId))
 
@@ -820,10 +795,10 @@ def cert(id):
     # Get the project proponent's name for the certificate
     project = Project.query.filter_by(ProjectId=id).first()
     project_proponent = User.query.filter_by(UserId=project.LeadProponentId).first()
-    proponent_name = project_proponent.FirstName + ' '
-    if project_proponent.MiddleName:
-        proponent_name += project_proponent.MiddleName[0] + '. '
-    proponent_name += project_proponent.LastName
+    proponent_name = project_proponent.Faculty.FirstName + ' '
+    if project_proponent.Faculty.MiddleName:
+        proponent_name += project_proponent.Faculty.MiddleName[0] + '. '
+    proponent_name += project_proponent.Faculty.LastName
 
     # Get the extension program's name for the certificate
     extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=project.ExtensionProgramId).first()
@@ -831,10 +806,10 @@ def cert(id):
     # Generate certificate for each beneficiary registered in the project
     for beneficiary in registered_beneficiaries:
         # Get the name of the beneficiary for the certificate
-        beneficiary_name = beneficiary.FirstName + ' '
-        if beneficiary.MiddleName:
-            beneficiary_name += beneficiary.MiddleName[0] + '. '
-        beneficiary_name += beneficiary.LastName
+        beneficiary_name = beneficiary.Beneficiary.FirstName + ' '
+        if beneficiary.Beneficiary.MiddleName:
+            beneficiary_name += beneficiary.Beneficiary.MiddleName[0] + '. '
+        beneficiary_name += beneficiary.Beneficiary.LastName
         data_dict = {'Text-n_L-ntAGRy': beneficiary_name,
                     'Text-Pnb29VfGWk': extension_program.Name,
                     'Date-jWSJ8ZAYJ_': datetime.utcnow(),
@@ -871,11 +846,12 @@ def cert(id):
                                 ProjectId=id)
         
         db.session.add(cert_to_add)
-    
-    db.session.commit()
-    flash('Certificate is successfully released', category='success')
-
-    return redirect(url_for('programs.programs'))
+    try:
+        db.session.commit()
+        flash('Certificate is successfully released', category='success')
+    except Exception as e:
+        print(e)
+    return redirect(request.referrer)
 
 
 # =========================================================
@@ -885,41 +861,22 @@ def cert(id):
 @bp.route('/extension-programs')
 def extensionPrograms():
     extension_programs = ExtensionProgram.query.all()
-    programs = Program.query.all()
+    programs = Course.query.all()
     agendas = Agenda.query.all()
     return render_template('programs/ext_programs_list.html', extension_programs=extension_programs, programs=programs, agendas=agendas)
 
 @bp.route('/extension-program/view/<int:id>')
 def extensionProgram(id):
     extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
-    projects = Project.query.filter_by(ExtensionProgramId=id).order_by(db.case(
-            (Project.Status == "Ongoing", 1),
-            (Project.Status == "To Be Started", 2),
-            (Project.Status == "Finished", 3),
-        ).asc()
-    ).all()
+    projects = Project.query.filter_by(ExtensionProgramId=id).order_by(Project.EndDate.desc()).all()
     project_ids = [project.ProjectId for project in projects]
     events = Activity.query.filter(Activity.ProjectId.in_(project_ids),
                                     Activity.Date>datetime.utcnow().date()).order_by(Activity.Date.desc()).all()
+    current_date = datetime.utcnow().date()
     # Get all the faculty in each project in current extension program
-    faculty_team = {}
-    for project in projects:
-        faculty_team.update(project.ProjectTeam)
-
-    # Make a GET request to the API with the API key in the headers
-    # response = getFacultyData()
-
-    # if response.status_code == 200:
-    #     # Process the API response data
-    #     api_data = response.json()
-        
-    #     faculty_profile = {}
-    #     # RETURNING SPECIFIC DATA FROM ALL FACULTIES
-    #     for faculty in faculty_team.items():
-    #         faculty_info = api_data['Faculties'][faculty[0]]
-    #         faculty_profile[faculty[0]] = 'https://drive.google.com/uc?export=view&id='+faculty_info['profile_pic']
+    project_team = getProjectTeam(projects)
     
-    return render_template('programs/extension_program.html', extension_program=extension_program, projects=projects, events=events, faculty_team=faculty_team, faculty_profile=faculty_profile)
+    return render_template('programs/extension_program.html', extension_program=extension_program, projects=projects, events=events, project_team=project_team, current_date=current_date)
 
 
 @bp.route('/projects')
@@ -938,19 +895,10 @@ def project(id):
     registration = Registration.query.filter_by(ProjectId=id, UserId=user_id).first()
     current_date = datetime.utcnow().date()
 
-    # Make a GET request to the API with the API key in the headers
-    response = getFacultyData()
+    # Get all the faculty in each project in current extension program
+    project_team = getProjectTeam([project])
 
-    if response.status_code == 200:
-        # Process the API response data
-        api_data = response.json()
-        
-        faculty_profile = {project.LeadProponentId:'https://drive.google.com/uc?export=view&id='+api_data['Faculties'][project.LeadProponent.UserNumber]['profile_pic']}
-        # RETURNING SPECIFIC DATA FROM ALL FACULTIES
-        for faculty in project.ProjectTeam.items():
-            faculty_info = api_data['Faculties'][faculty[0]]
-            faculty_profile[faculty[0]] = 'https://drive.google.com/uc?export=view&id='+faculty_info['profile_pic']
-    return render_template('programs/project_reg.html', project=project, events=events,activities=activities, faculty_profile=faculty_profile, registration=registration, current_date=current_date)
+    return render_template('programs/project_reg.html', project=project, events=events,activities=activities, project_team=project_team, registration=registration, current_date=current_date)
 
 @bp.route('/registration/<int:project_id>', methods=['POST'])
 @login_required(role=["Beneficiary", "Student"])
@@ -995,9 +943,12 @@ def activity(id):
     suggestions = Activity.query.filter(Activity.Date > current_date,
                                         Activity.ProjectId==activity.ProjectId,
                                         Activity.ActivityId!=activity.ActivityId ).order_by(func.random()).limit(3).all()
-    user_id = current_user.UserId if current_user.is_authenticated else None
-    evaluation_id = activity.Evaluation[0].EvaluationId if activity.Evaluation else None
-    bool_is_evaluation_taken = True if Response.query.filter_by(BeneficiaryId=user_id, EvaluationId=evaluation_id).first() else False
+    evaluation_id = None
+    bool_is_evaluation_taken = False
+    if current_user.is_authenticated and current_user.Role.RoleId==2:
+        beneficiary_id = current_user.Beneficiary.BeneficiaryId
+        evaluation_id = activity.Evaluation[0].EvaluationId if activity.Evaluation else None
+        bool_is_evaluation_taken = True if Response.query.filter_by(BeneficiaryId=beneficiary_id, EvaluationId=evaluation_id).first() else False
     return render_template('programs/activity.html', activity=activity, suggestions=suggestions, current_date=current_date, bool_is_evaluation_taken=bool_is_evaluation_taken)
 
 @bp.route('/project/management/<int:id>')
@@ -1043,3 +994,16 @@ def recordAttendance():
         flash('There was an issue recording the attendance.', category='error')
     
     return redirect(url_for('programs.manageAttendance', project_id=request.form.get('project_id'), activity_id=request.form.get('activity_id')))
+
+
+def getProjectTeam(projects):
+    faculty_team = {}
+    for project in projects:
+        faculty_team.update(project.ProjectTeam)
+        
+    project_team = []
+    for faculty in faculty_team.items():
+        faculty_info = Faculty.query.filter_by(FacultyId=int(faculty[0])).first()
+        project_team.append(faculty_info)
+    
+    return project_team

@@ -311,7 +311,7 @@ input[type="file"]::-webkit-file-upload-button,
                                     {% endfor %}
                                 </ul>
                             </div>
-                            <div class="col-auto col-md-4 text-start">
+                            <div class="col-auto col-md-6 text-start">
                                 <!-- start date -->
                                 {{ form.project.start_date.label }}
                                 {{ form.project.start_date(class="input")}}
@@ -321,22 +321,12 @@ input[type="file"]::-webkit-file-upload-button,
                                     {% endfor %}
                                 </ul>
                             </div>
-                            <div class="col-auto col-md-4 text-start">
+                            <div class="col-auto col-md-6 text-start">
                                 <!-- end date -->
                                 {{ form.project.end_date.label }}
                                 {{ form.project.end_date(class="input")}}
                                 <ul>
                                     {% for error in form.project.end_date.errors %}
-                                    <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="col-auto col-md-4 text-start">
-                                <!-- status -->
-                                {{ form.project.status.label }}
-                                {{ form.project.status(class="input")}}
-                                <ul>
-                                    {% for error in form.project.status.errors %}
                                     <li class="text-danger mb-4 mt-0 p-0">{{ error }}</li>
                                     {% endfor %}
                                 </ul>

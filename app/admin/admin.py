@@ -2,12 +2,14 @@ from app.admin import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
 from flask_login import current_user, login_user, login_required, logout_user
 from .forms import LoginForm, CollaboratorForm, SpeakerForm
-from ..models import Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity, Speaker
+from ..models import Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity, Speaker, Faculty, Beneficiary, Student
 from ..Api.resources import AdminLoginApi
 from ..decorators.decorators import login_required
 from app import db, api
 from ..store import uploadImage
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash
+from datetime import datetime
 import folium
 from folium.plugins import MarkerCluster
 import os
@@ -29,10 +31,10 @@ def adminLogin():
         return redirect(url_for('programs.programs')) 
     if request.method == "POST":
         if form.validate_on_submit():
-            attempted_user = User.query.filter_by(Email=form.email.data).first()
-            if attempted_user and attempted_user.RoleId == 1: 
-                if attempted_user.check_password_correction(attempted_password=form.password.data):
-                    login_user(attempted_user, remember=True)
+            attempted_user = Faculty.query.filter_by(Email=form.email.data).first()
+            if attempted_user and attempted_user.User[0].RoleId == 1: 
+                if check_password_hash(attempted_user.Password, form.password.data):
+                    login_user(attempted_user.User[0], remember=True)
                     return redirect(url_for('admin.dashboard')) 
                 else:
                     flash('The password you\'ve entered is incorrect.', category='error')
@@ -49,7 +51,7 @@ def logout():
 @bp.route('/beneficiaries')
 @login_required(role=["Admin"])
 def beneficiaries():
-    users = User.query.filter_by(RoleId=2).all()
+    users = Beneficiary.query.all()
     current_url_path = request.path
     return render_template('admin/users.html', users=users,current_url_path=current_url_path)
 
@@ -67,24 +69,45 @@ def faculty():
     current_url_path = request.path
     return render_template('admin/users.html', users=users,current_url_path=current_url_path)
 
-@bp.route('/beneficiaries/<string:id>')
+@bp.route('/beneficiaries/<int:id>')
 @login_required(role=["Admin"])
-def viewUser(id):
-    user = User.query.filter_by(UserNumber=id).first()
-    if user.Role.RoleName in ["Beneficiary", "Student"]:
-        user_projects = (
-        Project.query
-        .join(Registration, Registration.ProjectId == Project.ProjectId)
-        .join(User, User.UserId == Registration.UserId)
-        .filter(User.UserId == user.UserId)
-        .all()
-        )
-    else:
-        user_projects = Project.query.filter_by(LeadProponentId=user.UserId)
-    return render_template('admin/view_user.html', user=user, user_projects=user_projects)
+def viewBeneficiary(id):
+    user = Beneficiary.query.filter_by(BeneficiaryId=id).first()
+    user_projects = (
+    Project.query
+    .join(Registration, Registration.ProjectId == Project.ProjectId)
+    .join(User, User.UserId == Registration.UserId)
+    .filter(User.UserId == user.User[0].UserId)
+    .all()
+    )
+    current_date = datetime.utcnow().date()
+    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
+
+@bp.route('/students/<string:id>')
+@login_required(role=["Admin"])
+def viewStudent(id):
+    user = Student.query.filter_by(StudentNumber=id).first()
+    user_projects = (
+    Project.query
+    .join(Registration, Registration.ProjectId == Project.ProjectId)
+    .join(User, User.UserId == Registration.UserId)
+    .filter(User.UserId == user.User[0].UserId)
+    .all()
+    )
+    current_date = datetime.utcnow().date()
+    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
+
+@bp.route('/faculty/<int:id>')
+@login_required(role=["Admin"])
+def viewFaculty(id):
+    user = Faculty.query.filter_by(FacultyId=id).first()
+    current_date = datetime.utcnow().date()
+    user_projects = Project.query.filter_by(LeadProponentId=user.User[0].UserId)
+    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
+
     
 @bp.route('/dashboard')
-@login_required(role=["Admin"])
+@login_required(role=["Admin", "Faculty"])
 def dashboard():
     programs = ExtensionProgram.query.all()
     years = set()
@@ -143,7 +166,6 @@ def dashboard():
                     chart_data[program_name] = 0
 
     for extension_program in ExtensionProgram.query.all():
-        print("extension_program:", extension_program)
         program_ratings = []
         for project in extension_program.Projects:
             for activity in project.Activity:

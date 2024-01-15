@@ -2,7 +2,7 @@ from app.announcement import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
 from flask_login import current_user
 from ..decorators.decorators import login_required
-from ..models import Project, ExtensionProgram, Program, Announcement, Registration, User
+from ..models import Project, ExtensionProgram,  Announcement, Registration, User, Course
 from .forms import AnnouncementForm
 from ..email import sendEmail
 import string, os
@@ -23,7 +23,7 @@ def generateSlug(title, separator='-', lower=True):
 @login_required(role=["Admin", "Faculty"])
 def extensionProgram():
     program_abbreviation = request.args.get('program')
-    program = Program.query.filter_by(Abbreviation=program_abbreviation).first()
+    program = Course.query.filter_by(CourseCode=program_abbreviation).first()
     ext_programs = [ext_program for ext_program in program.ExtensionPrograms]
     return render_template('announcement/ext_program_options.html', ext_programs=ext_programs)
 
@@ -75,7 +75,7 @@ def filterAnnouncement():
 @bp.route('/announcements', defaults={'project': None})
 @login_required(role=["Admin", "Faculty"])
 def manageAnnouncements(project):    
-    programs = Program.query.all()
+    programs = Course.query.all()
     return render_template('announcement/announcement_management.html', programs=programs)
 
 @bp.route('/announcement/create', methods=['GET', 'POST'])

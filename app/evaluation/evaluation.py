@@ -225,12 +225,12 @@ def evaluation(id):
 
             if not response is None and not response.isspace() and response != "":
                 if question.Type == 1:
-                    if not save_response(id, current_user.UserId, question.QuestionId, None, int(response)):
+                    if not save_response(id, current_user.Beneficiary.BeneficiaryId, question.QuestionId, None, int(response)):
                         error = 1
                         break
 
                 elif question.Type == 2:
-                    if not save_response(id, current_user.UserId, question.QuestionId, response, None):
+                    if not save_response(id, current_user.Beneficiary.BeneficiaryId, question.QuestionId, response, None):
                         error = 1
                         break
         if not error:

@@ -70,18 +70,26 @@
                                     <div class="col-auto">
                                     <span class="avatar" style="background-image: url({{project.ImageUrl}}); height: 50px; width:50px">
                                         <span class="badge 
-                                        {% if project.Status == "Ongoing" %}
-                                        bg-primary
-                                        {% elif project.Status == "Finished" %}
+                                        {% if project.EndDate < current_date  %}
                                         bg-success
+                                        {% elif project.StartDate > current_date %}
+                                        bg-light
                                         {% else %}
-                                        bg-danger
+                                        bg-primary
                                         {% endif %}
                                         "></span></span>
                                     </div>
                                     <div class="col text-truncate">
                                     <a href="{{url_for('programs.project', id=project.ProjectId)}}" class="fs-2 text-reset d-block text-truncate">{{ project.Title }}</a>
-                                    <div class="fs-3 text-secondary text-truncate mt-n1">{{ project.Status }}</div>
+                                    <div class="fs-3 text-secondary text-truncate mt-n1">
+                                        {% if project.EndDate < current_date  %}
+                                        Finished
+                                        {% elif project.StartDate > current_date %}
+                                        Upcoming
+                                        {% else %}
+                                        Ongoing
+                                        {% endif %}
+                                    </div>
                                     </div>
                                 </div>
                                 </div>
@@ -143,12 +151,12 @@
         </div>
         <div class="card-body mt-3">
             <div class="row g-3">
-                {% for key, value in faculty_team.items()    %}
+                {% for faculty in project_team    %}
                 <div class="col-auto col-md-4">
                 <div class="row g-3 align-items-center">
-                    <span class="avatar avatar-md" style="background-image: url('{{faculty_profile[key]}}');"></span>
+                    <span class="avatar avatar-md" style="background-image: url( 'https://lh3.googleusercontent.com/d/{{faculty.ProfilePic}}');"></span>
                     <div class="col text-truncate">
-                    <span class="fs-2 text-reset d-block text-truncate">{{ value }}</span>
+                    <span class="fs-2 text-reset d-block text-truncate">{{ faculty.FirstName }} {{ faculty.LastName }}</span>
                     </div>
                 </div>
                 </div>

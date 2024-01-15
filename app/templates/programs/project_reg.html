@@ -39,15 +39,15 @@
                 <div class="my-2">
                     <span class="fs-2">Project Lead</span>
                     <div class="d-flex align-items-center mt-2">
-                        <span class="avatar avatar-md me-2 rounded fs-3" style="background-image: url('{{faculty_profile[project.LeadProponentId]}}')"></span>
-                        {{project.LeadProponent.FirstName}} {{project.LeadProponent.LastName}} 
+                        <span class="avatar avatar-md me-2 rounded fs-3" style="background-image: url('https://lh3.googleusercontent.com/d/{{project.LeadProponent.Faculty.ProfilePic}} ')"></span>
+                        {{project.LeadProponent.Faculty.FirstName}} {{project.LeadProponent.Faculty.LastName}} 
                       </div>
                 </div>
                 <div class="my-2">
                     <span class="fs-2 pb-2">Project Team</span>
                     <div class="avatar-list avatar-list-stacked mt-2">
-                        {% for member in project.ProjectTeam.items() %}
-                        <span class="avatar avatar-sm rounded border-0" style="background-image: url('{{faculty_profile[member[0]]}}')" data-bs-toggle="tooltip" data-bs-title={{member[1]}}></span>
+                        {% for faculty in project_team %}
+                        <span class="avatar avatar-sm rounded border-0" style="background-image: url('https://lh3.googleusercontent.com/d/{{faculty.ProfilePic}}')" data-bs-toggle="tooltip" data-bs-title="{{faculty.FirstName}} {{faculty.LastName}}"></span>
                         {% endfor %}
                     </div>
                 </div>

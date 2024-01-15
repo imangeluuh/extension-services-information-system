@@ -1,6 +1,7 @@
 from flask import render_template, url_for, request, redirect, flash, current_app, Blueprint
 from flask_login import current_user
 from .models import Certificate, Registration, Project
+from datetime import datetime
 
 
 bp = Blueprint('user', __name__, template_folder="templates", static_folder="static", static_url_path='static')
@@ -8,9 +9,13 @@ bp = Blueprint('user', __name__, template_folder="templates", static_folder="sta
 @bp.route('/profile')
 def profile():
     # Get all projects current user are registered
-    projects_id = [registration.ProjectId for registration in Registration.query.filter_by(UserId=current_user.UserId).all()]
-    user_projects = [Project.query.filter_by(ProjectId=project_id).first() for project_id in projects_id]
+    if current_user.RoleId in [2, 3]:
+        projects_id = [registration.ProjectId for registration in Registration.query.filter_by(UserId=current_user.UserId).all()]
+        user_projects = [Project.query.filter_by(ProjectId=project_id).first() for project_id in projects_id]
+    else: 
+        user_projects = Project.query.filter_by(LeadProponentId=current_user.UserId).all()
     user_certificates = Certificate.query.filter_by(UserId=current_user.UserId).all()
+    current_date = datetime.utcnow().date()
     
     # Create a list of project and certificate
     projects = []
@@ -22,4 +27,4 @@ def profile():
                 # Modify the last appended item
                 projects[-1][1] = certificate
                 break
-    return render_template('user_profile.html', projects=projects)
+    return render_template('user_profile.html', projects=projects, current_date=current_date)

@@ -27,14 +27,14 @@
                         <div class="mb-3">
                             <!-- start time -->
                             {{ activity_form.start_time.label(class="form-label") }}
-                            {{ activity_form.start_time(id="start_time", class="form-control", value=activity.StartTime.strftime('%H:%M'), required="required" if not activity)}}
+                            {{ activity_form.start_time(id="start_time", class="form-control", value=activity.StartTime.strftime('%H:%M'))}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!-- end time -->
                             {{ activity_form.end_time.label(class="form-label") }}
-                            {{ activity_form.end_time(id="end_time", class="form-control", value=activity.StartTime.strftime('%H:%M'), required="required" if not activity)}}
+                            {{ activity_form.end_time(id="end_time", class="form-control", value=activity.StartTime.strftime('%H:%M'))}}
                         </div>
                     </div>
                     <div class="col-auto col-md-6">
@@ -62,7 +62,7 @@
                             {{activity_form.location.label(class="form-label")}}
                             <select id="{{activity_form.location.id}}1" name="{{activity_form.location.name}}" class="form-select">
                                 {% for option in activity_form.location.choices %}
-                                <option value="{{ option[0] }}" {{'selected' if option[0] == activity.Location.LocationId}}>{{ option[1] }}</option>
+                                <option value="{{ option[0] }}" {{'selected' if option[0] == activity.LocationId}}>{{ option[1] }}</option>
                                 {% endfor %}
                             </select>
                         </div>

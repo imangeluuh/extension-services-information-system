@@ -27,7 +27,11 @@
                         <div class="mb-3">
                             <!-- collaborator -->
                             {{ form.collaborator.label(class="form-label") }}
-                            {{ form.collaborator(class="form-select")}}
+                            <select id="{{form.collaborator.id}}" name="{{form.collaborator.name}}" class="form-select">
+                                {% for option in form.collaborator.choices %}
+                                    <option value="{{ option[0] }}" {{'selected' if option[0] == project.CollaboratorId}}>{{ option[1] }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="col-12">
@@ -47,7 +51,7 @@
                             <!-- project team -->
                             <div class="form-group">
                                 {{ form.project_team.label(class="form-label")}}
-                                <select id="{{form.project_team.id}}" name="{{form.project_team.name}}" multiple="" hidden>
+                                <select id="{{form.project_team.id}}" name="{{form.project_team.name}}"  class="form-select" multiple="" hidden>
                                     {% for option in form.project_team.choices %}
                                         <option value="{{ option[0] }}" {{'selected' if option[0] in project_team}}>{{ option[1] }}</option>
                                     {% endfor %}
@@ -62,25 +66,18 @@
                             {{ form.project_type(class="form-select")}}
                         </div>
                     </div>
-                    <div class="col-auto col-md-4">
+                    <div class="col-auto col-md-6">
                         <div class="mb-3">
                             <!-- start date -->
                             {{ form.start_date.label(class="form-label") }}
                             {{ form.start_date(class="form-control")}}
                         </div>
                     </div>
-                    <div class="col-auto col-md-4">
+                    <div class="col-auto col-md-6">
                         <div class="mb-3">
                             <!-- end date -->
                             {{ form.end_date.label(class="form-label") }}
                             {{ form.end_date(class="form-control")}}
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-4">
-                        <div class="mb-3">
-                            <!-- status -->
-                            {{ form.status.label(class="form-label") }}
-                            {{ form.status(class="form-select")}}
                         </div>
                     </div>
                     <div class="col-12">
