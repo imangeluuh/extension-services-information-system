@@ -317,7 +317,7 @@ class Speaker(db.Model):
     FirstName = db.Column(db.String(50), nullable=False)
     MiddleName = db.Column(db.String(50), default=None)
     LastName = db.Column(db.String(50), nullable=False)
-    # Email = db.Column(db.String(100), nullable=False)
+    Email = db.Column(db.String(50), nullable=False)
     ContactDetails = db.Column(db.String(13), nullable=False)
 
 class Item(db.Model):
@@ -355,6 +355,7 @@ class Announcement(db.Model):
     Slug = db.Column(db.String(255), nullable=False)
     Created = db.Column(db.DateTime, default=datetime.utcnow, index=True, nullable=False)
     Updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, index=True, nullable=False)
+    Recipient = db.Column(db.String(50), nullable=False)
     ImageUrl = db.Column(db.Text)
     ImageId = db.Column(db.Text)
     ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), nullable=False)

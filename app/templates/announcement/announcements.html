@@ -2,53 +2,58 @@
 
 {% block head %}
 <title>Announcements</title>
-{% endblock %}
+{% endblock%}
 
 {% block content %}
-<div class="py-4 md:px-8 mt-6">
-    <div class="w-fit mx-auto bg-white p-8 shadow-md">
-        <h1 class="text-3xl text-center font-bold mb-6">Announcements</h1>
-        {% if announcements[0] %}
-            <h2 class="font-bold text-xl mb-4">LATEST</h2>
-            <a href="{{url_for('announcement.viewAnnouncement', id=announcements[0].AnnouncementId)}}" class="flex flex-col items-between bg-white mb-8 md:flex-row h-64 overflow-hidden">
-                <img class="object-fill rounded-t-lg mr-4 md:h-64 md:w-64 md:rounded-none md:rounded-l-lg" src="{{url_for('static', filename='images/announcement-icon.png')}}" alt="">
-                <!-- <div class="flex items-center justify-center h-48 w-48 bg-gray-300 rounded">
-                    <svg class="w-10 h-10 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                        <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                    </svg>
-                </div> -->
-                <div class="flex flex-col items-between ml-6 max-w-4xl">
-                    <h3 class="text-xl font-bold pt-4 mb-4">{{announcements[0].Title}}</h3>
-                    <div class="max-h-26 break-words">
-                        <div class="whitespace-nowrap">
-                            <span class="mb-3 font-normal max-h-10 text-gray-700">{{announcements[0].Content|safe}}</span>
+    <div class="container-xl p-0">
+        <h1 class="page-title mb-4 mt-4">Announcements</h1>
+        {% if announcements %}
+        <div class="row row-cards">
+            <div class="col-12">
+                <div class="card">
+                    <div class="row ">
+                        <div class="col-md-4">
+                            <div class="img-wrapper">
+                                <img src="{{ announcements[0].ImageUrl if announcements[0].ImageUrl else url_for('static', filename='images/announcement.png') }}" class="w-100 h-100 object-fit-cover " alt="{{ announcements[0].Title }}">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h2 class="card-title">{{ announcements[0].Title }}</h2>
+                                <p class="card-text">{{ announcements[0].Content[:100]|safe }}...</p>
+                                <p class="card-text"><small class="text-muted">Posted by {{ announcements[0].Creator.Faculty.FirstName }} {{ announcements[0].Creator.Faculty.LastName }} at {{ announcements[0].Updated.strftime('%b %d, %Y') }}</small></p>
+                                <a href="{{ url_for('announcement.viewAnnouncement', id=announcements[0].AnnouncementId, slug=announcements[0].Slug) }}" class="btn btn-primary">Read More</a>
+                            </div>  
                         </div>
                     </div>
-                    <span class="flex md:mt-16 text-sm uppercase">{{announcements[0].Creator.FirstName ~ " " ~ announcements[0].Creator.LastName}}   •   {{announcements[0].Updated.strftime('%b %d, %Y')}} </span>
                 </div>
-            </a>
-            <hr>
-        {% endif %}
-        <div class="grid grid-cols-2 mt-4">
-            {% for announcement in announcements %}
-                {% if not loop.first %}
-                    <div class="col-span-1">
-                        <a href="{{url_for('announcement.viewAnnouncement', id=announcement.AnnouncementId)}}" class="flex flex-col items-center md:flex-row md:max-w-xl mb-4">
-                            <img class="object-fill w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-l-lg" src="{{url_for('static', filename='images/announcement-icon.png')}}" alt="">
-                            <!-- <div class="flex items-center justify-center h-48 w-48 bg-gray-300 rounded">
-                                <svg class="w-10 h-10 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                </svg>
-                            </div> -->
-                            <div class="flex flex-col items-between p-4 leading-normal">
-                                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">{{announcement.Title}}</h5>
-                                <span class="flex md:mt-16 text-sm uppercase">{{announcement.Creator.FirstName ~ " " ~ announcement.Creator.LastName}}   •   {{announcement.Updated.strftime('%b %d, %Y')}} </span>
-                            </div>
-                        </a>
+            </div>
+            {% for announcement in announcements[1:] %}
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="row row-0">
+                        <div class="col-12 col-md-4 p-0">
+                        <!-- Photo -->
+                        <img src="{{ announcement.ImageUrl if announcement.ImageUrl else url_for('static', filename='images/announcement.png') }}" class="w-100 h-100 " alt="{{ announcement.Title }}">
+                        </div>
+                        <div class="col-12 col-md-8 p-0">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ announcement.Title }}</h3>
+                            <p class="card-text">{{ announcement.Content[:100]|safe }}...</p>
+                                <p class="card-text"><small class="text-muted">Posted by {{ announcement.Creator.Faculty.FirstName }} {{ announcement.Creator.Faculty.LastName }} at {{ announcement.Updated.strftime('%b %d, %Y') }}</small></p>
+                                <a href="{{ url_for('announcement.viewAnnouncement', id=announcement.AnnouncementId, slug=announcement.Slug) }}" class="btn btn-primary">Read More</a>
+                        </div>
+                        </div>
                     </div>
-                {% endif %}
+                </div>
+            </div>
             {% endfor %}
+        {% else %}
+        <p>No announcements available at the moment.</p>
+        {% endif %}
         </div>
+
     </div>
-</div>
+</body>
+</html>
 {% endblock %}

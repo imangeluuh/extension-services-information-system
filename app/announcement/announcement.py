@@ -10,7 +10,7 @@ from app import db
 from ..programs.programs import saveImage
 from ..store import uploadImage, purgeImage
 from werkzeug.utils import secure_filename
-
+from sqlalchemy import desc, select
 
 def generateSlug(title, separator='-', lower=True):
     title = title.translate(str.maketrans('', '', string.punctuation))
@@ -82,11 +82,11 @@ def manageAnnouncements(project):
 @login_required(role=["Admin", "Faculty"])
 def createAnnouncement():
     form = AnnouncementForm()
+    recipients_string = ""
     if request.method == "POST":
         if form.validate_on_submit():
             str_image_url = None
             str_image_id = None
-            print(form.image.data)
             if form.image.data is not None:
                 # Get the input image path
                 imagepath = os.path.join(
@@ -114,6 +114,11 @@ def createAnnouncement():
                 is_live = 1
             elif 'draft' in request.form:
                 is_live = 0
+            if 'Bulletin' in form.medium.data and form.recipient.data and is_live == 1:
+                # Extract the selected recipients from the form
+                selected_recipients = form.recipient.data
+                # Convert the selected recipients into a string to store in the database
+                recipients_string = ",".join(selected_recipients)
             announcement_to_create = Announcement(Title=form.title.data,
                                                 Content=form.content.data,
                                                 CreatorId=current_user.UserId,
@@ -121,7 +126,8 @@ def createAnnouncement():
                                                 Slug=generateSlug(form.title.data),
                                                 ImageUrl=str_image_url,
                                                 ImageId=str_image_id,
-                                                ProjectId=form.project.data)
+                                                ProjectId=form.project.data,
+                                                Recipient=recipients_string)
             db.session.add(announcement_to_create)
             db.session.commit()
             # If announcement session is not empty, clear the session after saving to database
@@ -131,27 +137,30 @@ def createAnnouncement():
                 session.pop('announcement_body', None)
             # If Email checkbox is checked, send the announcement to desired recipients
             if 'Email' in form.medium.data and form.recipient.data is not [] and is_live == 1:
-                if len(form.recipient.data) == 2:
-                    emails = (
-                        User.query
-                        .join(Registration)
-                        .join(Project)
-                        .filter(Project.ProjectId == 10)
-                        .with_entities(User.Email)
-                        .all()
+                emails = []
+                if '2' in form.recipient.data:
+                    query = (
+                        select(Beneficiary.Email)
+                        .join(User, Beneficiary.BeneficiaryId == User.BeneficiaryId)
+                        .join(Registration, User.UserId == Registration.UserId)
+                        .join(Project, Registration.ProjectId == Project.ProjectId)
+                        .filter(Project.ProjectId == form.project.data)
                     )
-                else:
-                    emails = (
-                        User.query
-                        .join(Registration)
-                        .join(Project)
-                        .filter(Project.ProjectId == 10, User.RoleId == form.recipient.data[0])
-                        .with_entities(User.Email)
-                        .all()
+
+                    beneficiary_emails = db.session.execute(query).scalars().all()
+                    emails += beneficiary_emails
+                if '3' in form.recipient.data:
+                    query = (
+                        select(Student.Email)
+                        .join(User, Student.StudentId == User.StudentId)
+                        .join(Registration, User.UserId == Registration.UserId)
+                        .join(Project, Registration.ProjectId == Project.ProjectId)
+                        .filter(Project.ProjectId == form.project.data)
                     )
-                # Extract the emails from the query result
-                list_email = [email for (email,) in emails]
-                sendEmail(form.title.data, list_email, form.content.data, form.content.data)
+
+                    student_emails = db.session.execute(query).scalars().all()
+                    emails += student_emails
+                sendEmail(form.title.data, emails, form.content.data, form.content.data)
                 flash('Announcement is successfully sent to email', category='success')
             flash('Announcement is successfully inserted.', category='success')
             return redirect(url_for('announcement.manageAnnouncements'))
@@ -200,8 +209,6 @@ def deleteAnnouncement(id):
 
     return redirect(url_for('announcement.manageAnnouncements'))
 
-
-
 @bp.route('/announcement/update/<int:id>', methods=['GET', 'POST'])
 @login_required(role=["Admin", "Faculty"])
 def updateAnnouncement(id):
@@ -224,6 +231,11 @@ def updateAnnouncement(id):
             announcement.IsLive=is_live
             announcement.Slug=generateSlug(form.title.data)
 
+            if 'Bulletin' in form.medium.data and form.recipient.data and is_live == 1:
+                selected_recipients = form.recipient.data
+                recipients_string = ",".join(selected_recipients)
+                announcement.Recipient = recipients_string
+
             try:
                 db.session.commit()
                 flash('Announcement is successfully updated.', category='success')
@@ -241,9 +253,23 @@ def updateAnnouncement(id):
 
     return render_template('announcement/announcement_form.html', form=form, announcement=announcement, current_url_path=current_url_path)
 
+@bp.route('/announcement')
+def announcement():
+    user_role_id = current_user.RoleId if current_user.is_authenticated else None
 
-# @bp.route('/announcement')
-# def announcement():
-#     announcements = Announcement.query.order_by(desc(Announcement.Updated)).all()
-#     return render_template('announcement/announcements.html', announcements=announcements)
+    if user_role_id == 3:  # Student
+        announcements = Announcement.query.filter(
+            (Announcement.Recipient.contains('3') | Announcement.Recipient.contains('2,3')) &
+            Announcement.IsLive
+        ).order_by(desc(Announcement.Created)).all()
+    elif user_role_id == 2:  # Beneficiary
+        announcements = Announcement.query.filter(
+            (Announcement.Recipient.contains('2') | Announcement.Recipient.contains('2,3')) &
+            Announcement.IsLive
+        ).order_by(desc(Announcement.Created)).all()
+    else:
+        # Non-authenticated users see only live announcements
+        announcements = Announcement.query.filter_by(IsLive=True).order_by(desc(Announcement.Created)).all()
+
+    return render_template('announcement/announcements.html', announcements=announcements)
 
