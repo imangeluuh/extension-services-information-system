@@ -2,7 +2,7 @@ from app.announcement import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
 from flask_login import current_user
 from ..decorators.decorators import login_required
-from ..models import Project, ExtensionProgram,  Announcement, Registration, User, Course
+from ..models import Project, ExtensionProgram,  Announcement, Registration, User, Course, Beneficiary, Student
 from .forms import AnnouncementForm
 from ..email import sendEmail
 import string, os
