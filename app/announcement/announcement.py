@@ -114,11 +114,11 @@ def createAnnouncement():
                 is_live = 1
             elif 'draft' in request.form:
                 is_live = 0
-            if 'Bulletin' in form.medium.data and form.recipient.data and is_live == 1:
-                # Extract the selected recipients from the form
-                selected_recipients = form.recipient.data
-                # Convert the selected recipients into a string to store in the database
-                recipients_string = ",".join(selected_recipients)
+            # Extract the selected recipients from the form
+            selected_recipients = form.recipient.data
+            # Convert the selected recipients into a string to store in the database
+            recipients_string = ",".join(selected_recipients)
+
             announcement_to_create = Announcement(Title=form.title.data,
                                                 Content=form.content.data,
                                                 CreatorId=current_user.UserId,
@@ -135,8 +135,9 @@ def createAnnouncement():
                 session.pop('announcement_title', None)
             if 'announcement_body' in session:
                 session.pop('announcement_body', None)
+
             # If Email checkbox is checked, send the announcement to desired recipients
-            if 'Email' in form.medium.data and form.recipient.data is not [] and is_live == 1:
+            if form.medium.data and form.recipient.data is not [] and is_live == 1:
                 emails = []
                 if '2' in form.recipient.data:
                     query = (
@@ -180,7 +181,6 @@ def createAnnouncement():
 @bp.route('/announcement/<int:id>/<string:slug>')
 def viewAnnouncement(id, slug):
     announcement = Announcement.query.filter_by(AnnouncementId=id, Slug=slug).first()
-    print(announcement)
     return render_template('announcement/view_announcement.html', announcement=announcement)
 
 @bp.route('/unpublish/announcement/<int:id>', methods=['POST'])
@@ -231,10 +231,37 @@ def updateAnnouncement(id):
             announcement.IsLive=is_live
             announcement.Slug=generateSlug(form.title.data)
 
-            if 'Bulletin' in form.medium.data and form.recipient.data and is_live == 1:
-                selected_recipients = form.recipient.data
-                recipients_string = ",".join(selected_recipients)
-                announcement.Recipient = recipients_string
+            selected_recipients = form.recipient.data
+            recipients_string = ",".join(selected_recipients)
+            announcement.Recipient = recipients_string
+
+            # If Email checkbox is checked, send the announcement to desired recipients
+            if form.medium.data and form.recipient.data is not [] and is_live == 1:
+                emails = []
+                if '2' in form.recipient.data:
+                    query = (
+                        select(Beneficiary.Email)
+                        .join(User, Beneficiary.BeneficiaryId == User.BeneficiaryId)
+                        .join(Registration, User.UserId == Registration.UserId)
+                        .join(Project, Registration.ProjectId == Project.ProjectId)
+                        .filter(Project.ProjectId == form.project.data)
+                    )
+
+                    beneficiary_emails = db.session.execute(query).scalars().all()
+                    emails += beneficiary_emails
+                if '3' in form.recipient.data:
+                    query = (
+                        select(Student.Email)
+                        .join(User, Student.StudentId == User.StudentId)
+                        .join(Registration, User.UserId == Registration.UserId)
+                        .join(Project, Registration.ProjectId == Project.ProjectId)
+                        .filter(Project.ProjectId == form.project.data)
+                    )
+
+                    student_emails = db.session.execute(query).scalars().all()
+                    emails += student_emails
+                sendEmail(form.title.data, emails, form.content.data, form.content.data)
+                flash('Announcement is successfully sent to email', category='success')
 
             try:
                 db.session.commit()

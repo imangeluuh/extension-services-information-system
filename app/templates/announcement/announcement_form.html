@@ -49,26 +49,33 @@
                 </div>
             </div>
             <div class="row mt-4">
-                <div class="col-auto col-md-6 d-flex flex-column">
-                    {{ form.medium.label(class="form-label") }}
-                    <div class="d-flex align-items-center row">
-                        {% for option in form.medium %}
-                        <div class="col-auto col-md-6 d-flex align-items-center mb-4">
-                            {{ option(class="me-2") }}
-                            {{ option.label(class="fw-normal m-0") }}
+                <div class="col-auto col-md-6 d-flex">
+                    <div class="form-check p-0">
+                        <p class="fw-bold fs-4 mb-2 ">Medium</p>
+                        <div class="d-flex">
+                            {{ form.medium(class="me-2") }}
+                            {{ form.medium.label(class="form-check-label")}}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
                 <div class="col-auto col-md-6 d-flex flex-column">
                     {{ form.recipient.label(class="form-label") }}
                     <div class="d-flex align-items-center row">
+                        {% if announcement and request.url == url_for('announcement.updateAnnouncement', id=announcement.AnnouncementId, _external=True) %}
+                        {% for option in form.recipient.choices %}
+                        <div class="col-auto col-md-6 d-flex align-items-center mb-4">
+                            <input class="me-2" name={{form.recipient.name}} type="checkbox" value={{option[0]}} {{'checked' if option[0] in announcement.Recipient }}>
+                            <span class="form-check-label">{{option[1]}}</span>
+                        </div>
+                        {% endfor %}
+                        {% else %}
                         {% for option in form.recipient %}
                         <div class="col-auto col-md-6 d-flex align-items-center mb-4">
                             {{ option(class="me-2") }}
                             {{ option.label(class="fw-normal m-0") }}
                         </div>
                         {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
             </div>

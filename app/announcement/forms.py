@@ -1,7 +1,7 @@
 from flask import current_app
 from flask_wtf import FlaskForm
 from flask_ckeditor import CKEditorField
-from wtforms import StringField, SubmitField, SelectField, SelectMultipleField, widgets
+from wtforms import StringField, SubmitField, SelectField, SelectMultipleField, widgets, BooleanField
 from flask_wtf.file import FileField, FileAllowed
 from ..models import Project
 
@@ -15,7 +15,7 @@ class AnnouncementForm(FlaskForm):
     project = SelectField('Extension Project')
     publish = SubmitField("Publish") 
     draft = SubmitField("Save as Draft") 
-    medium = MultiCheckboxField("Medium", choices=[('Bulletin', 'Bulletin'), ('Email', 'Email')])
+    medium = BooleanField("Email")
     recipient = MultiCheckboxField("Recipient", choices=[('2', 'Beneficiaries'), ('3', 'Students')])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
 
