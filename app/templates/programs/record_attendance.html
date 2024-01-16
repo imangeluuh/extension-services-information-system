@@ -57,11 +57,11 @@
                     </thead>
                     <tbody>
                         {% for beneficiary in beneficiaries %}
-                        <form action="{{url_for('programs.recordAttendance')}}" method="post">
+                        <form id="beneficiary-{{beneficiary[0].User.Beneficiary.BeneficiaryId}}" action="{{url_for('programs.recordAttendance')}}" method="post">
                         <tr>
-                            <td>{{ beneficiary[0].User.FirstName }}</td>
-                            <td>{{ beneficiary[0].User.MiddleName if beneficiary[0].User.MiddleName else 'N/A' }}</td>
-                            <td>{{ beneficiary[0].User.LastName }}</td>
+                            <td>{{ beneficiary[0].User.Beneficiary.FirstName }}</td>
+                            <td>{{ beneficiary[0].User.Beneficiary.MiddleName if beneficiary[0].User.Beneficiary.MiddleName else 'N/A' }}</td>
+                            <td>{{ beneficiary[0].User.Beneficiary.LastName }}</td>
                             <td class="d-flex">
                                 {% if not beneficiary[1] %}
                                 <form action="{{url_for('programs.recordAttendance')}}" method="post">
@@ -97,9 +97,9 @@
                     <tbody>
                         {% for student in students %}
                         <tr>
-                            <td>{{ student[0].User.FirstName }}</td>
-                            <td>{{ student[0].User.MiddleName if student[0].User.MiddleName else 'N/A' }}</td>
-                            <td>{{ student[0].User.LastName }}</td>
+                            <td>{{ student[0].User.Student.FirstName }}</td>
+                            <td>{{ student[0].User.Student.MiddleName if student[0].User.Student.MiddleName else 'N/A' }}</td>
+                            <td>{{ student[0].User.Student.LastName }}</td>
                             <td class="d-flex">
                                 {% if not student[1] %}
                                 <form action="{{url_for('programs.recordAttendance')}}" method="post">

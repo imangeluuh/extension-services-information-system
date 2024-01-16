@@ -15,7 +15,8 @@ from sqlalchemy import func
 from fillpdf import fillpdfs
 from dotenv import load_dotenv
 from pathlib import Path
-import os
+import os, folium
+from folium.plugins import MarkerCluster
 
 env_path = Path(".") / ".env"
 load_dotenv(dotenv_path=env_path)
@@ -946,6 +947,31 @@ def activity(id):
         evaluation_id = activity.Evaluation[0].EvaluationId if activity.Evaluation else None
         bool_is_evaluation_taken = True if Response.query.filter_by(BeneficiaryId=beneficiary_id, EvaluationId=evaluation_id).first() else False
     return render_template('programs/activity.html', activity=activity, suggestions=suggestions, current_date=current_date, bool_is_evaluation_taken=bool_is_evaluation_taken)
+
+
+@bp.route('/activities/<int:id>/map')
+def activity_map(id):
+    activity = Activity.query.filter_by(ActivityId=id).first()
+
+    # Create a map with a marker for the activity location
+    mapObj = folium.Map(location=[float(activity.Location.Latitude), float(activity.Location.Longitude)], zoom_start=15, tiles=None)
+
+    # Add tile layers
+    folium.TileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                    name='CartoDB.DarkMatter', attr="CartoDB.DarkMatter").add_to(mapObj)
+    folium.TileLayer('openstreetmap').add_to(mapObj)
+    
+    folium.LayerControl().add_to(mapObj)
+
+    folium.Marker(
+        location=[float(activity.Location.Latitude), float(activity.Location.Longitude)],
+        popup=folium.Popup(f'Activity Location: {activity.Location.LocationName}', max_width=300),
+        icon=folium.Icon(color='red')
+    ).add_to(mapObj)
+
+    mapObj.save('app/templates/programs/activity_map.html')
+
+    return render_template('programs/activity_map.html', activity=activity)
 
 @bp.route('/project/management/<int:id>')
 @login_required(role=["Student"])
