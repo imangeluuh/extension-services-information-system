@@ -38,9 +38,9 @@
                 {% for speaker in speakers %}
                 <tr>
                     <td>{{ speaker.FirstName }}</td>
-                    <td>{{ speaker.MiddleName }}</td>
+                    <td>{{ speaker.MiddleName if speaker.MiddleName else 'N/A' }}</td>
                     <td>{{ speaker.LastName }}</td>
-                    <td>{# speaker.Email #}</td>
+                    <td>{{ speaker.Email }}</td>
                     <td>{{ speaker.ContactDetails }}</td>
                     <td class="d-flex align-items-center">
                         <a href="#" class="text-primary me-2" data-bs-toggle="modal" data-bs-target="#edit-speaker-{{speaker.SpeakerId}}">
@@ -50,6 +50,8 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 256 256"><path fill="currentColor" d="M216 48h-36V36a28 28 0 0 0-28-28h-48a28 28 0 0 0-28 28v12H40a12 12 0 0 0 0 24h4v136a20 20 0 0 0 20 20h128a20 20 0 0 0 20-20V72h4a12 12 0 0 0 0-24M100 36a4 4 0 0 1 4-4h48a4 4 0 0 1 4 4v12h-56Zm88 168H68V72h120Zm-72-100v64a12 12 0 0 1-24 0v-64a12 12 0 0 1 24 0m48 0v64a12 12 0 0 1-24 0v-64a12 12 0 0 1 24 0"/></svg>
                         </a>
                     </td>
+                    {% include 'admin/edit_speaker.html' %}
+                    {% include 'admin/delete_speaker.html' %}
                 </tr>
                 {% endfor %}
             </tbody>
@@ -65,7 +67,7 @@
         <h5 class="modal-title">New speaker</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
-    <form action="#{url_for('admin.createSpeaker')#}" method="post" enctype="multipart/form-data">
+    <form action="{{url_for('admin.createSpeaker')}}" method="post" enctype="multipart/form-data">
     {{form.hidden_tag()}}
     <div class="modal-body">
         <div class="row">
@@ -127,6 +129,8 @@
         var table = $('#speakers').DataTable({
                 responsive: true,
                 "columns": [
+                    null,
+                    null,
                     null,
                     null,
                     null,

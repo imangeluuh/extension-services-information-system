@@ -1,0 +1,57 @@
+<div class="modal modal-blur fade" id="edit-speaker-{{speaker.SpeakerId}}" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Edit Speaker</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{url_for('admin.updateSpeaker', id=speaker.SpeakerId)}}" method="post" enctype="multipart/form-data">
+            {{form.hidden_tag()}}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-md-4">
+                        <div class="mb-3">
+                            {{form.first_name.label(class="form-label")}}
+                            {{form.first_name(class="form-control", value=speaker.FirstName)}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="mb-3">
+                            {{form.middle_name.label(class="form-label")}}
+                            {{form.middle_name(class="form-control", value=(speaker.MiddleName if speaker.MiddleName))}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div>
+                            {{form.last_name.label(class="form-label")}}
+                            {{form.last_name(class="form-control", value=speaker.LastName)}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div>
+                            {{form.email.label(class="form-label")}}
+                            {{form.email(class="form-control", value=speaker.Email)}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div>
+                            {{form.contact_details.label(class="form-label")}}
+                            {{form.contact_details(class="form-control", value=speaker.ContactDetails)}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                Cancel
+                </a>
+                <button type="submit" class="btn btn-primary ms-auto">
+                <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
+                Save
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+    </div>

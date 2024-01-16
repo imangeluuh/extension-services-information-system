@@ -315,7 +315,7 @@ def createCollaborator():
             flash('There was an error creating new collaborator', category='error')
     if form.errors != {}: # If there are errors from the validations
         for field, error in form.errors.items():
-            flash(f"Field '{field}' has an error: {error}")
+            flash(f"Field '{field}' has an error: {error}", category='error')
     return redirect(url_for('admin.collaborators'))
 
 @bp.route('/collaborators/<int:id>')
@@ -355,7 +355,7 @@ def updateCollaborator(id):
                 collaborator.SignedMOAUrl = str_moa_url
                 collaborator.SignedMOAFileId = str_moa_file_id
             db.session.commit()
-            flash('Collaborator is successfully update', category='success')
+            flash('Collaborator is successfully updated', category='success')
         except Exception as e:
             print(e)
             flash('There was an issue updating collaborator', category='error')
@@ -383,23 +383,58 @@ def speakers():
     speakers = Speaker.query.all()
     return render_template('admin/speakers.html', speakers=speakers, form=form)
 
-@bp.route('/collaborators/create', methods=['POST'])
+@bp.route('/speakers/create', methods=['POST'])
 @login_required(role=["Admin"])
 def createSpeaker():
     form = SpeakerForm()
-    # if form.validate_on_submit():
-    #     try:
-    #         collaborator_to_add = Collaborator(Organization=form.organization.data
-    #                                             , Location=form.location.data
-    #                                             , SignedMOAUrl=str_moa_url
-    #                                             , SignedMOAFileId=str_moa_file_id)
-    #         db.session.add(collaborator_to_add)
-    #         db.session.commit()
-    #         flash('Collaborator is successfully inserted', category='success')
-    #     except:
-    #         flash('There was an error creating new collaborator', category='error')
-    # if form.errors != {}: # If there are errors from the validations
-    #     for field, error in form.errors.items():
-    #         flash(f"Field '{field}' has an error: {error}")
-    # return redirect(url_for('admin.collaborators'))
+    if form.validate_on_submit():
+        try:
+            speaker_to_add = Speaker(FirstName = form.first_name.data,
+                                        MiddleName = form.middle_name.data if form.middle_name.data else None,
+                                        LastName = form.last_name.data,
+                                        Email = form.email.data,
+                                        ContactDetails = form.contact_details.data)
+            db.session.add(speaker_to_add)
+            db.session.commit()
+            flash('Speaker is successfully inserted', category='success')
+        except:
+            flash('There was an error creating a new speaker', category='error')
+    if form.errors != {}: # If there are errors from the validations
+        for field, error in form.errors.items():
+            print(f"Field '{field}' has an error: {error}")
+            flash(f"Field '{field}' has an error: {error}", category='error')
+    return redirect(url_for('admin.speakers'))
 
+@bp.route('/spakers/update/<int:id>', methods=['POST'])
+@login_required(role=["Admin"])
+def updateSpeaker(id):
+    form = SpeakerForm()
+    if form.validate_on_submit():
+        speaker = Speaker.query.filter_by(SpeakerId=id).first()
+        try:
+            speaker.FirstName = form.first_name.data,
+            speaker.MiddleName = form.middle_name.data if form.middle_name.data else None,
+            speaker.LastName = form.last_name.data,
+            speaker.Email = form.email.data,
+            speaker.ContactDetails = form.contact_details.data
+            db.session.commit()
+            flash('Speaker is successfully updated', category='success')
+        except Exception as e:
+            print(e)
+            flash('There was an issue updating speaker', category='error')
+    
+    return redirect(request.referrer)
+
+@bp.route('/speakers/delete/<int:id>', methods=['POST'])
+@login_required(role=["Admin"])
+def deleteSpeaker(id):
+    speaker = Speaker.query.filter_by(SpeakerId=id).first()
+    try:
+        db.session.delete(speaker)
+        db.session.commit()
+        flash('Speaker is successfully deleted.', category='success')
+    except Exception as e:
+        print(e)
+        flash('There was an issue deleting the extension program.', category='error')
+
+    return redirect(request.referrer)
