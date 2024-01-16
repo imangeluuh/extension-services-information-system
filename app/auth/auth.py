@@ -53,7 +53,7 @@ def beneficiarySignup():
         if form.validate_on_submit():
             try:
                 beneficiary_to_create = Beneficiary(FirstName=form.first_name.data,
-                                                    MiddleName=form.middle_name.data,
+                                                    MiddleName=form.middle_name.data if form.middle_name.data else None,
                                                     LastName=form.last_name.data,
                                                     Email=form.email.data,
                                                     password_hash=form.password1.data,
