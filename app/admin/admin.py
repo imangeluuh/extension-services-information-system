@@ -105,15 +105,24 @@ def viewFaculty(id):
     user_projects = Project.query.filter_by(LeadProponentId=user.User[0].UserId)
     return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
 
-    
+
 @bp.route('/dashboard')
-@login_required(role=["Admin", "Faculty"])
+@login_required(role=["Admin"])
 def dashboard():
     programs = ExtensionProgram.query.all()
     years = set()
     programs_participants = {}
     programs_projects = {}
     data_for_bar_graph = []
+    current_date = datetime.utcnow().date()
+
+    upcoming_projects = Project.query.filter(Project.StartDate > current_date).count()
+    ongoing_projects = Project.query.filter(Project.StartDate <= current_date, Project.EndDate >= current_date).count()
+    completed_projects = Project.query.filter(Project.EndDate < current_date).count()
+
+    upcoming_activities = Activity.query.filter(Project.StartDate > current_date).count()
+    ongoing_activities = Activity.query.filter(Project.StartDate <= current_date, Project.EndDate >= current_date).count()
+    completed_activities = Activity.query.filter(Project.EndDate < current_date).count()
 
     for program in programs:
         program_data = {"name": program.Name, "data": []}
@@ -166,6 +175,7 @@ def dashboard():
                     chart_data[program_name] = 0
 
     for extension_program in ExtensionProgram.query.all():
+        print("extension_program:", extension_program)
         program_ratings = []
         for project in extension_program.Projects:
             for activity in project.Activity:
@@ -192,67 +202,76 @@ def dashboard():
     print("data_for_chart_projects:", data_for_chart_projects)
     print("data_for_bar_graph:", data_for_bar_graph)
 
-    with current_app.app_context():
-        # Query the Activity table to get the location count
-        location_counts = db.session.query(Location.LocationName, db.func.count(Activity.LocationId)). \
-            join(Activity, Location.LocationId == Activity.LocationId). \
-            group_by(Location.LocationName).all()
-
-        # Fetch longitude and latitude from the Location table
-        locations = db.session.query(Location).all()
-
-        # Update the bubble_data list
-        bubble_data = []
-        for location in locations:
-            location_name = location.LocationName
-            longitude = location.Longitude
-            latitude = location.Latitude
-
-            # Find the corresponding location count
-            count = next((count for name, count in location_counts if name == location_name), 0)
-
-            # Display bubble marker only if activities are done in this location
-            if count > 0:
-                bubble_data.append((float(latitude), float(longitude), count))
-
-        # Initialize a map with center and zoom
-        mapObj = folium.Map(location=[14.7011253, 121.0721637], zoom_start=15, tiles=None)
-
-        # Add tile layers
-        folium.TileLayer('openstreetmap').add_to(mapObj)
-        folium.TileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                        name='CartoDB.DarkMatter', attr="CartoDB.DarkMatter").add_to(mapObj)
-
-        marker_cluster = MarkerCluster().add_to(mapObj)
-
-        # Add dynamic bubble markers
-        for bubble in bubble_data:
-            latitude, longitude, program_count = bubble
-            location_name = next((name for name, in db.session.query(Location.LocationName).filter_by(Latitude=str(latitude), Longitude=str(longitude)).all()), '')
-
-            size_multiplier = 5
-            bubble_size = program_count * size_multiplier
-
-            folium.CircleMarker(
-                location=[latitude, longitude],
-                radius=bubble_size,
-                popup=folium.Popup(f'Location: {location_name}<br>Projects: {program_count}', max_width=300),
-                fill=True,
-                fill_opacity=0.7
-            ).add_to(marker_cluster)
-
-
-        # Add layers control over the map
-        folium.LayerControl().add_to(mapObj)
-
-        # Save the map as an HTML file
-        mapObj.save('app/templates/admin/qcmap.html')
-
     return render_template('admin/dashboard.html',
                             data_for_chart_participants=data_for_chart_participants,
                             data_for_chart_projects=data_for_chart_projects,
                             data_for_bar_graph=data_for_bar_graph,
-                            sorted_years=sorted_years)
+                            sorted_years=sorted_years,
+                            upcoming_projects=upcoming_projects,
+                            ongoing_projects=ongoing_projects,
+                            completed_projects=completed_projects,
+                            upcoming_activities=upcoming_activities,
+                            ongoing_activities=ongoing_activities,
+                            completed_activities=completed_activities)
+
+@bp.route('/qcmap')
+def qcmap():
+    programs = ExtensionProgram.query.all()
+    # Query the Activity table to get the location count
+    location_counts = db.session.query(Location.LocationName, db.func.count(Activity.LocationId)). \
+        join(Activity, Location.LocationId == Activity.LocationId). \
+        group_by(Location.LocationName).all()
+
+    # Fetch longitude and latitude from the Location table
+    locations = db.session.query(Location).all()
+
+    # Update the bubble_data list
+    bubble_data = []
+    for location in locations:
+        location_name = location.LocationName
+        longitude = location.Longitude
+        latitude = location.Latitude
+
+        # Find the corresponding location count
+        count = next((count for name, count in location_counts if name == location_name), 0)
+
+        # Display bubble marker only if activities are done in this location
+        if count > 0:
+            bubble_data.append((float(latitude), float(longitude), count))
+
+    # Initialize a map with center and zoom
+    mapObj = folium.Map(location=[14.7011253, 121.0721637], zoom_start=15, tiles=None)
+
+    # Add tile layers
+    folium.TileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                    name='CartoDB.DarkMatter', attr="CartoDB.DarkMatter").add_to(mapObj)
+    folium.TileLayer('openstreetmap').add_to(mapObj)
+
+    marker_cluster = MarkerCluster().add_to(mapObj)
+
+    # Add dynamic bubble markers
+    for bubble in bubble_data:
+        latitude, longitude, program_count = bubble
+        location_name = next((name for name, in db.session.query(Location.LocationName).filter_by(Latitude=str(latitude), Longitude=str(longitude)).all()), '')
+
+        size_multiplier = 5
+        bubble_size = program_count * size_multiplier
+
+        folium.CircleMarker(
+            location=[latitude, longitude],
+            radius=bubble_size,
+            popup=folium.Popup(f'Location: {location_name}<br>Projects: {program_count}', max_width=300),
+            fill=True,
+            fill_opacity=0.7
+        ).add_to(marker_cluster)
+
+    # Add layers control over the map
+    folium.LayerControl().add_to(mapObj)
+
+    # Save the map as an HTML file
+    mapObj.save('app/templates/admin/qcmap.html')
+
+    return render_template('admin/qcmap.html')
 
     
 @bp.route('/collaborators')
@@ -363,4 +382,24 @@ def speakers():
     form = SpeakerForm()
     speakers = Speaker.query.all()
     return render_template('admin/speakers.html', speakers=speakers, form=form)
+
+@bp.route('/collaborators/create', methods=['POST'])
+@login_required(role=["Admin"])
+def createSpeaker():
+    form = SpeakerForm()
+    # if form.validate_on_submit():
+    #     try:
+    #         collaborator_to_add = Collaborator(Organization=form.organization.data
+    #                                             , Location=form.location.data
+    #                                             , SignedMOAUrl=str_moa_url
+    #                                             , SignedMOAFileId=str_moa_file_id)
+    #         db.session.add(collaborator_to_add)
+    #         db.session.commit()
+    #         flash('Collaborator is successfully inserted', category='success')
+    #     except:
+    #         flash('There was an error creating new collaborator', category='error')
+    # if form.errors != {}: # If there are errors from the validations
+    #     for field, error in form.errors.items():
+    #         flash(f"Field '{field}' has an error: {error}")
+    # return redirect(url_for('admin.collaborators'))
 
