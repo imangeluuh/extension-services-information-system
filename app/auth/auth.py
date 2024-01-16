@@ -115,7 +115,7 @@ def studentLogin():
 # @bp.route('/student/signup', methods=['GET', 'POST'])
 # def studentSignup():
 #     current_url_path = request.path
-#     form = RegisterForm()    
+#     form = RegisterForm()     
 #     current_url_path = request.path
 #     if request.method == "POST":
 #         if form.validate_on_submit():
