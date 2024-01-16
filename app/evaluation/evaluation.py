@@ -200,7 +200,7 @@ def evaluation(id):
         flash('The evaluation you have requested does not exist. Please check if your link is correct.', category='error')
         return redirect(url_for('programs.activities'))
     
-    if Response.query.filter_by(EvaluationId=id, BeneficiaryId=current_user.UserId).first():
+    if Response.query.filter_by(EvaluationId=id, BeneficiaryId=current_user.Beneficiary.BeneficiaryId).first():
         evaluation_taken = True
         return render_template("evaluation/evaluation.html", evaluation=evaluation, evaluation_taken=evaluation_taken)
 

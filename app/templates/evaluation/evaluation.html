@@ -50,7 +50,7 @@
                                 <input name="{{ question.QuestionId }}" type="radio" value="{{ loop.index }}" {{ 'required' if question.Required }}> {{ response }}</input><br>
                             {% endfor %}
                         {% else %}
-                            <textarea class="" name="{{ question.QuestionId }}" placeholder="Please enter your response..."></textarea><br>
+                            <textarea class="w-100" name="{{ question.QuestionId }}" placeholder="Please enter your response..."></textarea><br>
                         {% endif %}
                     {% endfor %}
                     <button type="submit" name="bt" class="btn btn-primary rounded-2 w-auto d-flex align-items-center p-2 text-center mt-4">Submit response</button>
