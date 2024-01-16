@@ -94,8 +94,8 @@ def studentLogin():
                 if not attempted_user.User:  # if SPS account not yet registered in ESISUser
                     # Create row for SPS account in EISUser
                     account_to_create = User(UserId=uuid.uuid4(),
-                                            RoleId=4,
-                                            FacultyId=attempted_user.FacultyId)
+                                            RoleId=3,
+                                            StudentId=attempted_user.StudentId)
                     db.session.add(account_to_create)
                     db.session.commit()
                 # Login to system
