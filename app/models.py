@@ -44,8 +44,7 @@ class User(db.Model, UserMixin):
     
 
 class Student(db.Model): 
-    __tablename__ = 'SPSStudent' 
-
+    __tablename__ = 'SPSStudent'
     StudentId = db.Column(db.Integer, primary_key=True, autoincrement=True)
     StudentNumber = db.Column(db.String(30), unique=True, nullable=False)  # UserID
     FirstName = db.Column(db.String(50), nullable=False)  # First Name
@@ -90,11 +89,11 @@ class Student(db.Model):
 
 # Faculty Users
 class Faculty(db.Model):
-    __tablename__ = 'FISFaculty' # Set the name of table in database
-    FacultyId = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    __tablename__ = 'FISFaculty'
+    FacultyId = db.Column(db.Integer, primary_key=True, autoincrement=True)  # UserID
     FacultyType = db.Column(db.String(50), nullable=False)  # Faculty Type
     Rank = db.Column(db.String(50))  # Faculty Rank
-    Units = db.Column(db.Numeric, nullable=False)  # Faculty Unit
+    Units = db.Column(db.Float, nullable=False)  # Faculty Unit
     FirstName = db.Column(db.String(50), nullable=False)  # First Name
     LastName = db.Column(db.String(50), nullable=False)  # Last Name
     MiddleName = db.Column(db.String(50))  # Middle Name
@@ -112,14 +111,12 @@ class Faculty(db.Model):
     ResidentialAddress = db.Column(db.String(50))  # ResidentialAddress
     MobileNumber = db.Column(db.String(11))  # MobileNumber
     Gender = db.Column(db.Integer) # Gender # 1 if Male 2 if Female
-    
+
     Password = db.Column(db.String(256), nullable=False)  # Password
     ProfilePic= db.Column(db.String(50),default="14wkc8rPgd8NcrqFoRFO_CNyrJ7nhmU08")  # Profile Pic
     IsActive = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-    # FOREIGN TABLES
-    
 
     def to_dict(self):
         return {
