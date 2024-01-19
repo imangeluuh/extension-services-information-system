@@ -9,7 +9,7 @@ def login_required(role=["ANY"]):
             if not current_user.is_authenticated:
                 return current_app.login_manager.unauthorized()
             user_role = current_user.get_role()
-            if ( (user_role not in role) and (role not in ["ANY"])):
+            if ( (user_role not in role) and (role != ["ANY"])):
                 return current_app.login_manager.unauthorized()      
             return fn(*args, **kwargs)
         return decorated_view

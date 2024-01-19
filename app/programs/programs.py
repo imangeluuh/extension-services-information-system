@@ -856,6 +856,7 @@ def cert(id):
 # =========================================================
 
 @bp.route('/extension-programs')
+@role_excluded(role=["Admin", "Faculty"])
 def extensionPrograms():
     extension_programs = ExtensionProgram.query.all()
     programs = Course.query.all()
@@ -863,6 +864,7 @@ def extensionPrograms():
     return render_template('programs/ext_programs_list.html', extension_programs=extension_programs, programs=programs, agendas=agendas)
 
 @bp.route('/extension-program/view/<int:id>')
+@role_excluded(role=["Admin", "Faculty"])
 def extensionProgram(id):
     extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
     projects = Project.query.filter_by(ExtensionProgramId=id).order_by(Project.EndDate.desc()).all()
@@ -877,11 +879,13 @@ def extensionProgram(id):
 
 
 @bp.route('/projects')
+@role_excluded(role=["Admin", "Faculty"])
 def projects():
     projects = Project.query.all()
     return render_template('programs/projects_list.html', projects=projects)
 
 @bp.route('/projects/<int:id>')
+@role_excluded(role=["Admin", "Faculty"])
 def project(id):
     project = Project.query.filter_by(ProjectId=id).first()
     activities = Activity.query.filter_by(ProjectId=id).order_by(Activity.Date.desc()).all()
@@ -929,11 +933,13 @@ def cancelRegistration(project_id):
 
 
 @bp.route('/activities')
+@role_excluded(role=["Admin", "Faculty"])
 def activities():
     activities = Activity.query.order_by(Activity.Date.desc()).all()
     return render_template('programs/activities.html', activities=activities)
 
 @bp.route('/activities/<int:id>')
+@role_excluded(role=["Admin", "Faculty"])
 def activity(id):
     activity = Activity.query.filter_by(ActivityId=id).first()
     current_date = datetime.utcnow().date()
