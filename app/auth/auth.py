@@ -193,7 +193,7 @@ def resetPasswordRequest():
 def resetPassword(token):
     if current_user.is_authenticated:
         return redirect(url_for('home'))  # Temp route
-    user = User.verify_reset_password_token(token)
+    user = Beneficiary.verify_reset_password_token(token)
     if not user:
         return redirect(url_for('home'))
     form = ResetPasswordForm()
