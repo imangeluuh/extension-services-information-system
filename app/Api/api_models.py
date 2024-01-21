@@ -76,14 +76,14 @@ activity_model = api.model("Activity", {
 })
 
 agenda_model = api.model("Agenda", {
-    "AgendaId": fields.Integer,
+    # "AgendaId": fields.Integer,
     "AgendaName": fields.String,
 })
 
 collaborator_model = api.model("Collaborator", {
-    "CollaboratorId": fields.Integer,
+    # "CollaboratorId": fields.Integer,
     "Organization": fields.String,
-    "Location": fields.String
+    # "Location": fields.String
 })
 
 extension_project_model = api.model("ExtensionProject", {
@@ -115,7 +115,7 @@ extension_program_model = api.model('ExtensionProgram', {
     'Name': fields.String(description='Name of the extension program'),
     'Rationale': fields.String(description='Rationale for the extension program'),
     'ImageUrl': fields.String(description='URL of the program image'),
-    'ImageFileId': fields.String(description='File ID of the program image'),
+    # 'ImageFileId': fields.String(description='File ID of the program image'),
     "Agenda": fields.Nested(agenda_model),
     "Program": fields.Nested(course_model),
     "Projects": fields.List(fields.Nested(extension_project_model)),

@@ -115,7 +115,36 @@ class UsersListApi(Resource):
 class ExtensionProgramListApi(Resource):
     @ns.marshal_list_with(extension_program_model)
     def get(self):
-        return ExtensionProgram.query.all()
+        # Get all extension programs
+        extension_programs = ExtensionProgram.query.all()
+
+        # Create a new list for API response with filtered completed projects
+        serialized_extension_programs = []
+        for program in extension_programs:
+            completed_projects = [project for project in program.Projects if project.EndDate > datetime.utcnow().date()]
+
+            # Create a dictionary with the program's attributes
+            program_dict = {
+                'ExtensionProgramId': program.ExtensionProgramId,
+                'Name': program.Name,
+                'Rationale': program.Rationale,
+                'ImageUrl': program.ImageUrl,
+                'ImageFileId': program.ImageFileId,
+                'Agenda': program.Agenda,
+                'Program': program.Program,
+                'Projects': completed_projects,
+            }
+
+            # Create a new instance of ExtensionProgram with the copied values
+            program_copy = ExtensionProgram(**program_dict)
+            serialized_extension_programs.append(api.marshal(program_copy, extension_program_model))
+
+        return extension_programs
+
+def is_project_completed(project):
+    # Replace this with your logic to determine if a project is completed
+    # For example, check if the current date is after the project's end date
+    return datetime.now() > project.get('EndDate', datetime.now())
     
 @ns.route('/extension-projects')
 class ExtensionProjectListApi(Resource):
