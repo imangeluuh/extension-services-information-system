@@ -46,23 +46,21 @@ admin_model = api.model("Admin", {
 #     "User": fields.Nested(user_model)
 # })
 
+
+faculty_model = api.model('Faculty', {
+    'FacultyId': fields.Integer(description='Unique faculty ID'),
+    'FirstName': fields.String(description='First name'),
+    'LastName': fields.String(description='Last name'),
+    'MiddleName': fields.String(description='Middle name'),
+    'Email': fields.String(description='Email address'),
+})
+
 user_model = api.model("User", {
-    "UserId": fields.String,
-    "FirstName": fields.String,
-    "MiddleName": fields.String,
-    "LastName": fields.String,
-    "ContactDetails": fields.String,
-    "Birthdate": fields.Date,
-    "Gender": fields.String,
-    "Address": fields.String,
-    # "UserLogin": fields.Nested(login_model)
+    "Faculty": fields.Nested(faculty_model)
 })
 
 location_model = api.model("Location", {
-    "LocationId": fields.Integer,
     "LocationName": fields.String,
-    "Longitude": fields.String,
-    "Latitude": fields.String,
 })
 
 activity_model = api.model("Activity", {
@@ -85,7 +83,6 @@ agenda_model = api.model("Agenda", {
 collaborator_model = api.model("Collaborator", {
     "CollaboratorId": fields.Integer,
     "Organization": fields.String,
-    "KeyPersonnel": fields.String,
     "Location": fields.String
 })
 
@@ -98,12 +95,8 @@ extension_project_model = api.model("ExtensionProject", {
     "ProjectType": fields.String,
     "StartDate": fields.Date,
     "EndDate": fields.Date,
-    "ProposedBudget": fields.Float,
-    "ApprovedBudget": fields.Float,
-    "FundType": fields.String,
     "ImpactStatement": fields.String,
     "Objectives": fields.String,
-    "Status": fields.String,
     "ImageUrl": fields.String,
     "ProjectProposalUrl": fields.String,
     "LeadProponent": fields.Nested(user_model),
@@ -111,18 +104,19 @@ extension_project_model = api.model("ExtensionProject", {
     "Activity": fields.List(fields.Nested(activity_model)),
 })
 
-program_model = api.model("Program", {
-    "ProgramId": fields.Integer,
-    "ProgramName": fields.String,
-    "Abbreviation": fields.String
+course_model = api.model("Course", {
+    "CourseId": fields.Integer,
+    "Name": fields.String,
+    "CourseCode": fields.String
 })
 
-extension_program_model = api.model("ExtensionProgram", {
-    "ExtensionProgramId": fields.Integer,
-    "Name": fields.String,
-    "Rationale": fields.String,
-    "ImageUrl": fields.String,
+extension_program_model = api.model('ExtensionProgram', {
+    'ExtensionProgramId': fields.Integer(description='Extension program ID'),
+    'Name': fields.String(description='Name of the extension program'),
+    'Rationale': fields.String(description='Rationale for the extension program'),
+    'ImageUrl': fields.String(description='URL of the program image'),
+    'ImageFileId': fields.String(description='File ID of the program image'),
     "Agenda": fields.Nested(agenda_model),
-    "Program": fields.Nested(program_model),
+    "Program": fields.Nested(course_model),
     "Projects": fields.List(fields.Nested(extension_project_model)),
 })

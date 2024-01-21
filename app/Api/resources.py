@@ -28,7 +28,7 @@ class AdminLoginApi(Resource):
     @ns.expect(login_input_model)
     @ns.header('Content-Type', 'application/json')
     def post(self):
-        attempted_user = Login.query.filter_by(Email=ns.payload['Email'], RoleId=1).first()
+        attempted_user = Faculty.query.filter_by(Email=ns.payload['Email']).first()
         if attempted_user and attempted_user.Status == 'Active': 
             if attempted_user.check_password_correction(attempted_password=ns.payload['Password']):
                 return {'access_token': create_access_token(attempted_user.LoginId),
@@ -43,7 +43,7 @@ class BeneficiaryLoginApi(Resource):
     
     @ns.expect(login_input_model)
     def post(self):
-        attempted_user = Login.query.filter_by(Email=ns.payload['Email'], RoleId=2).first()
+        attempted_user = Beneficiary.query.filter_by(Email=ns.payload['Email']).first()
         if attempted_user and attempted_user.Status == 'Active': 
             if attempted_user.check_password_correction(attempted_password=ns.payload['Password']):
                 return {'access_token': create_access_token(attempted_user.LoginId),
@@ -58,7 +58,7 @@ class StudentLoginApi(Resource):
     
     @ns.expect(login_input_model)
     def post(self):
-        attempted_user = Login.query.filter_by(Email=ns.payload['Email'], RoleId=3).first()
+        attempted_user = Student.query.filter_by(Email=ns.payload['Email'], RoleId=3).first()
         if attempted_user and attempted_user.Status == 'Active': 
             if attempted_user.check_password_correction(attempted_password=ns.payload['Password']):
                 return {'access_token': create_access_token(attempted_user.LoginId),
@@ -73,7 +73,7 @@ class FacultyLoginApi(Resource):
     
     @ns.expect(login_input_model)
     def post(self):
-        attempted_user = Login.query.filter_by(Email=ns.payload['Email'], RoleId=4).first()
+        attempted_user = Faculty.query.filter_by(Email=ns.payload['Email']).first()
         print(ns.payload)
         print(attempted_user)
         if attempted_user and attempted_user.Status == 'Active': 
