@@ -185,7 +185,7 @@ object-fit: cover;">
                 </div>
                 <div class="tab-pane" id="tabs-activity">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4>Activity tab</h4>
+                        <h4>Activities</h4>
                         {% if project.LeadProponentId == current_user.UserId %}
                         <button type="button" data-bs-toggle="modal" data-bs-target="#add-activity" class="btn btn-primary rounded-2 d-flex align-items-center me-2 py-1 px-2">
                             <iconify-icon class="w-3 h-3 mr-2" icon="ic:baseline-plus"></iconify-icon>
@@ -199,9 +199,9 @@ object-fit: cover;">
                         <div class="col-auto col-md-8">
                             {% for activity in project.Activity %}
                             <div class="list-group-item mt-3">
-                                <div class="row">
+                                <a href="{{url_for('programs.viewActivity', id=activity.ActivityId)}}" class="row">
                                     <div class="col-auto col-md-10">
-                                        <div class="row" data-bs-toggle="modal" data-bs-target="#view-activity-{{activity.ActivityId}}">
+                                        <div class="row">
                                             <div class="col-12 col-md-2">
                                                 <span class="avatar" style="background-image: url('{{activity.ImageUrl if activity.ImageUrl}}'); height: 75px; width: 75px"></span>
                                             </div>
@@ -215,25 +215,8 @@ object-fit: cover;">
                                             </div>
                                         </div>
                                     </div>
-                                    {% if project.LeadProponentId == current_user.UserId %}
-                                    <div class="col-auto col-md-2">
-                                        <div class="d-flex">
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#edit-activity-{{activity.ActivityId}}" class="btn bg-transparent border-0 shadown-none d-flex align-items-center me-2 py-1 px-2">
-                                                <iconify-icon class="me-1 fs-1 text-primary" icon="bx:edit"></iconify-icon>
-                                            </button>
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#delete-activity-{{activity.ActivityId}}" class="btn bg-transparent border-0 shadown-none d-flex align-items-center  py-1 px-2">
-                                                <iconify-icon class="me-1 fs-1 text-danger " icon="ion:trash-outline"></iconify-icon>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                </div>
+                                </a>
                             </div>
-                            {% include 'programs/view_activity.html' %}
-                            {% if project.LeadProponentId == current_user.UserId %}
-                            {% include 'programs/edit_activity.html' %}
-                            {% include 'programs/delete_activity.html' %}
-                            {% endif %}
                             {% endfor %}
                         </div>
                         <div class="col-auto col-md-4 ">

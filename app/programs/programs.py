@@ -365,7 +365,6 @@ def insertProject():
 @login_required(role=["Admin", "Faculty"])
 def viewProject(id):
     form = ProjectForm()
-    activity_form = ActivityForm()
     project = Project.query.get_or_404(id)
     project_budget = Budget.query.filter_by(ProjectId=id).all()
     registered = Registration.query.filter_by(ProjectId=project.ProjectId).all()
@@ -627,6 +626,15 @@ def deleteActivity(id):
         flash('There was an issue deleting the activity', category='error')
 
     return redirect(url_for('programs.viewProject', id=project_id))
+
+@bp.route('/view/activity/<int:id>')
+@login_required(role=["Admin", "Faculty"])
+def viewActivity(id):
+    activity_form = ActivityForm()
+    activity = Activity.query.get_or_404(id)
+    attendance = Attendance.query.filter_by(ActivityId=id).all()
+    current_date = datetime.utcnow().date()
+    return render_template('programs/view_activity.html', activity=activity, attendance=attendance, activity_form=activity_form, current_date=current_date)
 
 
 @bp.route('/calendar')

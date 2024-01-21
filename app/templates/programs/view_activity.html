@@ -1,69 +1,196 @@
-<div class="modal modal-blur" id="view-activity-{{activity.ActivityId}}" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{activity.ActivityName}}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>{{ activity.ActivityName }}</title>
+    <!--Regular Datatables CSS-->
+    <link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
+    <!--Responsive Extension Datatables CSS-->
+    <!-- <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet"> -->
+    <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">
+    <!-- Multiple Select -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/multiple-select.css')}}">
+
+    {% endblock %}
+
+{% block content %}
+
+<!-- Background image -->
+<div class="text-center bg-image" style="
+background-image: url('{{activity.ImageUrl if activity.ImageUrl else 'https://mdbcdn.b-cdn.net/img/new/slides/041.webp' }}');
+height: 200px;
+object-fit: cover;">
+    <div class="mask" style="background-color: rgba(0, 0, 0, 0.6); height:inherit">
+        <div class="ms-4 d-flex flex-column justify-content-between align-items-start  h-100">
+            <ol class="breadcrumb bg-transparent px-0" aria-label="breadcrumbs">
+                <li class="breadcrumb-item"><a href="{{url_for('programs.programs')}}" class="text-primary">Extension Programs</a></li>
+                <li class="breadcrumb-item"><a href="{{url_for('programs.viewExtensionProgram', id=activity.Project.ExtensionProgramId)}}" class="text-primary">{{ activity.Project.ExtensionProgram.Name }}</a></li>
+                <li class="breadcrumb-item text-truncate" style="max-width: 400px;"><a href="{{url_for('programs.viewProject', id=activity.ProjectId)}}" class="text-primary">{{activity.Project.Title}}</a></li>
+                <li class="breadcrumb-item text-white active" style="max-width: 400px;" aria-current="page"><a>{{activity.ActivityName}}</a></li>
+            </ol>
+            <div class="text-white">
+                <h2 class="mb-3 ">{{activity.ActivityName}}</h2>
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-auto col-md-3">
-                        <div class="mb-3">
-                            <span class="avatar" style="background-image: url('{{activity.ImageUrl if activity.ImageUrl}}'); height: 175px; width: 175px"></span>
+        </div>
+    </div>
+</div>
+<!-- Background image -->
+<div class="container-xl">
+<div class="card mx-5 mb-5 mt-4">
+    <div class="card-header">
+        <h3 class="card-title">Details</h3>
+        <div class="d-flex justify-content-end w-100">
+            {% if activity.Project.LeadProponentId == current_user.UserId %}
+            <button type="button" data-bs-toggle="modal" data-bs-target="#edit-activity-{{activity.ActivityId}}" class="btn btn-primary rounded-2 d-flex align-items-center me-2 py-1 px-2">
+                <iconify-icon class="me-2" icon="bx:edit"></iconify-icon>
+                Edit
+            </button>
+            <button type="button" data-bs-toggle="modal" data-bs-target="#delete-activity-{{activity.ActivityId}}" class="btn btn-danger rounded-2 d-flex align-items-center  py-1 px-2">
+                <iconify-icon class="me-2" icon="ion:trash-outline"></iconify-icon>
+                Delete
+            </button>
+            {% include 'programs/edit_activity.html' %}
+            {% include 'programs/delete_activity.html' %}
+            {% endif %}
+        </div>
+        {# include 'programs/edit_ext_program_modal.html' #}
+    </div>
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-auto col-md-2">
+                <div class="datagrid-title">Activity ID</div>
+                <div class="datagrid-content">{{activity.ActivityId}}</div>
+            </div>
+            <div class="col-auto col-md-4">
+                <div class="datagrid-title">Activity Name</div>
+                <div class="datagrid-content">{{activity.ActivityName}}</div>
+            </div>
+            <div class="col-auto col-md-6">
+                <div class="datagrid-title">Speakers</div>
+                <div class="datagrid-content">
+                    <div class="row">
+                        {% for key, value in activity.Speaker.items() %}
+                        <div class="col-auto col-md-6">
+                            {{ value }}
                         </div>
-                    </div>
-                    <div class="col-auto col-md-9">
-                        <div class="mb-3 d-flex flex-column">
-                            <!-- name -->
-                            <span class="datagrid-title">Activity Name</span>
-                            <span class="datagrid-content">{{ activity.ActivityName }}</span>
-                        </div>
-                        <div class="mb-3 d-flex flex-column">
-                            <!--date -->
-                            <span class="datagrid-title">Date</span>
-                            <span class="datagrid-content">{{ activity.Date.strftime('%A, %B %d %Y') }}</span>
-                        </div>
-                        <div class="mb-3 d-flex flex-column">
-                            <!-- time -->
-                            <span class="datagrid-title">Time</span>
-                            <span class="datagrid-content">{{activity.StartTime.strftime('%I:%M %p') if activity.StartTime}} - {{activity.EndTime.strftime('%I:%M %p') if activity.EndTime}}</span>
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-8">
-                        <div class="mb-3 d-flex flex-column">
-                            <!-- speaker-->
-                            <span class="datagrid-title">Speakers</span>
-                            <div class="row">
-                                {% for key, value in activity.Speaker.items() %}
-                                <div class="col-auto col-md-6">
-                                    {{ value }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto col-md-4">
-                        <div class="mb-3 d-flex flex-column">
-                            <!-- location -->
-                            <span class="datagrid-title">Location</span>
-                            <span class="datagrid-content">{{ activity.Location.LocationName }}</span>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="mb-3 d-flex flex-column">
-                            <!-- description -->
-                            <span class="datagrid-title">Description</span>
-                            <span class="datagrid-content">{{activity.Description|safe }}</span>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
-                    Close
-                </a>
+            <div class="col-12 col-md-3">
+                <div class="datagrid-title">Date</div>
+                <div class="datagrid-content">{{activity.Date.strftime('%A, %B %d %Y')}}</div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="datagrid-title">Start Time</div>
+                <div class="datagrid-content">{{activity.StartTime.strftime('%I:%M %p')}}</div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="datagrid-title">End Time</div>
+                <div class="datagrid-content">{{activity.EndTime.strftime('%I:%M %p')}}</div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="datagrid-title">Location</div>
+                <div class="datagrid-content">{{activity.Location.LocationName}}</div>
+            </div>
+            <div class="col-12">
+                <div class="datagrid-title">Description</div>
+                <div class="datagrid-content">{{activity.Description|safe}}</div>
             </div>
         </div>
     </div>
 </div>
 
+ <!--Card-->
+ <div class="card mx-5 mb-5">
+    <div class="card-header d-flex justify-content-between">
+        <h3 class="card-title">Beneficiary Attendance</h3>
+    </div>
+    <div class="card-body">
+        <table id="attendance" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+            <thead>
+                <tr>
+                    <th data-priority="1">First Name</th>
+                    <th data-priority="2">Middle Name</th>
+                    <th data-priority="3">Last Name</th>
+                    <th data-priority="4">Gender</th>
+                    <th data-priority="5">Age</th>
+                    <th data-priority="6">Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance %}
+                <tr>
+                    <td>{{record.User.Beneficiary.FirstName}}</td>
+                    <td>{{record.User.Beneficiary.MiddleName if record.User.Beneficiary.MiddleName else 'N/A'}}</td>
+                    <td>{{record.User.Beneficiary.LastName}}</td>
+                    <td>
+                        {% if record.User.Beneficiary.Gender == 1 %}
+                        Male
+                        {% elif record.User.Beneficiary.Gender == 2 %}
+                        Female
+                        {% else %}
+                        Others
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% set age = (current_date - record.User.Beneficiary.DateOfBirth) | string %}
+                        {% set age = age.split(' ')[0] | int%}
+                        {{ (age/365) | int }}
+                    </td>
+                    <td>{{record.User.Beneficiary.ResidentialAddress}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+ </div>
+<!--/Card-->
+</div>
+
+{% endblock %}
+
+{% block script %}
+<!--Datatables -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<!-- <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script> -->
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+<!-- Multiple Select -->
+<script src="{{ url_for('static', filename='js/multiple-select.js')}}"></script>
+<script>
+    $(document).ready(function() {
+        new MultipleSelect('#speaker', {
+            placeholder: 'Select Speaker'
+        })
+
+        $('#attendance').DataTable( {
+            dom: 'Bfrtip',
+            buttons: [
+                'copy',
+                {
+                    extend: 'csv',
+                    title: '{{activity.ActivityName}} Attendance'
+                },
+                {
+                    extend: 'excel',
+                    title: '{{activity.ActivityName}} Attendance'
+                },
+                {
+                    extend: 'pdf',
+                    title: '{{activity.ActivityName}} Attendance'
+                },
+                {
+                    extend: 'print',
+                    title: '{{activity.ActivityName}} Attendance'
+                },
+            ]
+        } );
+    });
+</script>
+{% endblock %}
