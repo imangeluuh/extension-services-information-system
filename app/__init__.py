@@ -42,7 +42,13 @@ def create_app(config_class=Config):
     app.config['CACHE_TYPE'] = 'simple'
     cache.init_app(app)
 
-    CORS(app)
+    # Enable CORS for all routes
+    CORS(app, origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["*"],
+        max_age=600)
 
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, "media")
 

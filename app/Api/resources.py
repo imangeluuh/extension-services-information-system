@@ -15,13 +15,6 @@ authorizations = {
 
 ns = Namespace("api", authorizations=authorizations)
 
-@ns.route('/roles')
-class RoleApi(Resource):
-
-    @ns.marshal_list_with(role_model)
-    def get(self):
-        return Role.query.all()  
-
 @ns.route('/login/admin')
 class AdminLoginApi(Resource):
     
@@ -85,25 +78,25 @@ class FacultyLoginApi(Resource):
         else:
             return {'error': 'The email you entered isn\'t connected to an account.'}, 404
 
-@ns.route('/register/beneficiary')
-class BeneficiaryRegisterApi(Resource):
-    @ns.expect(register_input_model)
-    def post(self):
-        createUser(2)
-        return {"success": "Account is successfully created"}, 200
+# @ns.route('/register/beneficiary')
+# class BeneficiaryRegisterApi(Resource):
+#     @ns.expect(register_input_model)
+#     def post(self):
+#         createUser(2)
+#         return {"success": "Account is successfully created"}, 200
     
-@ns.route('/register/student')
-class StudentRegisterApi(Resource):
-    @ns.expect(register_input_model)
-    def post(self):
-        createUser(3)
-        return {"success": "Account is successfully created"}, 200
+# @ns.route('/register/student')
+# class StudentRegisterApi(Resource):
+#     @ns.expect(register_input_model)
+#     def post(self):
+#         createUser(3)
+#         return {"success": "Account is successfully created"}, 200
 
-@ns.route('/admins')
-class AdminListApi(Resource):
-    @ns.marshal_list_with(admin_model)
-    def get(self):
-        return Admin.query.all()
+# @ns.route('/admins')
+# class AdminListApi(Resource):
+#     @ns.marshal_list_with(admin_model)
+#     def get(self):
+#         return Admin.query.all()
     
 @ns.route('/users')
 class UsersListApi(Resource):
@@ -115,15 +108,21 @@ class UsersListApi(Resource):
 class ExtensionProgramListApi(Resource):
     @ns.marshal_list_with(extension_program_model)
     def get(self):
+        return ExtensionProgram.query.all()
+    
+@ns.route('/extension-programs/finished')
+class FinishedExtensionApi(Resource):
+    @ns.marshal_list_with(extension_program_model)
+    def get(self):
         # Get all extension programs
         extension_programs = ExtensionProgram.query.all()
 
         # Create a new list for API response with filtered completed projects
-        serialized_extension_programs = []
         for program in extension_programs:
             completed_projects = [project for project in program.Projects if project.EndDate > datetime.utcnow().date()]
 
             # Create a dictionary with the program's attributes
+            serialized_extension_programs = []
             program_dict = {
                 'ExtensionProgramId': program.ExtensionProgramId,
                 'Name': program.Name,
@@ -136,46 +135,39 @@ class ExtensionProgramListApi(Resource):
             }
 
             # Create a new instance of ExtensionProgram with the copied values
-            program_copy = ExtensionProgram(**program_dict)
-            serialized_extension_programs.append(api.marshal(program_copy, extension_program_model))
-
+            ExtensionProgram(**program_dict)
+            
         return extension_programs
-
-def is_project_completed(project):
-    # Replace this with your logic to determine if a project is completed
-    # For example, check if the current date is after the project's end date
-    return datetime.now() > project.get('EndDate', datetime.now())
     
 @ns.route('/extension-projects')
 class ExtensionProjectListApi(Resource):
     @ns.marshal_list_with(extension_project_model)
     def get(self):
         return Project.query.all()
-    
 
-def createUser(role):
-    str_login_uuid = uuid.uuid4()
-    user_login = Login(LoginId=str_login_uuid,
-                        Email=ns.payload['Email'],
-                        password_hash=ns.payload['Password'],
-                        RoleId=role)
-    str_user_id = uuid.uuid4()
-    user_to_create = User(UserId=str_user_id,
-                            FirstName=ns.payload['FirstName'],
-                            MiddleName=ns.payload['MiddleName'],
-                            LastName=ns.payload['LastName'],
-                            ContactDetails=ns.payload['ContactDetails'],
-                            Birthdate=ns.payload['Birthdate'],
-                            Gender=ns.payload['Gender'],
-                            Address=ns.payload['Address'],
-                            LoginId=str_login_uuid)
-    db.session.add(user_login)
-    db.session.add(user_to_create)
-    if role == 2:
-        beneficiary_to_create = Beneficiary(BeneficiaryId = str_user_id)
-        db.session.add(beneficiary_to_create)
-    elif role == 3:
-        student_to_create = Student(StudentId = str_user_id,
-                                    SkillsInterest = ns.payload['SkillsInterest'])
-        db.session.add(student_to_create)
-    db.session.commit()
+# def createUser(role):
+#     str_login_uuid = uuid.uuid4()
+#     user_login = Login(LoginId=str_login_uuid,
+#                         Email=ns.payload['Email'],
+#                         password_hash=ns.payload['Password'],
+#                         RoleId=role)
+#     str_user_id = uuid.uuid4()
+#     user_to_create = User(UserId=str_user_id,
+#                             FirstName=ns.payload['FirstName'],
+#                             MiddleName=ns.payload['MiddleName'],
+#                             LastName=ns.payload['LastName'],
+#                             ContactDetails=ns.payload['ContactDetails'],
+#                             Birthdate=ns.payload['Birthdate'],
+#                             Gender=ns.payload['Gender'],
+#                             Address=ns.payload['Address'],
+#                             LoginId=str_login_uuid)
+#     db.session.add(user_login)
+#     db.session.add(user_to_create)
+#     if role == 2:
+#         beneficiary_to_create = Beneficiary(BeneficiaryId = str_user_id)
+#         db.session.add(beneficiary_to_create)
+#     elif role == 3:
+#         student_to_create = Student(StudentId = str_user_id,
+#                                     SkillsInterest = ns.payload['SkillsInterest'])
+#         db.session.add(student_to_create)
+#     db.session.commit()
