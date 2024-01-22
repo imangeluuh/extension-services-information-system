@@ -120,3 +120,9 @@ extension_program_model = api.model('ExtensionProgram', {
     "Program": fields.Nested(course_model),
     "Projects": fields.List(fields.Nested(extension_project_model)),
 })
+
+extension_program_summary_model = api.model('ExtensionProgram',     {
+    'Name': fields.String(description='Name of the extension program'),
+    'Program': fields.Nested(course_model),
+    'Projects': fields.List(fields.Nested(extension_project_model)),
+})

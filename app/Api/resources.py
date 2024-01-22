@@ -112,7 +112,7 @@ class ExtensionProgramListApi(Resource):
     
 @ns.route('/extension-programs/finished-projects')
 class FinishedExtensionApi(Resource):
-    @ns.marshal_list_with(extension_program_model)
+    @ns.marshal_list_with(extension_program_summary_model)
     def get(self):
         # Get all extension programs
         extension_programs = ExtensionProgram.query.all()
@@ -122,14 +122,9 @@ class FinishedExtensionApi(Resource):
             completed_projects = [project for project in program.Projects if project.EndDate > datetime.utcnow().date()]
 
             # Create a dictionary with the program's attributes
-            serialized_extension_programs = []
             program_dict = {
                 'ExtensionProgramId': program.ExtensionProgramId,
                 'Name': program.Name,
-                'Rationale': program.Rationale,
-                'ImageUrl': program.ImageUrl,
-                'ImageFileId': program.ImageFileId,
-                'Agenda': program.Agenda,
                 'Program': program.Program,
                 'Projects': completed_projects,
             }
