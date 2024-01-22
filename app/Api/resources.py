@@ -110,7 +110,7 @@ class ExtensionProgramListApi(Resource):
     def get(self):
         return ExtensionProgram.query.all()
     
-@ns.route('/extension-programs/finished')
+@ns.route('/extension-programs/finished-projects')
 class FinishedExtensionApi(Resource):
     @ns.marshal_list_with(extension_program_model)
     def get(self):
