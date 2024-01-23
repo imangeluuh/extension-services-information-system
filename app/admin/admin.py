@@ -13,8 +13,7 @@ from datetime import datetime
 import folium
 from folium.plugins import MarkerCluster
 import os
-
-
+from datetime import timedelta
 
 def saveImage(image, imagepath):
     imagename = secure_filename(image.filename)
@@ -120,9 +119,9 @@ def dashboard():
     ongoing_projects = Project.query.filter(Project.StartDate <= current_date, Project.EndDate >= current_date).count()
     completed_projects = Project.query.filter(Project.EndDate < current_date).count()
 
-    upcoming_activities = Activity.query.filter(Project.StartDate > current_date).count()
-    ongoing_activities = Activity.query.filter(Project.StartDate <= current_date, Project.EndDate >= current_date).count()
-    completed_activities = Activity.query.filter(Project.EndDate < current_date).count()
+    upcoming_activities = Activity.query.filter(Activity.Date > current_date).count()
+    ongoing_activities = Activity.query.filter(Activity.Date <= current_date, Activity.Date >= current_date).count()
+    completed_activities = Activity.query.filter(Activity.Date < current_date).count()
 
     for program in programs:
         program_data = {"name": program.Name, "data": []}
@@ -137,10 +136,12 @@ def dashboard():
             years.add(year)
 
             # Update the participants count for the corresponding year
-            year_exists = any(entry["year"] == year for entry in program_data["data"])
+            year_exists_participants = any(entry["year"] == year for entry in program_data["data"])
+            year_exists_projects = any(entry["year"] == year for entry in program_projects_data["data"])
 
-            if not year_exists:
+            if not year_exists_participants:
                 program_data["data"].append({"year": year, "participants": 0})
+            if not year_exists_projects:
                 program_projects_data["data"].append({"year": year, "projects": 0})
 
             for data in program_data["data"]:
@@ -154,25 +155,35 @@ def dashboard():
         programs_participants[program.Name] = program_data
         programs_projects[program.Name] = program_projects_data
 
+    for program_name, program_data in programs_participants.items():
+        for year in years:
+            year_exists = any(entry["year"] == year for entry in program_data["data"])
+            if not year_exists:
+                program_data["data"].append({"year": year, "participants": 0})
+
+    for program_name, program_data in programs_projects.items():
+        for year in years:
+            year_exists = any(entry["year"] == year for entry in program_data["data"])
+            if not year_exists:
+                program_data["data"].append({"year": year, "projects": 0})
+
     years = sorted(list(years))
+
     data_for_chart_participants = [{"Year": year} for year in years]
     data_for_chart_projects = [{"Year": year} for year in years]
 
+    # Populate data for chart
     for program_name, program_data in programs_participants.items():
         for data in program_data["data"]:
             for chart_data in data_for_chart_participants:
                 if chart_data["Year"] == data["year"]:
                     chart_data[program_name] = data["participants"]
-                else:
-                    chart_data[program_name] = 0
 
     for program_name, program_data in programs_projects.items():
         for data in program_data["data"]:
             for chart_data in data_for_chart_projects:
                 if chart_data["Year"] == data["year"]:
                     chart_data[program_name] = data["projects"]
-                else:
-                    chart_data[program_name] = 0
 
     for extension_program in ExtensionProgram.query.all():
         print("extension_program:", extension_program)
@@ -195,12 +206,45 @@ def dashboard():
     # Sort years in chronological order
     sorted_years = sorted(set(entry["year"] for program_data in data_for_bar_graph for entry in program_data["data"]))
 
-    # Debug information
-    print("programs_participants:", programs_participants)
-    print("data_for_chart_participants:", data_for_chart_participants)
-    print("programs_projects:", programs_projects)
-    print("data_for_chart_projects:", data_for_chart_projects)
-    print("data_for_bar_graph:", data_for_bar_graph)
+    last_5_months = [
+        {
+            "date": (current_date - timedelta(days=30 * i)).strftime('%Y-%m'),
+            "month_name": (current_date - timedelta(days=30 * i)).strftime('%B')
+        } for i in range(4, -1, -1)
+    ]
+
+    last_5_months_projects_engagement = []
+    last_5_months_programs_engagement = []
+
+    for project in Project.query.all():
+        engagement_data = {
+            "name": project.Title,
+            "data": []
+        }
+
+        for month in last_5_months:
+            participants_count = project.get_participants_count_for_month(month)
+            engagement_data["data"].append({"month": month["date"], "month_name": month["month_name"], "participants": participants_count})
+
+        last_5_months_projects_engagement.append(engagement_data)
+
+    for program in ExtensionProgram.query.all():
+        engagement_data = {
+            "name": program.Name,
+            "data": []
+        }
+
+        for month in last_5_months:
+            participants_count = program.get_participants_count_for_month(month)
+            engagement_data["data"].append({"month": month["date"], "month_name": month["month_name"], "participants": participants_count})
+
+        last_5_months_programs_engagement.append(engagement_data)
+
+    # Sort projects based on the participants count for the last month
+    last_5_months_projects_engagement.sort(key=lambda x: x['data'][-1]['participants'], reverse=True)
+
+    # Select the top 5 projects
+    last_5_months_projects_engagement = last_5_months_projects_engagement[:5]
 
     return render_template('admin/dashboard.html',
                             data_for_chart_participants=data_for_chart_participants,
@@ -212,7 +256,9 @@ def dashboard():
                             completed_projects=completed_projects,
                             upcoming_activities=upcoming_activities,
                             ongoing_activities=ongoing_activities,
-                            completed_activities=completed_activities)
+                            completed_activities=completed_activities,
+                            last_5_months_projects_engagement=last_5_months_projects_engagement,
+                            last_5_months_programs_engagement=last_5_months_programs_engagement)
 
 @bp.route('/qcmap')
 def qcmap():
