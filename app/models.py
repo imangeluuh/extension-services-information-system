@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from flask_jwt_extended import create_access_token, decode_token
 from werkzeug.security import generate_password_hash, check_password_hash
 import ast
+from sqlalchemy import func
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -203,6 +204,12 @@ class ExtensionProgram(db.Model):
     Program = db.relationship("Course", backref='ExtensionProgram')
     Projects = db.relationship("Project", back_populates='ExtensionProgram', cascade='all, delete-orphan')
 
+    def get_participants_count_for_month(self, month_info):
+        participants_count = 0
+        for project in self.Projects:
+            participants_count += project.get_participants_count_for_month(month_info)
+        return participants_count
+
 
 class Project(db.Model):
     __tablename__ = 'ESISProject'
@@ -236,6 +243,19 @@ class Project(db.Model):
     def totalBudget(self):
         # Calculates and returns the total budget for the project.
         return sum(budget.Amount for budget in self.Budget)
+    
+    def get_participants_count_for_month(self, month_info):
+        participants_count = Attendance.query \
+            .join(Activity, Attendance.ActivityId == Activity.ActivityId) \
+            .join(Project, Project.ProjectId == Activity.ProjectId) \
+            .filter(Project.ProjectId == self.ProjectId,
+                    func.extract('year', Activity.Date) == month_info["date"][:4],  # Extracting year from 'YYYY-MM'
+                    func.extract('month', Activity.Date) == month_info["date"][5:],  # Extracting month from 'YYYY-MM'
+                    Attendance.UserId == User.UserId,
+                    User.RoleId == 2) \
+            .distinct(User.UserId) \
+            .count()
+        return participants_count
 
 # Course List
 class Course(db.Model):

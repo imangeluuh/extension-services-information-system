@@ -12,3 +12,8 @@ def not_found_error(error):
 def internal_error(error):
     db.session.rollback()
     return render_template('errors/500.html'), 500
+
+
+@bp.app_errorhandler(401)
+def unauthorized(error):
+    return render_template('errors/404.html'), 401

@@ -11,13 +11,19 @@
 
 {% block content %}
         <!--Container-->
-        <div class="container w-100 mx-auto">
+        <div class="container-xl ">
             <!--Title-->
-            <p class="d-flex align-items-center fs-1 px-2 py-4">
-                Projects Budget
-            </p>
+            <div class="page-header">
+                <div class="row align-items-center mw-100">
+                    <div class="col">
+                        <h2 class="page-title">
+                            Projects Budget
+                        </h2>
+                    </div>
+                </div>
+            </div>  
             <!--Card-->
-            <div class="p-4 mt-4 rounded shadow bg-white">
+            <div class="p-4 mt-3 rounded shadow bg-white">
                 <table id="budget" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
                     <thead>
                         <tr>
@@ -84,7 +90,7 @@
             
             // Format float_total_approved to display two decimal places
             float_total_approved = float_total_approved.toFixed(2);
-            float_total_approved = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(float_total_approved);
+            float_total_approved = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, style:'currency', currency: 'PHP'}).format(float_total_approved);
             $('#total-approved').text(float_total_approved)
         }
         });

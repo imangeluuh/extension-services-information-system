@@ -6,7 +6,7 @@
 
 {% block content %}
         <!--Container-->
-        <div class="container-xl mt-4">
+        <div class="container-xl">
             <!-- Page header -->
             <div class="page-header d-print-none">
                 <div class="container-xl">
@@ -19,7 +19,6 @@
                     <!-- Page title actions -->
                     <div class="col-auto ms-auto d-print-none">
                     <div class="d-flex">
-                        <input type="search" class="form-control d-inline-block w-9 me-3" placeholder="Search"/>
                         {% if current_user.RoleId == 1 %}
                         <a href="{{ url_for('programs.insertExtensionProgram')}}" class="btn btn-primary">
                         <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
@@ -33,14 +32,14 @@
                 </div>
             </div>
             {% if programs %}                
-                <div class="row mt-4">
+                <div class="row g-3 mt-2 mb-4">
                     {% for program in programs %}
                     <div class="col-md-6 col-lg-4">
                         <div class="card">
                             <!-- Photo -->
                             <img src="{{ program.ImageUrl if program.ImageUrl }}" height="200px" class="card-img-top object-fit-cover"></img>
                             <div class="card-body">
-                                <h3 class="card-title">{{ program.Name }}</h3><br>
+                                <h3 class="card-title mb-2">{{ program.Name }}</h3>
                                 <div class="tags-list row">
                                     <span class="border border-secondary-subtle text-muted fs-5 p-1 me-1" style="max-width: fit-content;">{{ program.Agenda.AgendaName }}</span>
                                     <span class="border border-secondary-subtle text-muted fs-5 p-1"  style="max-width: fit-content;">{{ program.Program.CourseCode }}</span>

@@ -48,7 +48,7 @@
                 start: '{{ event.Date~'T'~event.StartTime }}', 
                 end: '{{ event.Date~'T'~event.EndTime }}', 
                 project: '{{ event.Project.Title }}', 
-                url: '{{ url_for("programs.activity", id=event.ActivityId) if (current_user.is_authenticated and current_user.RoleId in [2, 3]) or not current_user.is_authenticated else url_for("programs.viewProject", id=event.ProjectId)}}'
+                url: '{{ url_for("programs.activity", id=event.ActivityId) if current_user.is_authenticated and current_user.RoleId in [2, 3] else url_for("programs.viewProject", id=event.ProjectId)}}'
             },
             {% endfor %}
         ];

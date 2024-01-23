@@ -14,32 +14,12 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Paytone+One&display=swap" rel="stylesheet">
-
-        {% if request.url != url_for('admin.adminLogin', _external=True) %}
-        <!-- AdminLTE -->
-        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css"> -->
-        {% endif %}
         {% block head %}
         
         {% endblock %}
         <style>
             * {
                 font-family: Arial, Helvetica, sans-serif;
-            }
-            ul.nav-sidebar a.nav-link.active {
-                background-color: #800000!important;
-            }
-
-            ul.nav-treeview li.nav-item a.nav-link.active {
-                background-color: #EAECED!important;
-            }
-
-            .nav-text {
-                font-size: 14px;
-            }
-
-            .nav-link {
-                padding: 10px 16px;
             }
         </style>
     </head>
@@ -64,10 +44,6 @@
         <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
         <!-- Toastr -->
         <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.js"></script>
-        {% if request.url != url_for('admin.adminLogin', _external=True) %}
-        <!-- AdminLTE -->
-        <!-- <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script> -->
-        {% endif %}
         {% block script %}
         
         {% endblock %}
@@ -81,23 +57,5 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        <script>
-            /*** add active class and stay opened when selected ***/
-            var url = window.location;
-            
-            // for sidebar menu entirely but not cover treeview
-            $('ul.nav-sidebar li.nav-item a.nav-link').filter(function() {
-                if (this.href) {
-                    return this.href == url || url.href.indexOf(this.href) == 0;
-                }
-            }).addClass('active');
-            
-            // for the treeview
-            $('ul.nav-treeview li.nav-item a.nav-link').filter(function() {
-                if (this.href) {
-                    return this.href == url || url.href.indexOf(this.href) == 0;
-                }
-            }).parentsUntil(".nav-sidebar > .nav-treeview").prev('a').addClass('active');
-        </script>
     </body>
 </html>

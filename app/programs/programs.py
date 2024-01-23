@@ -365,6 +365,7 @@ def insertProject():
 @login_required(role=["Admin", "Faculty"])
 def viewProject(id):
     form = ProjectForm()
+    activity_form = ActivityForm()
     project = Project.query.get_or_404(id)
     project_budget = Budget.query.filter_by(ProjectId=id).all()
     registered = Registration.query.filter_by(ProjectId=project.ProjectId).all()
