@@ -24,7 +24,7 @@
                             <th data-priority="1" class="text-start">Extension Project</th>
                             <th data-priority="2" class="text-start">Extension Program</th>
                             <th data-priority="3" class="text-start">Approved Budget</th>
-                            <th data-priority="4" class="text-start">Action</th>
+                            <th data-priority="4" class="text-start"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -32,7 +32,7 @@
                         <tr>
                             <td>{{ project.Title }}</td>
                             <td>{{ project.ExtensionProgram.Name }}</td>
-                            <td class="approved">{{project.totalBudget() }}</td>
+                            <td class="approved"> {{ "{:,.2f}".format(project.totalBudget()) }}</td>
                             <td class="flex"><a href="{{ url_for('programs.projectBudget', id=project.ProjectId) }}" class="btn btn-success me-2 px-2 py-1 rounded">View</a></td>
                         </tr>
                         {% endfor %}
@@ -61,8 +61,13 @@
 
         var table = $('#budget').DataTable({
                 responsive: true,
+                "columns": [
+                    { "width": "50%" },
+                    { "width": "25%" },
+                    { "width": "15%" },
+                    { "width": "10%" },
+                ]
             })
-            .columns.adjust()
             .responsive.recalc()
 
         computeTotal();
@@ -74,11 +79,12 @@
         function computeTotal() {
             var float_total_approved = 0.00
             $(".approved").each(function( index ) {
-                float_total_approved = float_total_approved + parseFloat($( this ).text())
+                float_total_approved = float_total_approved + parseFloat($( this ).text().replace(/,/g, ""))
             });
             
             // Format float_total_approved to display two decimal places
             float_total_approved = float_total_approved.toFixed(2);
+            float_total_approved = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(float_total_approved);
             $('#total-approved').text(float_total_approved)
         }
         });
