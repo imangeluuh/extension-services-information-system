@@ -12,8 +12,8 @@
     height: 200px;
     object-fit: cover;">
     <div class="mask" style="background-color: rgba(0, 0, 0, 0.6); height:inherit">
-    <div class="ms-4 d-flex flex-column justify-content-between align-items-start  h-100">
-        <ol class="breadcrumb bg-transparent px-0" aria-label="breadcrumbs">
+    <div class="container-xl d-flex flex-column justify-content-between align-items-start  h-100">
+        <ol class="breadcrumb bg-transparent px-0 mt-2" aria-label="breadcrumbs">
             <li class="breadcrumb-item"><a href="{{url_for('programs.programs')}}" class="text-primary">Extension Programs</a></li>
             <li class="breadcrumb-item text-white active" aria-current="page"><a href="#">{{ext_program.Name}}</a></li>
         </ol>
@@ -24,61 +24,75 @@
     </div>
 </div>
 <!-- Background image -->
+<div class="container-xl">
 
-<div class="card mx-5 mb-5 mt-4">
-    <div class="card-header">
-        <h3 class="card-title">Details</h3>
-        {% if current_user.RoleId == 1 %}
-        <div class="d-flex justify-content-end w-100">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#edit-ext-program" class="btn btn-primary d-flex align-items-center ">
-                <iconify-icon icon="bx:edit" class="fs-2 me-1"></iconify-icon>
-                Edit Details
-            </a>
+    <div class="card mx-5 mb-5 mt-4">
+        <div class="card-header">
+            <h3 class="card-title">Details</h3>
+            {% if current_user.RoleId == 1 %}
+            <div class="d-flex justify-content-end w-100">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#edit-ext-program" class="btn btn-primary d-flex align-items-center ">
+                    <iconify-icon icon="bx:edit" class="fs-2 me-1"></iconify-icon>
+                    Edit Details
+                </a>
+            </div>
+            {% include 'programs/edit_ext_program_modal.html' %}
+            {% endif %}
         </div>
-        {% include 'programs/edit_ext_program_modal.html' %}
-        {% endif %}
-    </div>
-    <div class="card-body">
-        <div class="row g-2">
-            <div class="col-auto col-md-2">
-                <div class="datagrid-title">Extension Program ID</div>
-                <div class="datagrid-content">{{ext_program.ExtensionProgramId}}</div>
-            </div>
-            <div class="col-auto col-md-5">
-                <div class="datagrid-title">Agenda</div>
-                <div class="datagrid-content">{{ext_program.Agenda.AgendaName}}</div>
-            </div>
-            <div class="col-auto col-md-5">
-                <div class="datagrid-title">Program</div>
-                <div class="datagrid-content">{{ext_program.Program.Name}}</div>
-            </div>
-            <div class="col-12">
-                <div class="datagrid-title">Rationale</div>
-                <div class="datagrid-content">{{ext_program.Rationale}}</div>
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-auto col-md-2">
+                    <div class="datagrid-title">Extension Program ID</div>
+                    <div class="datagrid-content">{{ext_program.ExtensionProgramId}}</div>
+                </div>
+                <div class="col-auto col-md-5">
+                    <div class="datagrid-title">Agenda</div>
+                    <div class="datagrid-content">{{ext_program.Agenda.AgendaName}}</div>
+                </div>
+                <div class="col-auto col-md-5">
+                    <div class="datagrid-title">Program</div>
+                    <div class="datagrid-content">{{ext_program.Program.Name}}</div>
+                </div>
+                <div class="col-12">
+                    <div class="datagrid-title">Rationale</div>
+                    <div class="datagrid-content">{{ext_program.Rationale}}</div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
- <!--Card-->
- <div class="card mx-5 mb-5">
-    <div class="card-header d-flex justify-content-between">
-        <h3 class="card-title">Projects</h3>
-        <div class="d-flex justify-content-end w-100">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#add-project" class="btn btn-primary d-flex align-items-center ">
-                <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon p-0 me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                Add project
-            </a>
+    
+     <!--Card-->
+     <div class="card mx-5 mb-5">
+        <div class="card-header d-flex justify-content-between">
+            <h3 class="card-title">Projects</h3>
+            <div class="d-flex justify-content-end w-100">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#add-project" class="btn btn-primary d-flex align-items-center ">
+                    <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon p-0 me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                    Add project
+                </a>
+            </div>
+            {% include 'programs/add_project_modal.html' %}
         </div>
-        {% include 'programs/add_project_modal.html' %}
-    </div>
-    {% if ext_program.Projects %}
-    <div class="list-group list-group-flush overflow-auto" style="max-height: 35rem">
-        {% for project in ext_program.Projects %}
-        <div class="list-group-item">
-            {% if current_user.Role.RoleName == "Faculty" %}
-                {% if project.LeadProponentId == current_user.UserId %}
+        {% if ext_program.Projects %}
+        <div class="list-group list-group-flush overflow-auto" style="max-height: 35rem">
+            {% for project in ext_program.Projects %}
+            <div class="list-group-item">
+                {% if current_user.Role.RoleName == "Faculty" %}
+                    {% if project.LeadProponentId == current_user.UserId %}
+                    <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}">
+                        <div class="row">
+                            <div class="col-auto">
+                                <span class="avatar" style="background-image: url('{{project.ImageUrl if project.ImageUrl}}'); height: 75px; width: 75px"></span>
+                            </div>
+                            <div class="col text-truncate">
+                                <span class="text-body d-block">{{project.Title}}</span>
+                                <div class="text-secondary text-truncate mt-n1">{{project.LeadProponent.Faculty.FirstName}} {{project.LeadProponent.Faculty.LastName}}</div>
+                            </div>
+                        </div>
+                    </a>
+                    {% endif %}
+                {% else %}
                 <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}">
                     <div class="row">
                         <div class="col-auto">
@@ -91,29 +105,17 @@
                     </div>
                 </a>
                 {% endif %}
-            {% else %}
-            <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}">
-                <div class="row">
-                    <div class="col-auto">
-                        <span class="avatar" style="background-image: url('{{project.ImageUrl if project.ImageUrl}}'); height: 75px; width: 75px"></span>
-                    </div>
-                    <div class="col text-truncate">
-                        <span class="text-body d-block">{{project.Title}}</span>
-                        <div class="text-secondary text-truncate mt-n1">{{project.LeadProponent.Faculty.FirstName}} {{project.LeadProponent.Faculty.LastName}}</div>
-                    </div>
-                </div>
-            </a>
-            {% endif %}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="d-flex justify-content-center p-5">
-        <span>No projects found.</span>
-    </div>
-    {% endif %}
- </div>
-<!--/Card-->
+        {% else %}
+        <div class="d-flex justify-content-center p-5">
+            <span>No projects found.</span>
+        </div>
+        {% endif %}
+     </div>
+    <!--/Card-->
+</div>
 
 {% endblock %}
 {% block script %}

@@ -21,8 +21,8 @@ background-image: url('{{activity.ImageUrl if activity.ImageUrl else 'https://md
 height: 200px;
 object-fit: cover;">
     <div class="mask" style="background-color: rgba(0, 0, 0, 0.6); height:inherit">
-        <div class="ms-4 d-flex flex-column justify-content-between align-items-start  h-100">
-            <ol class="breadcrumb bg-transparent px-0" aria-label="breadcrumbs">
+        <div class="container-xl d-flex flex-column justify-content-between align-items-start  h-100">
+            <ol class="breadcrumb bg-transparent px-0 mt-2" aria-label="breadcrumbs">
                 <li class="breadcrumb-item"><a href="{{url_for('programs.programs')}}" class="text-primary">Extension Programs</a></li>
                 <li class="breadcrumb-item"><a href="{{url_for('programs.viewExtensionProgram', id=activity.Project.ExtensionProgramId)}}" class="text-primary">{{ activity.Project.ExtensionProgram.Name }}</a></li>
                 <li class="breadcrumb-item text-truncate" style="max-width: 400px;"><a href="{{url_for('programs.viewProject', id=activity.ProjectId)}}" class="text-primary">{{activity.Project.Title}}</a></li>

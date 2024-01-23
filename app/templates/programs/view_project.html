@@ -20,8 +20,8 @@ background-image: url('{{project.ImageUrl if project.ImageUrl else 'https://mdbc
 height: 200px;
 object-fit: cover;">
     <div class="mask" style="background-color: rgba(0, 0, 0, 0.6); height:inherit">
-        <div class="ms-4 d-flex flex-column justify-content-between align-items-start  h-100">
-            <ol class="breadcrumb bg-transparent px-0" aria-label="breadcrumbs">
+        <div class="container-xl d-flex flex-column justify-content-between align-items-start  h-100">
+            <ol class="breadcrumb bg-transparent px-0 mt-2" aria-label="breadcrumbs">
                 <li class="breadcrumb-item"><a href="{{url_for('programs.programs')}}" class="text-primary">Extension Programs</a></li>
                 <li class="breadcrumb-item"><a href="{{url_for('programs.viewExtensionProgram', id=project.ExtensionProgram.ExtensionProgramId)}}" class="text-primary">{{ project.ExtensionProgram.Name }}</a></li>
                 <li class="breadcrumb-item text-white active text-truncate" style="max-width: 400px;" aria-current="page"><a href="#" class="">{{project.Title}}</a></li>
@@ -35,7 +35,7 @@ object-fit: cover;">
 <!-- Background image -->
 
 <!-- Tabs -->
-<div class="mx-5 mb-5 mt-4 shadow-sm">
+<div class="container-xl mb-5 mt-4 ">
     <div class="card bg-light bg-gradient shadow-none">
         <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
