@@ -1,18 +1,69 @@
+{% if current_user.RoleId in [2, 3] %}
 {% extends 'base.html' %}
+{% else %}
+{% extends 'admin/base.html' %}
+{% endif %}
 
 {% block head %}
     <title>{{evaluation.Activity.ActivityName}} Evaluation</title>
+    {% if current_user.RoleId in [1, 4] %}
+    <style>
+        /* Styling for printing */
+        @media print {
+            body * {
+                display: none;
+            }
+
+            #evaluation, #evaluation * {
+                display: block;
+            }
+
+            #evaluation-card {
+                width: 100%!important;
+                box-shadow: none!important;
+                border: 0!important;
+                margin: 0!important;
+                padding-left: 0!important;
+                padding-right: 0!important;
+            }
+
+            #print {
+                display: none;
+            }
+
+            ::-webkit-input-placeholder { /* WebKit browsers */
+                color:transparent!important;
+            }
+            :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            color:    transparent!important;
+            opacity:  1;
+            }
+            ::-moz-placeholder { /* Mozilla Firefox 19+ */
+            color:    transparent!important;
+            opacity:  1;
+            }
+            :-ms-input-placeholder { /* Internet Explorer 10+ */
+            color:    transparent!important;
+            }
+        }
+    </style>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
 <!--Container-->
-<div class="container w-100 flex justify-center mx-auto">
+    <div class="container-xl">
     <div class="page-header my-4">
         <div class="row align-items-center mw-100">
             <div class="col">
                 <div class="mb-1">
                 <ol class="breadcrumb bg-transparent p-0" aria-label="breadcrumbs">
-                    <li class="breadcrumb-item"><a href="{{url_for('programs.activity', id=evaluation.ActivityId)}}">{{evaluation.Activity.ActivityName}}</a></li>
+                    <li class="breadcrumb-item"><a href="{% if current_user.RoleId in [2, 3] %}
+                        {{url_for('programs.activity', id=evaluation.ActivityId)}}
+                        {% else %}
+                        {{url_for('evaluation.evaluations')}}
+                        {% endif %}
+                        ">Evaluations</a></li>
                     <li class="breadcrumb-item active" aria-current="page"><a href="#">Evaluation</a></li>
                 </ol>
                 </div>
@@ -22,53 +73,69 @@
             </div>
         </div>
     </div>  
+    </div>  
     <!-- Card -->
-    <div class="p-5 mb-5 mx-auto bg-white border border-secondary-subtle rounded-4 shadow" style="width: 70%">
-        <div class="">
-            <h1 class="fs-1 text-center fw-semibold">{{ evaluation.EvaluationName }}</h1>
-        </div>
-        <hr class="my-2">
-        {% if evaluation_taken %}
-            <h2 class="content-subhead"><i class="fa fa-comment"></i> Thanks for your feedback</h2>
-            <p style="color: green;">Your response has been recorded successfully.</p>
-        {% elif evaluation.State == 1 %}
-            <h2 class="fs-2 d-flex align-items-center my-3 text-secondary fw-norma">
-                <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                    <path fill="currentColor" d="M8 1c4.418 0 8 2.91 8 6.5S12.418 14 8 14c-.424 0-.841-.027-1.247-.079c-1.718 1.718-3.77 2.027-5.753 2.072v-.421c1.071-.525 2-1.48 2-2.572a3.01 3.01 0 0 0-.034-.448C1.157 11.36 0 9.54 0 7.5C0 3.91 3.582 1 8 1z"/>
-                </svg>
-                Please complete the evaluation below
-            </h2>
-            <p class="text-secondary">Your feedback is greatly appreciated.</p><br>
-            <form class="" method="POST">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <fieldset>
-                    {% for question in questions %}
-                    <legend class="my-1">{{ question.Text }} {% if question.Required %}<span class="fs-4 text-danger align-text-top ms-2">* required</span>{% endif %}</legend>
-                        <hr class="mb-4">
-                        {% if question.Type == 1 %}
-                            {% for response in question.responsesList() %}
-                                <input name="{{ question.QuestionId }}" type="radio" value="{{ loop.index }}" {{ 'required' if question.Required }}> {{ response }}</input><br>
-                            {% endfor %}
-                        {% else %}
-                            <textarea class="w-100" name="{{ question.QuestionId }}" placeholder="Please enter your response..."></textarea><br>
+    <div class="container-xl" id="evaluation">
+        <div id="evaluation-card" class="p-5 mb-5 mx-auto bg-white border border-secondary-subtle rounded-4 shadow" style="width: 70%">
+            <div class="d-flex justify-content-between ">
+                <h1 class="fs-1">{{ evaluation.EvaluationName }}</h1>
+                <button id="print" class="bg-transparent border-0  text-secondary"><iconify-icon class="fs-1" icon="material-symbols:print-outline"></iconify-icon></button>
+            </div>
+            <hr class="my-2">
+            {% if evaluation_taken %}
+                <h2 class="content-subhead"><i class="fa fa-comment"></i> Thanks for your feedback</h2>
+                <p style="color: green;">Your response has been recorded successfully.</p>
+            {% elif evaluation.State == 1 %}
+                <h2 class="fs-2 d-flex align-items-center my-3 text-secondary fw-norma">
+                    <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M8 1c4.418 0 8 2.91 8 6.5S12.418 14 8 14c-.424 0-.841-.027-1.247-.079c-1.718 1.718-3.77 2.027-5.753 2.072v-.421c1.071-.525 2-1.48 2-2.572a3.01 3.01 0 0 0-.034-.448C1.157 11.36 0 9.54 0 7.5C0 3.91 3.582 1 8 1z"/>
+                    </svg>
+                    Please complete the evaluation below
+                </h2>
+                <p class="text-secondary mb-0">Your feedback is greatly appreciated.</p><br>
+                <form class="" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <fieldset>
+                        {% for question in questions %}
+                            <div class="mb-3">
+                                <legend class="my-1 lh-1 "><span class="fs-3">{{ question.Text }}</span> {% if question.Required %}<span class="fs-4 text-danger align-text-top ms-1">* required</span>{% endif %}</legend>
+                                <hr class="mb-2">
+                                {% if question.Type == 1 %}
+                                    <div class="d-flex justify-content-between ">
+                                        {% for response in question.responsesList() %}
+                                            <div class="d-flex align-items-center ">
+                                                <input class="me-2" name="{{ question.QuestionId }}" type="radio" value="{{ loop.index }}" {{ 'required' if question.Required }}><span class="fs-4">{{ response }}</span></input>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <textarea rows="5" class="free-response w-100 mt-1" name="{{ question.QuestionId }}" placeholder="Please enter your response..."></textarea>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        {% if current_user.RoleId in [2, 3] %}
+                        <button type="submit" name="bt" class="btn btn-primary rounded-2 w-auto d-flex align-items-center p-2 text-center mt-4">Submit response</button>
                         {% endif %}
-                    {% endfor %}
-                    <button type="submit" name="bt" class="btn btn-primary rounded-2 w-auto d-flex align-items-center p-2 text-center mt-4">Submit response</button>
-                </fieldset>
-            </form>
-            {%else%}
-            <p>This evaluation is no longer accepting responses.</p>
-            {% endif %}
+                    </fieldset>
+                </form>
+                {%else%}
+                <p>This evaluation is no longer accepting responses.</p>
+                {% endif %}
+        </div>
+        <!-- /Card -->
     </div>
-    <!-- /Card -->
-</div>
-<!--/container-->
 {% endblock %}
 
 {% block script %}
 <script>
     $(document).ready(function() {
         $('select').select2({placeholder: 'Please select an activity...', allowClear: true});
+    });
+
+    let printBtn = document.querySelector("#print");
+
+    printBtn.addEventListener("click", function () {
+        window.print();
     });
 </script>
 {% endblock %}

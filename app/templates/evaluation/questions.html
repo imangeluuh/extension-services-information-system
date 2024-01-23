@@ -25,9 +25,9 @@
             <!--Card-->
             <div class="p-4 rounded shadow bg-white">
                 <!--Title-->
-                <p class="d-flex align-items-center fw-bold pb-3 text-danger fs-1">
+                <h2 class="d-flex align-items-center pb-3">
                     Mandatory Question Pool
-                </p>
+                </h2>
                 <table id="mandatory" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
                     <thead>
                         <tr>
@@ -47,11 +47,11 @@
                             <td>{{ 'MCQ' if question.Type == 1 else 'Text' }}</td>
                             <td>{% if question.Type == 1%}{% for response in question.responsesList() %} {{ loop.index }}. {{ response }} {{ "// " if not loop.last }} {% endfor %} {% else %}-- Free response -- {% endif %}</td>
                             {% if current_user.Role.RoleName == 'Admin'%}
-                            <td>{{ question.Creator.FirstName ~ ' ' ~ question.Creator.LastName }}</td>
+                            <td>{{ question.Creator.Faculty.FirstName ~ ' ' ~ question.Creator.Faculty.LastName }}</td>
                             {% endif %}
                             <td class="d-flex">
                                 <a href="{{ url_for('evaluation.deleteQuestion', id=question.QuestionId) }}" class="btn btn-danger rounded-2 text-center">
-                                    <iconify-icon icon="ph:trash-bold"></iconify-icon>
+                                    <iconify-icon class="me-1" icon="ph:trash-bold"></iconify-icon>Delete
                                 </a>
                             </td>
                         </tr>
@@ -64,9 +64,9 @@
             <!--Card-->
             <div class="p-4 rounded shadow bg-white">
                 <!--Title-->
-                <p class="d-flex pb-3 align-items-center fw-bold text-danger fs-1">
+                <h2 class="d-flex pb-3 align-items-center">
                     Optional Question Pool
-                </p>
+                </h2>
                 <table id="optional" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
                     <thead>
                         <tr>
@@ -82,15 +82,15 @@
                     <tbody>
                         {% for question in optional_questions %}
                         <tr>
-                            <td>{{ question.text }}</td>
+                            <td>{{ question.Text }}</td>
                             <td>{{ 'MCQ' if question.Type == 1 else 'Text' }}</td>
                             <td>{% if question.Type == 1%}{% for response in question.responsesList() %} {{ loop.index }}. {{ response }} {{ "// " if not loop.last }} {% endfor %} {% else %}-- Free response -- {% endif %}</td>
                             {% if current_user.Role.RoleName == 'Admin'%}
-                            <td>{{question.Creator.FirstName ~ ' ' ~ question.Creator.LastName }}</td>
+                            <td>{{question.Creator.Faculty.FirstName ~ ' ' ~ question.Creator.Faculty.LastName }}</td>
                             {% endif %}
                             <td >
                                 <a href="{{ url_for('evaluation.deleteQuestion', id=question.QuestionId) }}" class="btn btn-danger rounded-2  text-center">
-                                    <iconify-icon icon="ph:trash-bold"></iconify-icon>
+                                    <iconify-icon class="me-1" icon="ph:trash-bold"></iconify-icon>Delete
                                 </a>
                             </td>
                         </tr>
@@ -114,9 +114,9 @@
         var table = $('#mandatory').DataTable({
                 responsive: true,
                 "columns": [
-                    null,
-                    null,
-                    null,
+                    {"width": "35%"},
+                    {"width": "5%"},
+                    {"width": "25%"},
                     {% if current_user.Role.RoleName == "Admin" %}
                     null,
                     {% endif %}
@@ -128,9 +128,9 @@
         var response_table = $('#optional').DataTable({
                 responsive: true,
                 "columns": [
-                    null,
-                    null,
-                    null,
+                    {"width": "35%"},
+                    {"width": "5%"},
+                    {"width": "25%"},
                     {% if current_user.Role.RoleName == "Admin" %}
                     null,
                     {% endif %}

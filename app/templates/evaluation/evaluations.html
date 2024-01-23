@@ -25,9 +25,9 @@
         <!--Card-->
         <div class="p-4 rounded shadow bg-white">
             <!--Title-->
-            <h1 class="d-flex align-items-center fw-bold pb-3 text-danger fs-2">
+            <h2 class="d-flex align-items-center pb-3">
                 Active Evaluations
-            </h1>
+            </h2>
             <table id="active" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
                 <thead>
                     <tr>
@@ -47,11 +47,14 @@
                         <td>{{ evaluation.Activity.ActivityName }}</td>
                         <td>{{ evaluation.CreatedAt.strftime("%d/%m/%Y %H:%M") }}</td>
                         {% if current_user.Role.RoleName == 'Admin'%}
-                        <td>{{ evaluation.Creator.FirstName ~ ' ' ~ evaluation.Creator.LastName }}</td>
+                        <td>{{ evaluation.Creator.Faculty.FirstName ~ ' ' ~ evaluation.Creator.Faculty.LastName }}</td>
                         {% endif %}
-                        <td>
+                        <td class="d-flex">
+                            <a href="{{ url_for('evaluation.viewEvaluation', id=evaluation.EvaluationId)}}" class="me-2 btn btn-primary rounded-2 text-center d-flex align-items-center" style="width: fit-content;">
+                                <iconify-icon icon="carbon:view" class="me-2"></iconify-icon>View
+                            </a>
                             <a href="{{ url_for('evaluation.closeEvaluation', id=evaluation.EvaluationId)}}" class="btn btn-danger rounded-2 text-center d-flex align-items-center" style="width: fit-content;">
-                                <iconify-icon icon="subway:error" class="me-2"></iconify-icon> Close
+                                <iconify-icon icon="subway:error" class="me-2"></iconify-icon>Close
                             </a>
                         </td>
                     </tr>
@@ -64,9 +67,9 @@
         <!--Card-->
         <div class="p-4 rounded shadow bg-white">
             <!--Title-->
-            <h1 class="d-flex pb-3 align-items-center fw-bold text-danger fs-2">
+            <h2 class="d-flex pb-3 align-items-center">
                 Closed Evaluations
-            </h1>
+            </h2>
             <table id="closed" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
                 <thead>
                     <tr>
@@ -86,7 +89,7 @@
                         <td>{{ evaluation.Activity.ActivityName }}</td>
                         <td>{{ evaluation.CreatedAt.strftime("%d/%m/%Y %H:%M") }}</td>
                         {% if current_user.Role.RoleName == 'Admin'%}
-                        <td>{{ evaluation.Creator.FirstName ~ ' ' ~ evaluation.Creator.LastName }}</td>
+                        <td>{{ evaluation.Creator.Faculty.FirstName ~ ' ' ~ evaluation.Creator.Faculty.LastName }}</td>
                         {% endif %}
                         <td>
                             <a href="{{url_for('evaluation.results', id=evaluation.EvaluationId)}}" class="btn btn-primary d-flex align-items-center rounded-2" style="width: fit-content;" >
@@ -111,14 +114,30 @@
 
         $(document).ready(function() {
         var active_table = $('#active').DataTable({
-                responsive: true
+                responsive: true,
+                "columns": [
+                    {"width": "25%"},
+                    {"width": "30%"},
+                    {"width": "15%"},
+                    {% if current_user.Role.RoleName == "Admin" %}
+                    null,
+                    {% endif %}
+                    { "width": "10%" },
+                ]
             })
-            .columns.adjust()
             .responsive.recalc()
         var inactive_table = $('#closed').DataTable({
-                responsive: true
+                responsive: true,
+                "columns": [
+                    {"width": "25%"},
+                    {"width": "30%"},
+                    {"width": "15%"},
+                    {% if current_user.Role.RoleName == "Admin" %}
+                    null,
+                    {% endif %}
+                    { "width": "10%" },
+                ]
             })
-            .columns.adjust()
             .responsive.recalc()
         });
 
