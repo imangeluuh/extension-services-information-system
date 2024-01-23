@@ -1,11 +1,12 @@
 from app.evaluation import bp
-from flask import render_template, url_for, request, redirect, flash, current_app
+from flask import render_template, url_for, request, redirect, flash, make_response
 from flask_login import current_user
 from ..models import Registration, Activity, Question, Evaluation, Response, Project
 from app import db
 from ..store import uploadImage, purgeImage
 from werkzeug.utils import secure_filename
 from ..decorators.decorators import login_required
+import pdfkit
 
 # =========================================================
 # ||                 ADMIN/FACULTY VIEWS                 ||
@@ -139,6 +140,17 @@ def closeEvaluation(id):
 
     return redirect(url_for("evaluation.evaluations"))
 
+@bp.route("/view/evaluation/<id>")
+@login_required(["Admin", "Faculty"])
+def viewEvaluation(id):
+    evaluation = Evaluation.query.filter_by(EvaluationId=id).first()
+    questions = []
+    for question_id in evaluation.questionsList():
+        question = Question.query.filter_by(QuestionId=question_id).first()
+        questions.append(question)
+
+    return render_template("evaluation/evaluation.html", evaluation=evaluation, questions=questions)
+
 #results page - show evaluation results
 @bp.route("/results/<id>")
 @login_required(["Admin", "Faculty"])
@@ -168,6 +180,25 @@ def results(id):
     responses = Response.query.filter_by(EvaluationId=id).all()
 
     return render_template("evaluation/results.html", evaluation=evaluation, questions=questions, responses=responses)
+
+
+
+# @bp.route("/summary")
+# def summary():
+#     return render_template("evaluation/summary.html")
+
+# @bp.route("/generate")
+# def generate():
+#     rendered = render_template("evaluation/summary.html")
+
+#     pdf = pdfkit.from_string(rendered, False)
+
+#     response = make_response(pdf)
+
+#     response.headers['Content-Type'] = 'application/pdf'
+#     response.headers['Content-Disposition'] = 'attachement; filename=evaluation-summary.pdf'
+
+#     return response
 
 
 # =========================================================
