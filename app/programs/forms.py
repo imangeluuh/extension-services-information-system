@@ -4,7 +4,7 @@ from flask_ckeditor import CKEditorField
 from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed
-from ..models import Agenda, Collaborator, Activity, Location, User, Faculty, Course
+from ..models import Agenda, Collaborator, Location, User, Faculty, Course, Alumni
 from app import cache
 import requests
 
@@ -94,7 +94,9 @@ class ActivityForm(FlaskForm):
         
         with current_app.app_context():
             self.location.choices = [(location.LocationId, location.LocationName) for location in Location.query.all()]
-            self.speaker.choices = [(str(faculty.FacultyId), faculty.FirstName + ' ' + faculty.LastName) for faculty in Faculty.query.all()]
+            speakers = [(str(faculty.FacultyId), faculty.FirstName + ' ' + faculty.LastName + ' - Faculty') for faculty in Faculty.query.all()]
+            speakers += [(str(alumni.id), alumni.first_name + ' ' + alumni.last_name + ' - Alumni') for alumni in Alumni.query.filter_by(role="alumni").all()]
+            self.speaker.choices = speakers
             
 class CombinedForm(FlaskForm):
     extension_program = FormField(ProgramForm)

@@ -1,7 +1,7 @@
 from app.programs import bp
 from flask import render_template, url_for, request, redirect, flash, current_app
 from flask_login import current_user
-from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance, Course, Faculty
+from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance, Course, Faculty, Speaker
 from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm
 import calendar
 from datetime import datetime
@@ -192,19 +192,30 @@ def insertExtensionProgram():
             if os.path.exists(imagepath):
                 os.remove(imagepath)
                 
-        speakers = getProjectTeamInput(form.activity.speaker.data, form.activity.speaker.choices)
-                
         activity_to_create = Activity(ActivityName=form.activity.activity_name.data,
                                         Date=form.activity.date.data,
                                         StartTime=form.activity.start_time.data,
                                         EndTime=form.activity.end_time.data,
                                         Description=form.activity.activity_description.data,
                                         LocationId=form.activity.location.data,
-                                        Speaker=speakers,
                                         ProjectId= int_project_id,
                                         ImageUrl=str_image_url,
                                         ImageFileId=str_image_file_id)
         db.session.add(activity_to_create)
+        db.session.flush()
+        activity_id = activity_to_create.ActivityId
+
+        selected_values = form.activity.speaker.data
+        for choice in form.activity.speaker.choices:
+            if choice[0] in selected_values:
+                role = choice[1].split(" - ")[-1]
+                if role == "Alumni":
+                    speaker_to_add = Speaker(ActivityId=activity_id,
+                                            AlumniId=choice[0])
+                else:
+                    speaker_to_add = Speaker(ActivityId=activity_id,
+                                            FacultyId=choice[0])
+                db.session.add(speaker_to_add)
         db.session.commit()
         flash('Extension program is successfully inserted.', category='success')
         return redirect(url_for('programs.programs'))
@@ -543,12 +554,6 @@ def insertActivity(id):
             # Delete file from local storage
             if os.path.exists(imagepath):
                 os.remove(imagepath)
-
-        selected_values = form.speaker.data
-        speakers ={}
-        for choice in form.speaker.choices:
-            if choice[0] in selected_values:
-                speakers[choice[0]] = choice[1]
                 
         activity_to_create = Activity(ActivityName=form.activity_name.data,
                                         Date=form.date.data,
@@ -556,11 +561,24 @@ def insertActivity(id):
                                         EndTime=form.end_time.data,
                                         Description=form.activity_description.data,
                                         LocationId=form.location.data,
-                                        Speaker=speakers,
                                         ProjectId=id,
                                         ImageUrl=str_image_url,
                                         ImageFileId=str_image_file_id)
         db.session.add(activity_to_create)
+        db.session.flush()
+        activity_id = activity_to_create.ActivityId
+
+        selected_values = form.speaker.data
+        for choice in form.speaker.choices:
+            if choice[0] in selected_values:
+                role = choice[1].split(" - ")[-1]
+                if role == "Alumni":
+                    speaker_to_add = Speaker(ActivityId=activity_id,
+                                            AlumniId=choice[0])
+                else:
+                    speaker_to_add = Speaker(ActivityId=activity_id,
+                                            FacultyId=choice[0])
+                db.session.add(speaker_to_add)
         db.session.commit()
         flash('Activity is successfully inserted.', category='success')
         return redirect(url_for('programs.viewProject', id=id))
@@ -596,10 +614,6 @@ def updateActivity(id):
             if os.path.exists(imagepath):
                 os.remove(imagepath)
 
-        if form.speaker.data:            
-            speakers =  getProjectTeamInput(form.speaker.data, form.speaker.choices)
-            activity.Speaker = speakers
-
         activity.ActivityName=form.activity_name.data
         activity.Date=form.date.data
         activity.StartTime=form.start_time.data
@@ -607,9 +621,34 @@ def updateActivity(id):
         activity.Description=form.activity_description.data
         activity.LocationId=form.location.data
 
+        selected_values = form.speaker.data
+        for speaker in activity.Speaker:
+            bool_is_removed = True
+            if speaker.FacultyId:
+                if str(speaker.FacultyId) in selected_values:
+                    selected_values.remove(str(speaker.FacultyId))
+                    bool_is_removed = False
+            else:
+                if str(speaker.AlumniId) in selected_values:
+                    selected_values.remove(str(speaker.AlumniId))
+                    bool_is_removed = False
+            if bool_is_removed:
+                db.session.delete(speaker)
+
+        if selected_values:
+            for choice in form.speaker.choices:
+                if choice[0] in selected_values:
+                    role = choice[1].split(" - ")[-1]
+                    if role == "Alumni":
+                        speaker_to_add = Speaker(ActivityId=activity.ActivityId,
+                                                AlumniId=choice[0])
+                    else:
+                        speaker_to_add = Speaker(ActivityId=activity.ActivityId,
+                                                FacultyId=choice[0])
+                    db.session.add(speaker_to_add)
         db.session.commit()
         flash('Activity is successfully updated.', category='success')
-        return redirect(url_for('programs.viewProject', id=activity.ProjectId))
+        return redirect(request.referrer)
     if form.errors != {}: # If there are errors from the validations
         for field, error in form.errors.items():
             print(f"Field '{field}' has an error: {error}")

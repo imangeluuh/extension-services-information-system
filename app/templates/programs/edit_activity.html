@@ -41,8 +41,12 @@
                         <div class="mb-3">
                             {% set my_list = [] %}
 
-                            {% for key, value in activity.Speaker.items() %}
-                                {% set _ = my_list.append(key) %}
+                            {% for speaker in activity.Speaker %}
+                                {% if speaker.FacultyId %}
+                                {% set _ = my_list.append(speaker.FacultyId | string) %}
+                                {% else %}
+                                {% set _ = my_list.append(speaker.AlumniId | string) %}
+                                {% endif %}
                             {% endfor %}
                             
                             <!-- speaker-->

@@ -69,9 +69,15 @@ object-fit: cover;">
                 <div class="datagrid-title">Speakers</div>
                 <div class="datagrid-content">
                     <div class="row">
-                        {% for key, value in activity.Speaker.items() %}
+                        {% for speaker in activity.Speaker %}
                         <div class="col-auto col-md-6">
-                            {{ value }}
+                            {% if speaker.FacultyId %}
+                                {{speaker.Faculty.FirstName ~ " " ~ speaker.Faculty.LastName}}
+                                <span class="text-secondary"> - Faculty </span>
+                            {% else %}
+                                {{speaker.Alumni.first_name ~ " " ~ speaker.Alumni.last_name}}
+                                <span class="text-secondary"> - Alumni </span>
+                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>
@@ -119,7 +125,9 @@ object-fit: cover;">
                 </tr>
             </thead>
             <tbody>
+                {% if attendance %}
                 {% for record in attendance %}
+                {% if record.User.RoleId == 2 %}
                 <tr>
                     <td>{{record.User.Beneficiary.FirstName}}</td>
                     <td>{{record.User.Beneficiary.MiddleName if record.User.Beneficiary.MiddleName else 'N/A'}}</td>
@@ -140,7 +148,34 @@ object-fit: cover;">
                     </td>
                     <td>{{record.User.Beneficiary.ResidentialAddress}}</td>
                 </tr>
+                {% else %}
+                <tr>
+                    <td>{{record.User.Student.FirstName}}</td>
+                    <td>{{record.User.Student.MiddleName if record.User.Student.MiddleName else 'N/A'}}</td>
+                    <td>{{record.User.Student.LastName}}</td>
+                    <td>
+                        {% if record.User.Student.Gender == 1 %}
+                        Male
+                        {% elif record.User.Student.Gender == 2 %}
+                        Female
+                        {% else %}
+                        Others
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if record.User.Student.DateOfBirth%}
+                        {% set age = (current_date - record.User.Student.DateOfBirth) | string %}
+                        {% set age = age.split(' ')[0] | int%}
+                        {{ (age/365) | int }}
+                        {% else %}
+                        'N/A'
+                        {% endif %}
+                    </td>
+                    <td>{{record.User.Student.ResidentialAddress}}</td>
+                </tr>
+                {% endif %}
                 {% endfor %}
+                {% endif %}
             </tbody>
         </table>
     </div>

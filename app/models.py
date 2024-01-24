@@ -6,6 +6,7 @@ from flask_jwt_extended import create_access_token, decode_token
 from werkzeug.security import generate_password_hash, check_password_hash
 import ast
 from sqlalchemy import func
+import uuid 
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -198,6 +199,7 @@ class ExtensionProgram(db.Model):
     Rationale = db.Column(db.Text, nullable=False)
     ImageUrl = db.Column(db.Text)
     ImageFileId = db.Column(db.Text)
+    IsArchived = db.Column(db.Boolean, default=False)
     AgendaId = db.Column(db.Integer, db.ForeignKey('ESISAgenda.AgendaId', ondelete='CASCADE'), nullable=False)
     ProgramId = db.Column(db.Integer, db.ForeignKey('SPSCourse.CourseId', ondelete='CASCADE'), nullable=False)
     Agenda = db.relationship("Agenda", back_populates='ExtensionPrograms', lazy='subquery', passive_deletes=True)
@@ -230,6 +232,7 @@ class Project(db.Model):
     ImageFileId = db.Column(db.Text)
     ProjectProposalUrl = db.Column(db.Text, nullable=False)
     ProjectProposalFileId = db.Column(db.Text, nullable=False)
+    IsArchived = db.Column(db.Boolean, default=False)
     ExtensionProgramId = db.Column(db.Integer, db.ForeignKey('ESISExtensionProgram.ExtensionProgramId', ondelete='CASCADE'), nullable=False)
     LeadProponent = db.relationship('User', backref='Project', lazy=True, passive_deletes=True)
     Collaborator = db.relationship("Collaborator", back_populates='Projects', lazy=True)
@@ -311,12 +314,25 @@ class Activity(db.Model):
     ImageUrl = db.Column(db.Text)
     ImageFileId = db.Column(db.Text)
     Speaker = db.Column(db.JSON, nullable=False)
+    IsArchived = db.Column(db.Boolean, default=False)
     LocationId = db.Column(db.Integer, db.ForeignKey('ESISLocation.LocationId', ondelete='CASCADE'))
     ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), nullable=False)
     Project = db.relationship('Project', back_populates='Activity', passive_deletes='all')
     Location = db.relationship('Location', back_populates='Activity', passive_deletes='all')
     Evaluation = db.relationship("Evaluation", back_populates='Activity', cascade='all, delete-orphan', lazy=True)
     Attendance = db.relationship('Attendance', back_populates='Activity', cascade='all, delete-orphan')
+    Speaker = db.relationship('Speaker', back_populates='Activity', cascade='all, delete-orphan')
+
+class Speaker(db.Model):
+    __tablename__ = 'ESISSpeaker'
+
+    SpeakerId = db.Column(db.Integer, primary_key=True)
+    ActivityId = db.Column(db.Integer, db.ForeignKey('ESISActivity.ActivityId', ondelete='CASCADE'), nullable=False)
+    AlumniId = db.Column(db.UUID, db.ForeignKey('APMSUser.id', ondelete='CASCADE'))
+    FacultyId = db.Column(db.Integer, db.ForeignKey('FISFaculty.FacultyId', ondelete='CASCADE'))
+    Activity = db.relationship("Activity", back_populates="Speaker", passive_deletes=True)
+    Alumni = db.relationship("Alumni", backref="Speaker")
+    Faculty =  db.relationship("Faculty", backref="Speaker")
 
 class Location(db.Model):
     __tablename__ = 'ESISLocation'
@@ -326,16 +342,6 @@ class Location(db.Model):
     Longitude = db.Column(db.String(55), nullable=False)
     Latitude = db.Column(db.String(55), nullable=False)
     Activity = db.relationship('Activity', back_populates='Location')
-
-class Speaker(db.Model):
-    __tablename__ = 'ESISSpeaker'
-
-    SpeakerId = db.Column(db.Integer, primary_key=True)
-    FirstName = db.Column(db.String(50), nullable=False)
-    MiddleName = db.Column(db.String(50), default=None)
-    LastName = db.Column(db.String(50), nullable=False)
-    Email = db.Column(db.String(50), nullable=False)
-    ContactDetails = db.Column(db.String(13), nullable=False)
 
 class Item(db.Model):
     __tablename__ = 'ESISItem'
@@ -466,3 +472,63 @@ class Certificate(db.Model):
     User = db.relationship("User", back_populates="Certificate", passive_deletes=True)
     Project = db.relationship("Project", back_populates="Certificate", passive_deletes=True)
 
+class Alumni(db.Model):
+    __tablename__ = 'APMSUser'
+    id = db.Column('id', db.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    created_at = db.Column('created_at', db.TIMESTAMP(timezone=True), nullable=False, server_default=db.text("now()"))
+    updated_at = db.Column('updated_at', db.TIMESTAMP(timezone=True), nullable=False, server_default=db.text("now()"))
+    deleted_at = db.Column('deleted_at', db.TIMESTAMP(timezone=True))  # Deletion timestamp (null if not deleted)
+    role = db.Column('Role', db.String, server_default='public', nullable=False, index=True)
+    sub = db.Column('Sub', db.String, unique=True, index=True)
+    password = db.Column('Password', db.String, nullable=False)
+    reset_code = db.Column('ResetCode', db.String)
+    is_completed = db.Column('IsCompleted', db.Boolean, nullable=False, server_default='False') 
+
+    # Alumni information
+    profile_picture = db.Column('ProfilePicture', db.String, server_default="#")
+    username = db.Column('Username', db.String, unique=True, index=True)
+    first_name = db.Column('FirstName', db.String)
+    last_name = db.Column('LastName', db.String)
+    student_number = db.Column('StudentNumber', db.String, unique=True, index=True)
+    birthdate = db.Column('Birthdate', db.Date)
+    civil_status = db.Column('CivilStatus', db.String)
+    gender = db.Column('Gender', db.String)
+    headline = db.Column('Headline', db.Text)
+
+    # Contact details
+    mobile_number = db.Column('MobileNumber', db.String)
+    telephone_number = db.Column('TelephoneNumber', db.String)
+    email = db.Column('Email', db.String, unique=True, index=True)
+
+    # Current residence
+    is_international = db.Column('IsInternational', db.Boolean, nullable=False, server_default='False') 
+    address = db.Column('Address', db.String)
+    country = db.Column('Country', db.String, server_default='philippines') 
+    region = db.Column('Region', db.String)
+    region_code = db.Column('RegionCode', db.String)
+    city = db.Column('City', db.String)
+    city_code = db.Column('CityCode', db.String)
+    barangay = db.Column('Barangay', db.String)
+    barangay_code = db.Column('BarangayCode', db.String)
+
+    # Place of birth
+    origin_is_international = db.Column('OriginIsInternational', db.Boolean, nullable=False, server_default='False')
+    origin_address = db.Column('OriginAddress', db.String)
+    origin_country = db.Column('OriginCountry', db.String, server_default='philippines') 
+    origin_region = db.Column('OriginRegion', db.String)
+    origin_city = db.Column('OriginCity', db.String)
+    origin_barangay = db.Column('OriginBarangay', db.String)
+    origin_region_code = db.Column('OriginRegionCode', db.String)
+    origin_city_code = db.Column('OriginCityCode', db.String)
+    origin_barangay_code = db.Column('OriginBarangayCode', db.String)
+
+    # PUPQC Education Profile
+    date_graduated = db.Column('DateGraduated', db.Date)
+    batch_year = db.Column('BatchYear', db.Integer)
+    post_grad_act = db.Column('PostGradAct', db.ARRAY(db.String))
+
+    # Employment Status
+    present_employment_status = db.Column('PresentEmploymentStatus', db.String, server_default="unanswered")
+    unemployment_reason = db.Column('UnemploymentReason',db. ARRAY(db.String))
+
+    course_id = db.Column('CourseId', db.Integer, db.ForeignKey('SPSCourse.CourseId', ondelete="CASCADE"))
