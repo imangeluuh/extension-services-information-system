@@ -38,12 +38,16 @@ def saveImage(image, imagepath):
     # Upload image to imagekit
     return uploadImage(imagepath, imagename)
 
+@cache.cached(timeout=1800, key_prefix='getPrograms')
+def getPrograms():
+    return ExtensionProgram.query.all()
+
 @bp.route('/pupqc/extension-programs')
 @login_required(role=["Admin", "Faculty"])
 def programs():
     form = ProgramForm()
     project_form = ProjectForm()
-    programs = ExtensionProgram.query.all()    
+    programs = getPrograms()    
     
     return render_template('programs/program_management.html', programs=programs, form=form, project_form=project_form)
 

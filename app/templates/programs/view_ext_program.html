@@ -25,44 +25,9 @@
 </div>
 <!-- Background image -->
 <div class="container-xl">
-
-    <div class="card mx-5 mb-5 mt-4">
-        <div class="card-header">
-            <h3 class="card-title">Details</h3>
-            {% if current_user.RoleId == 1 %}
-            <div class="d-flex justify-content-end w-100">
-                <a href="#" data-bs-toggle="modal" data-bs-target="#edit-ext-program" class="btn btn-primary d-flex align-items-center ">
-                    <iconify-icon icon="bx:edit" class="fs-2 me-1"></iconify-icon>
-                    Edit Details
-                </a>
-            </div>
-            {% include 'programs/edit_ext_program_modal.html' %}
-            {% endif %}
-        </div>
-        <div class="card-body">
-            <div class="row g-2">
-                <div class="col-auto col-md-2">
-                    <div class="datagrid-title">Extension Program ID</div>
-                    <div class="datagrid-content">{{ext_program.ExtensionProgramId}}</div>
-                </div>
-                <div class="col-auto col-md-5">
-                    <div class="datagrid-title">Agenda</div>
-                    <div class="datagrid-content">{{ext_program.Agenda.AgendaName}}</div>
-                </div>
-                <div class="col-auto col-md-5">
-                    <div class="datagrid-title">Program</div>
-                    <div class="datagrid-content">{{ext_program.Program.Name}}</div>
-                </div>
-                <div class="col-12">
-                    <div class="datagrid-title">Rationale</div>
-                    <div class="datagrid-content">{{ext_program.Rationale}}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
+    {% include 'programs/components/ext_program_info.html' %}
      <!--Card-->
-     <div class="card mx-5 mb-5">
+     <div class="card mb-5">
         <div class="card-header d-flex justify-content-between">
             <h3 class="card-title">Projects</h3>
             <div class="d-flex justify-content-end w-100">

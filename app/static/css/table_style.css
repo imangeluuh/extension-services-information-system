@@ -30,3 +30,9 @@ table.dataTable th {
     background-color: #edf2f7;
     /*bg-gray-200*/
 }
+
+.dt-buttons button.dt-button {
+    background-color: #206bc4!important;
+    color: white!important;
+    border: 0!important;
+}

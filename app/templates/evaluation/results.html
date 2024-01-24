@@ -119,8 +119,6 @@
 {% endblock %}
 
 {% block script %}
-<script src="{{ url_for('static', filename='js/html2canvas.js') }}"></script>
-<script src="{{ url_for('static', filename='js/print.js') }}"></script>
 <script>
     $(document).ready(function() {
         $('select').select2({placeholder: 'Please select an activity...', allowClear: true});

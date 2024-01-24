@@ -1,0 +1,34 @@
+<div class="card mb-3 mt-3">
+    <div class="card-header">
+        <h3 class="card-title" id="card-title">Details</h3>
+        {% if current_user.RoleId == 1 and request.blueprint != 'reports' %}
+        <div id="edit-btn" class="d-flex justify-content-end w-100">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#edit-ext-program" class="btn btn-primary d-flex align-items-center ">
+                <iconify-icon icon="bx:edit" class="fs-2 me-1"></iconify-icon>
+                Edit Details
+            </a>
+        </div>
+        {% include 'programs/edit_ext_program_modal.html' %}
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-auto col-md-2">
+                <div class="datagrid-title">Extension Program ID</div>
+                <div class="datagrid-content">{{ext_program.ExtensionProgramId}}</div>
+            </div>
+            <div class="col-auto col-md-5">
+                <div class="datagrid-title">Agenda</div>
+                <div class="datagrid-content">{{ext_program.Agenda.AgendaName}}</div>
+            </div>
+            <div class="col-auto col-md-5">
+                <div class="datagrid-title">Program</div>
+                <div class="datagrid-content">{{ext_program.Program.Name}}</div>
+            </div>
+            <div class="col-12">
+                <div class="datagrid-title">Rationale</div>
+                <div class="datagrid-content">{{ext_program.Rationale}}</div>
+            </div>
+        </div>
+    </div>
+</div>

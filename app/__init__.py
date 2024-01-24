@@ -78,6 +78,9 @@ def create_app(config_class=Config):
     from .evaluation.evaluation import bp as evaluation_bp
     app.register_blueprint(evaluation_bp, url_prefix='/')
 
+    from .reports.reports import bp as reports_bp
+    app.register_blueprint(reports_bp, url_prefix='/reports')
+
     from .user import bp as user_bp
     app.register_blueprint(user_bp, url_prefix='/')
 

@@ -1,0 +1,86 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>{{ext_program.Name}} Report</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+    <!--Regular Datatables CSS-->
+    <link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
+    <!--Responsive Extension Datatables CSS-->
+    <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            body * {
+                display: none;
+            }
+            
+            #program-report, #program-report * {
+                display: inline-block;
+            }
+
+            #details-container {
+                display: grid;
+            }
+            
+            #buttons-container, 
+            #extension-counter, 
+            #buttons-container *, 
+            #extension-counter *,
+            .dt-buttons,
+            #collaborators_filter,
+            .loader {
+                display: none!important;
+            }
+            
+            #details-container,
+            #details-container .card .card-header, 
+            #program-report,
+            #program-details,
+            #table-card {
+                padding: 0!important;
+                margin: 0!important;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/table_style.css')}}">
+{% endblock %}
+
+{% block content %}
+<div id="program-report" class="container-xl">
+    <div class="page-header my-3">
+        <div class="row align-items-center mw-100">
+            <div class="col">
+                <h2 class="page-title">
+                    {{ext_program.Name}} Report
+                </h2>
+            </div>
+        </div>
+    </div>  
+    <div id="buttons-container" class="d-flex justify-content-between">
+        <div class="filter-buttons">
+            {% for program in extension_programs %}
+            <button class="btn btn-outline-primary {{'active' if program.ExtensionProgramId == ext_program.ExtensionProgramId }}" hx-get="/reports/get-details?program={{program.ExtensionProgramId}}" hx-target="#program-details" {% if program.ExtensionProgramId == ext_program.ExtensionProgramId %} hx-trigger="load, click" {%endif%} hx-indicator=".loader" hx-swap="innerHTML">{{program.Name}}</button>
+            {% endfor %}
+        </div>
+        <button id="print" class="bg-transparent border-0  text-secondary"><iconify-icon class="fs-1" icon="material-symbols:print-outline"></iconify-icon></button>
+    </div>
+    <div id="program-details" class="mt-3 d-flex align-items-center justify-content-center " style="min-height: 300px;">
+        <!-- Loading spinner -->
+        <img  alt="Result loading..." class="loader htmx-indicator" width="150" height="100" src="{{url_for('static', filename='images/bars-rotate-fade.svg')}}"/>
+        <!-- Program details will be shown based on filter -->
+    </div>
+</div>
+{% endblock %}
+
+
+{% block script %}
+	<!--Datatables -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="{{url_for('static', filename='js/script.js')}}"></script>
+    
+{% endblock %}
