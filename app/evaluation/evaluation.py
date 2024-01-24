@@ -6,7 +6,6 @@ from app import db
 from ..store import uploadImage, purgeImage
 from werkzeug.utils import secure_filename
 from ..decorators.decorators import login_required
-import pdfkit
 
 # =========================================================
 # ||                 ADMIN/FACULTY VIEWS                 ||
@@ -181,25 +180,6 @@ def results(id):
     responses = Response.query.filter_by(EvaluationId=id).all()
 
     return render_template("evaluation/results.html", evaluation=evaluation, questions=questions, responses=responses)
-
-
-
-# @bp.route("/summary")
-# def summary():
-#     return render_template("evaluation/summary.html")
-
-# @bp.route("/generate")
-# def generate():
-#     rendered = render_template("evaluation/summary.html")
-
-#     pdf = pdfkit.from_string(rendered, False)
-
-#     response = make_response(pdf)
-
-#     response.headers['Content-Type'] = 'application/pdf'
-#     response.headers['Content-Disposition'] = 'attachement; filename=evaluation-summary.pdf'
-
-#     return response
 
 
 # =========================================================
