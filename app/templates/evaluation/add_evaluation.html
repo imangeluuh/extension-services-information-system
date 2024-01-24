@@ -43,7 +43,7 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <fieldset>
                 <div class="row d-flex align-items-center mb-3">
-                    <label class="col-auto col-md-3">Evaluation name</label>
+                    <label class="col-auto col-md-3">Evaluation Name</label>
                     <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">* required</span>
                     <input name="name" class="col-auto col-md-6 p-2 text-secondary rounded border border-secondary-subtle" placeholder="Evaluation name" required>
                 </div>
@@ -59,6 +59,17 @@
                         </select>
                     </div>
                 </div>
+                <div class="row d-flex align-items-center mb-3">
+                    <label class="col-auto col-md-3">Evaluation Type</label>
+                    <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">* required</span>
+                    <div class="form-group col-auto col-md-6 p-0 ">
+                        <select id="type" name="type" class="p-2 text-secondary bg-secondary-subtle rounded border border-secondary-subtle" required hidden>
+                            <option value="" selected disabled>Please select an evaluation type...</option>
+                            <option value="Satisfaction">Satisfaction</option>
+                            <option value="Assessment">Assessment</option>
+                        </select>
+                    </div>
+                </div>                
                 <br>
                 <div class="row mb-3">
                     <label class="col-auto col-md-3">Questions</label>
@@ -99,5 +110,9 @@
     new MultipleSelect('#activity', {
         placeholder: 'Please select an activity...'
     })
+
+    new MultipleSelect('#type', {
+        placeholder: 'Please select an evaluation type...'
+    });
 </script>
 {% endblock %}

@@ -5,7 +5,7 @@ from .forms import LoginForm, CollaboratorForm, SpeakerForm
 from ..models import Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity, Speaker, Faculty, Beneficiary, Student
 from ..Api.resources import AdminLoginApi
 from ..decorators.decorators import login_required
-from app import db, api
+from app import db, cache
 from ..store import uploadImage
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash
@@ -21,98 +21,9 @@ def saveImage(image, imagepath):
     # Upload image to imagekit
     return uploadImage(imagepath, imagename)
 
-@bp.route('/', methods=['GET', 'POST'])
-def adminLogin():
-    form = LoginForm()
-    
-    # Prevents logged in users from accessing the page
-    if current_user.is_authenticated:
-        return redirect(url_for('programs.programs')) 
-    if request.method == "POST":
-        if form.validate_on_submit():
-            attempted_user = Faculty.query.filter_by(Email=form.email.data).first()
-            if attempted_user and attempted_user.User[0].RoleId == 1: 
-                if check_password_hash(attempted_user.Password, form.password.data):
-                    login_user(attempted_user.User[0], remember=True)
-                    return redirect(url_for('admin.dashboard')) 
-                else:
-                    flash('The password you\'ve entered is incorrect.', category='error')
-            else:
-                flash('The email you entered isn\'t connected to an account.', category='error')
-    return render_template('auth/admin_login.html', form=form)
 
-@bp.route('/logout')
-def logout():
-    session.clear()
-    logout_user()
-    return redirect(url_for('admin.adminLogin'))
-
-@bp.route('/beneficiaries')
-@login_required(role=["Admin"])
-def beneficiaries():
-    users = Beneficiary.query.all()
-    current_url_path = request.path
-    return render_template('admin/users.html', users=users,current_url_path=current_url_path)
-
-@bp.route('/students')
-@login_required(role=["Admin"])
-def students():
-    users = User.query.filter_by(RoleId=3).all()
-    current_url_path = request.path
-    return render_template('admin/users.html', users=users,current_url_path=current_url_path)
-
-@bp.route('/faculty')
-@login_required(role=["Admin"])
-def faculty():
-    users = User.query.filter_by(RoleId=4).all()
-    current_url_path = request.path
-    return render_template('admin/users.html', users=users,current_url_path=current_url_path)
-
-@bp.route('/beneficiaries/<int:id>')
-@login_required(role=["Admin"])
-def viewBeneficiary(id):
-    user = Beneficiary.query.filter_by(BeneficiaryId=id).first()
-    user_projects = (
-    Project.query
-    .join(Registration, Registration.ProjectId == Project.ProjectId)
-    .join(User, User.UserId == Registration.UserId)
-    .filter(User.UserId == user.User[0].UserId)
-    .all()
-    )
-    current_date = datetime.utcnow().date()
-    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
-
-@bp.route('/students/<string:id>')
-@login_required(role=["Admin"])
-def viewStudent(id):
-    user = Student.query.filter_by(StudentNumber=id).first()
-    user_projects = (
-    Project.query
-    .join(Registration, Registration.ProjectId == Project.ProjectId)
-    .join(User, User.UserId == Registration.UserId)
-    .filter(User.UserId == user.User[0].UserId)
-    .all()
-    )
-    current_date = datetime.utcnow().date()
-    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
-
-@bp.route('/faculty/<int:id>')
-@login_required(role=["Admin"])
-def viewFaculty(id):
-    user = Faculty.query.filter_by(FacultyId=id).first()
-    current_date = datetime.utcnow().date()
-    user_projects = Project.query.filter_by(LeadProponentId=user.User[0].UserId)
-    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
-
-
-@bp.route('/dashboard')
-@login_required(role=["Admin"])
-def dashboard():
-    programs = ExtensionProgram.query.all()
-    years = set()
-    programs_participants = {}
-    programs_projects = {}
-    data_for_bar_graph = []
+@cache.cached(timeout=600, key_prefix='getStatusCount')
+def getStatusCount():
     current_date = datetime.utcnow().date()
 
     upcoming_projects = Project.query.filter(Project.StartDate > current_date).count()
@@ -123,6 +34,15 @@ def dashboard():
     ongoing_activities = Activity.query.filter(Activity.Date <= current_date, Activity.Date >= current_date).count()
     completed_activities = Activity.query.filter(Activity.Date < current_date).count()
 
+    return [upcoming_projects, ongoing_projects, completed_projects, upcoming_activities, ongoing_activities, completed_activities]
+
+@cache.cached(timeout=600, key_prefix='getParticipants')
+def getParticipants():
+    programs = ExtensionProgram.query.all()
+    years = set()
+    programs_participants = {}
+    programs_projects = {}
+    data_for_bar_graph = []
     for program in programs:
         program_data = {"name": program.Name, "data": []}
         program_projects_data = {"name": program.Name, "data": []}
@@ -192,10 +112,12 @@ def dashboard():
             for activity in project.Activity:
                 if activity.Evaluation:
                     for evaluation in activity.Evaluation:
-                        for response in evaluation.Response:
-                            rating = response.Num
-                            if rating is not None:
-                                program_ratings.append({"year": activity.Date.year, "rating": rating})
+                        # Check if the evaluation type is for satisfaction
+                        if evaluation.EvaluationType == "Satisfaction":
+                            for response in evaluation.Response:
+                                rating = response.Num
+                                if rating is not None:
+                                    program_ratings.append({"year": activity.Date.year, "rating": rating})
         
         if program_ratings:
             # Calculate the average rating for the extension program
@@ -203,9 +125,11 @@ def dashboard():
             average_rating = sum(non_none_ratings) / len(non_none_ratings) if non_none_ratings else None
             data_for_bar_graph.append({"name": extension_program.Name, "data": program_ratings, "average_rating": average_rating})
 
-    # Sort years in chronological order
-    sorted_years = sorted(set(entry["year"] for program_data in data_for_bar_graph for entry in program_data["data"]))
+    return [data_for_chart_participants, data_for_chart_projects, data_for_bar_graph]
 
+@cache.cached(timeout=600, key_prefix='getEngagement')
+def getEngagement():
+    current_date = datetime.utcnow().date()
     last_5_months = [
         {
             "date": (current_date - timedelta(days=30 * i)).strftime('%Y-%m'),
@@ -245,6 +169,116 @@ def dashboard():
 
     # Select the top 5 projects
     last_5_months_projects_engagement = last_5_months_projects_engagement[:5]
+    return [last_5_months_projects_engagement, last_5_months_programs_engagement]
+
+
+@bp.route('/', methods=['GET', 'POST'])
+def adminLogin():
+    form = LoginForm()
+    
+    # Prevents logged in users from accessing the page
+    if current_user.is_authenticated:
+        return redirect(url_for('programs.programs')) 
+    if request.method == "POST":
+        if form.validate_on_submit():
+            attempted_user = Faculty.query.filter_by(Email=form.email.data).first()
+            if attempted_user and attempted_user.User[0].RoleId == 1: 
+                if check_password_hash(attempted_user.Password, form.password.data):
+                    login_user(attempted_user.User[0], remember=True)
+                    return redirect(url_for('programs.programs')) 
+                else:
+                    flash('The password you\'ve entered is incorrect.', category='error')
+            else:
+                flash('The email you entered isn\'t connected to an account.', category='error')
+    return render_template('auth/admin_login.html', form=form)
+
+@bp.route('/logout')
+def logout():
+    session.clear()
+    logout_user()
+    return redirect(url_for('admin.adminLogin'))
+
+@bp.route('/beneficiaries')
+@login_required(role=["Admin"])
+def beneficiaries():
+    users = Beneficiary.query.all()
+    current_url_path = request.path
+    return render_template('admin/users.html', users=users,current_url_path=current_url_path)
+
+@bp.route('/students')
+@login_required(role=["Admin"])
+def students():
+    users = User.query.filter_by(RoleId=3).all()
+    current_url_path = request.path
+    return render_template('admin/users.html', users=users,current_url_path=current_url_path)
+
+@bp.route('/faculty')
+@login_required(role=["Admin"])
+def faculty():
+    users = User.query.filter_by(RoleId=4).all()
+    current_url_path = request.path
+    return render_template('admin/users.html', users=users,current_url_path=current_url_path)
+
+@bp.route('/beneficiaries/<int:id>')
+@login_required(role=["Admin"])
+def viewBeneficiary(id):
+    user = Beneficiary.query.filter_by(BeneficiaryId=id).first()
+    user_projects = (
+    Project.query
+    .join(Registration, Registration.ProjectId == Project.ProjectId)
+    .join(User, User.UserId == Registration.UserId)
+    .filter(User.UserId == user.User[0].UserId)
+    .all()
+    )
+    current_date = datetime.utcnow().date()
+    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
+
+@bp.route('/students/<string:id>')
+@login_required(role=["Admin"])
+def viewStudent(id):
+    user = Student.query.filter_by(StudentNumber=id).first()
+    user_projects = (
+    Project.query
+    .join(Registration, Registration.ProjectId == Project.ProjectId)
+    .join(User, User.UserId == Registration.UserId)
+    .filter(User.UserId == user.User[0].UserId)
+    .all()
+    )
+    current_date = datetime.utcnow().date()
+    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
+
+@bp.route('/faculty/<int:id>')
+@login_required(role=["Admin"])
+def viewFaculty(id):
+    user = Faculty.query.filter_by(FacultyId=id).first()
+    current_date = datetime.utcnow().date()
+    user_projects = Project.query.filter_by(LeadProponentId=user.User[0].UserId)
+    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
+
+@bp.route('/dashboard')
+@login_required(role=["Admin", "Faculty"])
+def dashboard():
+    statusCount = getStatusCount()
+    upcoming_projects = statusCount[0]
+    ongoing_projects = statusCount[1]
+    completed_projects = statusCount[2]
+
+    upcoming_activities = statusCount[3]
+    ongoing_activities = statusCount[4]
+    completed_activities = statusCount[5]
+
+    participants = getParticipants()
+
+    data_for_chart_participants = participants[0]
+    data_for_chart_projects = participants[1]
+    data_for_bar_graph = participants[2]
+
+    # Sort years in chronological order
+    sorted_years = sorted(set(entry["year"] for program_data in data_for_bar_graph for entry in program_data["data"]))
+
+    engagement = getEngagement()
+    last_5_months_projects_engagement = engagement[0]
+    last_5_months_programs_engagement = engagement[1]
 
     return render_template('admin/dashboard.html',
                             data_for_chart_participants=data_for_chart_participants,

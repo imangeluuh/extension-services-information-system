@@ -200,8 +200,8 @@ class ExtensionProgram(db.Model):
     ImageFileId = db.Column(db.Text)
     AgendaId = db.Column(db.Integer, db.ForeignKey('ESISAgenda.AgendaId', ondelete='CASCADE'), nullable=False)
     ProgramId = db.Column(db.Integer, db.ForeignKey('SPSCourse.CourseId', ondelete='CASCADE'), nullable=False)
-    Agenda = db.relationship("Agenda", back_populates='ExtensionPrograms', lazy=True, passive_deletes=True)
-    Program = db.relationship("Course", backref='ExtensionProgram')
+    Agenda = db.relationship("Agenda", back_populates='ExtensionPrograms', lazy='subquery', passive_deletes=True)
+    Program = db.relationship("Course", backref='ExtensionProgram', lazy='subquery',)
     Projects = db.relationship("Project", back_populates='ExtensionProgram', cascade='all, delete-orphan')
 
     def get_participants_count_for_month(self, month_info):
@@ -413,6 +413,7 @@ class Evaluation(db.Model):
 
     EvaluationId = db.Column(db.Integer, primary_key=True)
     EvaluationName = db.Column(db.Text, nullable=False)
+    EvaluationType = db.Column(db.String(50), nullable=False)
     ActivityId = db.Column(db.Integer, db.ForeignKey('ESISActivity.ActivityId', ondelete='CASCADE'), nullable=False)
     State = db.Column(db.Integer, nullable=False)
     Questions = db.Column(db.Text, nullable=False)

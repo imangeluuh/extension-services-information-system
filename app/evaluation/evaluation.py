@@ -108,13 +108,14 @@ def addEvaluation():
 
         evaluation_name = request.form["name"]
         evaluation_activity = request.form["activity"]
+        evaluation_type = request.form["type"]
         evaluation_questions = request.form.getlist("questions")
 
         if evaluation_name.isspace() or evaluation_name == "" or not evaluation_questions or not evaluation_activity:
             flash('Please complete all required fields.', category='error')
 
         try:
-            evaluation_to_add = Evaluation(EvaluationName=evaluation_name, ActivityId=evaluation_activity, State=1, Questions=str(evaluation_questions), CreatorId=current_user.UserId)
+            evaluation_to_add = Evaluation(EvaluationName=evaluation_name, ActivityId=evaluation_activity, State=1, Questions=str(evaluation_questions), CreatorId=current_user.UserId, EvaluationType=evaluation_type)
             db.session.add(evaluation_to_add)
             db.session.commit()
             flash('Evaluation is successfully created.', category='success')
