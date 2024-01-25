@@ -351,6 +351,21 @@ input[type="file"]::-webkit-file-upload-button,
                                     {% endfor %}
                                 </ul>
                             </div>
+                            <div class="col-12 text-start">
+                                <div class="form-check form-switch">
+                                    {{ form.project.research_based(class="form-check-input me-2 border-1 bg-secondary", id="checkbox")}}
+                                    {{ form.project.research_based.label }}
+                                </div>
+                            </div>
+                            <div class="col-12 text-start" id="research-title" style="display: none">
+                                {{form.project.research_title.label}}
+                                <select id="{{form.project.research_title.id}}" name="{{form.project.research_title.name}}" class="input">
+                                {% for choice in form.project.research_title.choices %}
+                                <option value="{{choice[0]}}">{{choice[1]}}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
+
                             <div class="col-12 col-md-6">
                                 <label for="approved_budget" class="text-start">Budget Amount</label>
                                 <input type="number" name="approved_budget" class="input" required>
@@ -523,6 +538,20 @@ input[type="file"]::-webkit-file-upload-button,
         placeholder: 'Select Faculty'
     })
     document.getElementById("multiple-select-container-1").classList.add("input");
+
+    const checkbox = document.getElementById("checkbox");
+    const selectField = document.getElementById("research-title");
+
+    checkbox.addEventListener("change", () => {
+        selectField.style.display = checkbox.checked ? "block" : "none";
+        if (checkbox.classList.contains('bg-primary')) {
+            checkbox.classList.remove('bg-primary');
+            checkbox.classList.add('bg-secondary');
+        } else {
+            checkbox.classList.remove('bg-secondary');
+            checkbox.classList.add('bg-primary');
+        }
+    });
     
 </script>
 

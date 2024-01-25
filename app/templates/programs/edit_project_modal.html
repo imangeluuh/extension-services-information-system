@@ -108,6 +108,25 @@
                             {{ form.project_proposal(class="form-control")}}
                         </div>
                     </div>
+                    <div class="col-12 col-md-12">
+                        {{project.Title}}
+                        <div class="mb-3 d-flex">
+                            <div class="form-check form-switch">
+                                <input type="checkbox" class="form-check-input me-2 {{'bg-primary' if project.ResearchBased else 'bg-secondary'}}" id="checkbox" name="{{form.research_based.name}}" {{'checked' if project.ResearchBased }}>
+                                {{ form.research_based.label(class="form-check-label") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div  class="col-12 col-md-23" >
+                        <div class="mb-3" id="research-title" style="display: {{'block' if project.ResearchBased else 'none'}};">
+                            {{form.research_title.label(class="form-label")}}
+                            <select id="{{form.research_title.id}}" name="{{form.research_title.name}}" class="form-select">
+                            {% for choice in form.research_title.choices %}
+                            <option value="{{choice[0]}}" {{'selected' if project.ResearchBased and project.ResearchId == choice[0] }}>{{choice[1]}}</option>
+                            {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                     {% for budget in project_budget %}
                     {% if loop.first %}
                     <input type="hidden" name="id" value="{{budget.BudgetId}}">

@@ -173,7 +173,8 @@ class Beneficiary(db.Model):
 
     @password_hash.setter
     def password_hash(self, plain_text_password):
-        self.Password = generate_password_hash(plain_text_password)
+        self.Password = generate_password_hash(plain_text_password, method="pbkdf2:sha256")
+        
 
     def check_password_correction(self, attempted_password):
         return check_password_hash(self.Password, attempted_password)
@@ -228,6 +229,8 @@ class Project(db.Model):
     EndDate = db.Column(db.Date)
     ImpactStatement = db.Column(db.Text, nullable=False)
     Objectives = db.Column(db.Text, nullable=False)
+    ResearchBased = db.Column(db.Boolean, nullable=False)
+    ResearchId = db.Column(db.String, db.ForeignKey('RISresearch_papers.id', ondelete='CASCADE'))
     ImageUrl = db.Column(db.Text)
     ImageFileId = db.Column(db.Text)
     ProjectProposalUrl = db.Column(db.Text, nullable=False)
@@ -242,7 +245,7 @@ class Project(db.Model):
     Activity = db.relationship("Activity", back_populates="Project", cascade='all, delete-orphan')
     Budget = db.relationship('Budget', back_populates='Project', cascade='all, delete-orphan')
     Item = db.relationship('Item', back_populates='Project', cascade='all, delete-orphan')
-
+    Research = db.relationship('ResearchPaper', backref='Research')
     def totalBudget(self):
         # Calculates and returns the total budget for the project.
         return sum(budget.Amount for budget in self.Budget)
@@ -532,3 +535,26 @@ class Alumni(db.Model):
     unemployment_reason = db.Column('UnemploymentReason',db. ARRAY(db.String))
 
     course_id = db.Column('CourseId', db.Integer, db.ForeignKey('SPSCourse.CourseId', ondelete="CASCADE"))
+
+
+class Status(db.Enum):
+    Approve = "Approve"
+    Reject = "Rejected"
+    Pending = "Pending"
+    Revise = "Revise"
+    Revised = "Revised"
+    Approved = "Approved"
+    Rejected = "Rejected"
+    
+
+class ResearchPaper(db.Model):
+    __tablename__ = 'RISresearch_papers'
+
+    id = db.Column(db.String, primary_key=True)
+    title = db.Column(db.String, nullable=False)
+    research_type = db.Column(db.String, nullable=False)
+    submitted_date = db.Column(db.Date, nullable=False)
+    status = db.Column(db.String, nullable=False, default=Status.Pending)
+    file_path = db.Column(db.String, nullable=False)
+    research_adviser = db.Column(db.String, nullable=False)
+    extension = db.Column(db.String, nullable=True)

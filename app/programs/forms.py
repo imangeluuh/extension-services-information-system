@@ -1,41 +1,12 @@
 from flask import current_app
 from flask_wtf import FlaskForm
 from flask_ckeditor import CKEditorField
-from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField
+from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField, BooleanField
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed
-from ..models import Agenda, Collaborator, Location, User, Faculty, Course, Alumni
+from ..models import Agenda, Collaborator, Location, User, Faculty, Course, Alumni, ResearchPaper
 from app import cache
 import requests
-
-@cache.cached(timeout=1800, key_prefix='getFacultyNames')
-def getFacultyNames():
-    faculty_names = []
-    url = current_app.config['API_URL']
-    api_key = current_app.config['API_KEY']
-    # Set up headers with the API key in the 'API Key' authorization header
-    headers = {
-        'Authorization': 'API Key',
-        'token': api_key,  # 'token' key with the API key value
-        'Content-Type': 'application/json'  # Adjust content type as needed
-    }
-
-    # Make a GET request to the API with the API key in the headers
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        # Process the API response data
-        api_data = response.json()
-        
-        # Extracting faculty_account_ids into a list
-        faculty_account_ids = list(api_data['Faculties'].keys())
-
-        # Fetching name for each faculty
-        for faculty_id in faculty_account_ids:
-            faculty_info = api_data['Faculties'][faculty_id]
-            faculty_name = faculty_info['name']
-            faculty_names.append((faculty_id, faculty_name))
-    return faculty_names
 
 class ProgramForm(FlaskForm):
     program_name = StringField('Extension Program Name', validators=[DataRequired()])
@@ -68,6 +39,8 @@ class ProjectForm(FlaskForm):
     objectives = CKEditorField("Objective of the Project", validators=[DataRequired()])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
     project_proposal = FileField('Project Proposal', validators=[FileAllowed(['docx', 'pdf', 'docs'])])
+    research_based = BooleanField('Research-based Project')
+    research_title = SelectField('Research Title')
     extension_program = HiddenField()
     submit = SubmitField("Save Project")
 
@@ -77,6 +50,7 @@ class ProjectForm(FlaskForm):
         with current_app.app_context():
             self.collaborator.choices = [(collaborator.CollaboratorId, collaborator.Organization) for collaborator in Collaborator.query.all()]
             self.project_team.choices = [(str(faculty.FacultyId), faculty.FirstName + ' ' + faculty.LastName) for faculty in Faculty.query.all()]
+            self.research_title.choices = [(research.id, research.title) for research in ResearchPaper.query.filter_by(extension="For Extension")]
 
 class ActivityForm(FlaskForm):
     activity_name = StringField("Activity Name", validators=[DataRequired()])

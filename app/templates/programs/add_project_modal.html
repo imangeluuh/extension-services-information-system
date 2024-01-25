@@ -102,10 +102,28 @@
                                 {{ form.project_proposal(class="form-control")}}
                             </div>
                         </div>
+                        <div class="col-12 col-md-12">
+                            <div class="mb-3 d-flex">
+                                <div class="form-check form-switch">
+                                    {{ form.research_based(class="form-check-input me-2 border-1 bg-secondary", id="checkbox")}}
+                                    {{ form.research_based.label(class="form-check-label") }}
+                                </div>
+                            </div>
+                        </div>
+                        <div  class="col-12 col-md-23" >
+                            <div class="mb-3" id="research-title" style="display: none;">
+                                {{form.research_title.label(class="form-label")}}
+                                <select id="{{form.research_title.id}}" name="{{form.research_title.name}}" class="form-select">
+                                {% for choice in form.research_title.choices %}
+                                <option value="{{choice[0]}}">{{choice[1]}}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-12 col-md-6">
                             <div class="mb-3">
                                 <label for="approved_budget" class="form-label">Budget Amount</label>
-                                <input type="number" name="approved_budget"" class="form-control" required>
+                                <input type="number" name="approved_budget" class="form-control" required>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -146,5 +164,7 @@
 new MultipleSelect('#project_team', {
         placeholder: 'Select Faculty'
 })
+
+
 </script>
 

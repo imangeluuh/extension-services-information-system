@@ -60,8 +60,8 @@ object-fit: cover;">
             <div class="tab-content">
                 <div class="tab-pane active show" id="tabs-details" role="tabpanel">
                     <div class="row g-2">
-                        <div class="col-auto col-md-8">
-                            <h4 class="pb-2">Details</h4>
+                        <div class="col-auto col-md-8 d-flex">
+                            <h3>{{project.Title}}</h3>
                         </div>
                         <div class="col-auto col-md-4 d-flex justify-content-md-end " id="details-buttons">
                             {% if project.LeadProponentId == current_user.UserId %}
@@ -76,6 +76,16 @@ object-fit: cover;">
                             {% include 'programs/edit_project_modal.html' %}
                             {% include 'programs/delete_project.html' %}
                             {% endif %}
+                        </div>
+                        <div class="tags-list mb-3">
+                            <span class="tag border border-2 border-secondary p-1 me-2">
+                                <small class="text-secondary">Research-based Project</small>
+                            </span>
+                            <span class="tag border border-2 border-secondary p-1">
+                                <!-- Download SVG icon from http://tabler-icons.io/i/file-minus -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M14 3v4a1 1 0 0 0 1 1h4"></path><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path><path d="M9 14l6 0"></path></svg>
+                                <small class="text-secondary">Research Title: {{project.Research.title}}</small>
+                            </span>
                         </div>
                         <div class="col-auto col-md-2">
                             <div class="datagrid-title">Extension Project ID</div>
@@ -305,6 +315,19 @@ object-fit: cover;">
 
     $('body').on('click', '.remove-item', function() {
         $(this).closest('.budget').remove();
+    });
+    const checkbox = document.getElementById("checkbox");
+    const selectField = document.getElementById("research-title");
+
+    checkbox.addEventListener("change", () => {
+        selectField.style.display = checkbox.checked ? "block" : "none";
+        if (checkbox.classList.contains('bg-primary')) {
+            checkbox.classList.remove('bg-primary');
+            checkbox.classList.add('bg-secondary');
+        } else {
+            checkbox.classList.remove('bg-secondary');
+            checkbox.classList.add('bg-primary');
+        }
     });
     });
 </script>

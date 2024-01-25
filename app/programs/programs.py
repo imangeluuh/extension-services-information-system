@@ -23,6 +23,7 @@ load_dotenv(dotenv_path=env_path)
 
 # ============== Admin/Faculty views ===========================
 
+
 # Function to add project team input to dictionary
 def getProjectTeamInput(selected_values, choices):
     project_team ={}
@@ -38,7 +39,25 @@ def saveImage(image, imagepath):
     # Upload image to imagekit
     return uploadImage(imagepath, imagename)
 
-@cache.cached(timeout=1800, key_prefix='getPrograms')
+
+# def getResearchData():
+#     headers = {
+#         'Content-Type': 'application/json'  # Adjust content type as needed
+#     }
+#     token_response = requests.get(os.getenv('RIS_AUTH_API'), headers=headers)
+#     data = token_response.json()
+
+#     # Set up headers with the API key in the 'API Key' authorization header
+#     headers = {
+#         'Authorization': f"Bearer {data['result']['access_token']}",  
+#         'Content-Type': 'application/json'  # Adjust content type as needed
+#     }
+#     url = os.getenv('RIS_FOR_API')
+
+#     response = requests.get(url, headers=headers)
+#     print(response.json())
+
+# @cache.cached(timeout=1800, key_prefix='getPrograms')
 def getPrograms():
     return ExtensionProgram.query.all()
 
@@ -150,6 +169,8 @@ def insertExtensionProgram():
                                 EndDate = form.project.end_date.data,
                                 ImpactStatement = form.project.impact_statement.data,
                                 Objectives = form.project.objectives.data,
+                                ResearchBased = form.project.research_based.data if form.project.research_based.data else False,
+                                ResearchId = form.project.research_title.data if form.project.research_based.data and form.project.research_title.data else None,
                                 ImageUrl=str_image_url,
                                 ImageFileId=str_image_file_id,
                                 ProjectProposalUrl = str_proposal_url,
@@ -285,7 +306,6 @@ def deleteExtensionProgram(id):
 
     return redirect(url_for('programs.programs'))
 
-
 @bp.route('/extension-program/project/insert', methods=['POST'])
 @login_required(role=["Admin", "Faculty"])
 def insertProject():
@@ -344,6 +364,8 @@ def insertProject():
                                     EndDate = form.end_date.data,
                                     ImpactStatement = form.impact_statement.data,
                                     Objectives = form.objectives.data,
+                                    ResearchBased = form.research_based.data if form.research_based.data else False,
+                                    ResearchId = form.research_title.data if form.research_based.data and form.research_title.data else None,
                                     ImageUrl=str_image_url,
                                     ImageFileId=str_image_file_id,
                                     ProjectProposalUrl = str_proposal_url,
@@ -372,7 +394,6 @@ def insertProject():
         if form.errors != {}: # If there are errors from the validations
             for field, error in form.errors.items():
                 flash(f"Field '{field}' has an error: {error}", category='error')
-    print('goodbye')
     return redirect(url_for("programs.programs"))
 
 
@@ -466,6 +487,8 @@ def updateProject(id):
         extension_project.EndDate = form.end_date.data
         extension_project.ImpactStatement = form.impact_statement.data
         extension_project.Objectives = form.objectives.data
+        extension_project.ResearchBased = form.research_based.data if form.research_based.data else False
+        extension_project.ResearchId = form.research_title.data if form.research_based.data and form.research_title else None
 
         # Edit budget
         ids = request.form.getlist('id')

@@ -121,6 +121,20 @@
     $('body').on('click', '.remove-item', function() {
         $(this).closest('.budget').remove();
     });
+
+    const checkbox = document.getElementById("checkbox");
+    const selectField = document.getElementById("research-title");
+
+    checkbox.addEventListener("change", () => {
+        selectField.style.display = checkbox.checked ? "block" : "none";
+        if (checkbox.classList.contains('bg-primary')) {
+            checkbox.classList.remove('bg-primary');
+            checkbox.classList.add('bg-secondary');
+        } else {
+            checkbox.classList.remove('bg-secondary');
+            checkbox.classList.add('bg-primary');
+        }
+    });
     });
 </script>
 
