@@ -77,7 +77,9 @@
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                     <a href="{{url_for('user.profile')}}" class="dropdown-item">Profile</a>
                     <div class="dropdown-divider"></div>
+                    {% if current_user.RoleId == 2 %}
                     <a href="{{url_for('user.changePassword')}}" class="dropdown-item">Change Password</a>
+                    {% endif %}
                     <a href="{{url_for('auth.logout')}}" class="dropdown-item">Logout</a>
                 </div>
             </div>
