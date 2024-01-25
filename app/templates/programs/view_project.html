@@ -77,6 +77,7 @@ object-fit: cover;">
                             {% include 'programs/delete_project.html' %}
                             {% endif %}
                         </div>
+                        {% if project.ResearchBased %}
                         <div class="tags-list mb-3">
                             <span class="tag border border-2 border-secondary p-1 me-2">
                                 <small class="text-secondary">Research-based Project</small>
@@ -87,6 +88,7 @@ object-fit: cover;">
                                 <small class="text-secondary">Research Title: {{project.Research.title}}</small>
                             </span>
                         </div>
+                        {% endif %}
                         <div class="col-auto col-md-2">
                             <div class="datagrid-title">Extension Project ID</div>
                             <div class="datagrid-content">{{project.ProjectId}}</div>
