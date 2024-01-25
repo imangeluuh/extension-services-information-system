@@ -263,6 +263,12 @@ class Project(db.Model):
             .count()
         return participants_count
 
+# class ProjectTeam(db.Model):
+#     ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId'), primary_key=True)
+#     FacultyId = db.Column(db.Integer, db.ForeignKey('FISFaculty.FacultyId'), primary_key=True)
+#     Project = db.relationship('Project', back_populates='ProjectTeam', passive_deletes=True)
+#     Faculty = db.relationship('Faculty', back_populates='ProjectTeam', passive_deletes=True)
+
 # Course List
 class Course(db.Model):
     __tablename__ = 'SPSCourse'
