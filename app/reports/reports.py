@@ -12,7 +12,7 @@ from folium.plugins import MarkerCluster
 @bp.route('/extensio-programs-report')
 @login_required(role=["Admin"])
 def extensionPrograms():
-    extension_programs = ExtensionProgram.query.order_by(ExtensionProgram.ExtensionProgramId.asc()).all()
+    extension_programs = ExtensionProgram.query.filter_by(IsArchived=False).order_by(ExtensionProgram.ExtensionProgramId.asc()).all()
     ext_program = extension_programs[0]
     
     return render_template('reports/extension_program.html'
@@ -23,6 +23,48 @@ def extensionPrograms():
 @login_required(role=["Admin"])
 def programParticipation():    
     return render_template('reports/program_participation.html')
+
+@bp.route('/project-expense')
+@login_required(role=["Admin"])
+def projectExpense():    
+    extension_programs = ExtensionProgram.query.filter_by(IsArchived=False).order_by(ExtensionProgram.ExtensionProgramId.asc()).all()
+    ext_program = extension_programs[0]
+    
+    return render_template('reports/expend_reports.html'
+                        , ext_program=ext_program
+                        , extension_programs=extension_programs)
+
+@bp.route('/get-expense')
+@login_required(role=["Admin"])
+def getExpense():
+    filter_value = int(request.args.get("program"))
+
+    if filter_value:
+        ext_program = ExtensionProgram.query.filter_by(ExtensionProgramId=filter_value, IsArchived=False).first()
+        projects = ext_program.Projects
+        print(projects)
+        project_title = []
+        project_budget = []
+        project_expense = []
+        project_remaining = []
+
+        for project in projects:
+            project_title.append(project.Title)
+            project_budget.append(float(project.totalBudget()))
+            project_expense.append(float(project.totalExpense()))
+            project_remaining.append(round(float(project.totalBudget())-float(project.totalExpense()),2))
+
+        print(project_title)
+        print(project_budget)
+        print(project_expense)
+        print(project_remaining)
+
+    return render_template('reports/project_expense.html', ext_program=ext_program
+                                                        , projects=projects
+                                                        , project_title=project_title
+                                                        , project_budget=project_budget
+                                                        , project_expense=project_expense
+                                                        , project_remaining=project_remaining)
 
 @bp.route('/get-details')
 @login_required(role=["Admin"])

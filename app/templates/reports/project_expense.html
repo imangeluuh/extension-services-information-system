@@ -1,0 +1,87 @@
+<div class="row w-100">
+    <div class="card p-3">
+        <h5 class="page-title mb-4" style="font-size: 15px">Comparison of Budget, Remaining Budget, and Total Expense for Each Project</h5>
+        <div id="chart" style="width: 100%; height: 300px; margin-top: 0px"></div>
+    </div>
+</div>
+<div id="table-card" class="card p-4 w-100 mt-3 ">
+    <table id="projects" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+        <thead>
+            <tr>
+                <th class="text-start title">Title</th>
+                <th class="text-start lead">Project Budget</th>
+                <th class="text-start agency">Total Expense</th>
+                <th class="text-start time">Remaining Budget</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+            <tr>
+                <td class="title">{{project.Title}}</td>
+                <td class="lead">{{project.totalBudget()}}</td>
+                <td class="agency">{{project.totalExpense()}}</td>
+                <td class="time">{{project.totalBudget()}} - {{project.totalExpense()}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="{{url_for('static', filename='js/project_expense_table.js')}}"></script>
+<script>
+    var chart = echarts.init(document.getElementById('chart'));
+
+option = {
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  legend: {
+    data: ['Total Budget', 'Remaining Budget', 'Total Expense']
+  },
+  xAxis: {
+    type: 'category',
+    data: [{% for title in project_title %}'{{title}}',{% endfor %}]
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [
+    {
+      name: 'Total Budget',
+      type: 'bar',
+      stack: 'budget',
+      data: [
+      {% for budget in project_budget %}
+        {{budget}},
+        {% endfor %}
+      ]
+    },
+    {
+      name: 'Remaining Budget',
+      type: 'bar',
+      stack: 'budget',
+      data: [
+      {% for remaining in project_remaining %}
+        {{remaining}},
+        {% endfor %}
+      ]
+    },
+    {
+      name: 'Expense',
+      type: 'bar',
+      stack: 'budget',
+      data: [
+      {% for expense in project_expense %}
+        {{expense}},
+        {% endfor %}
+      ]
+    }
+  ]
+};
+
+chart.setOption(option);
+
+</script>

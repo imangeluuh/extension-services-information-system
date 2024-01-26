@@ -250,6 +250,10 @@ class Project(db.Model):
         # Calculates and returns the total budget for the project.
         return sum(budget.Amount for budget in self.Budget)
     
+    def totalExpense(self):
+        # Calculates and returns the total budget for the project.
+        return sum(item.Amount for item in self.Item)
+    
     def get_participants_count_for_month(self, month_info):
         participants_count = Attendance.query \
             .join(Activity, Attendance.ActivityId == Activity.ActivityId) \
