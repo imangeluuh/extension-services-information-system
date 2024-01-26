@@ -245,7 +245,7 @@ class Project(db.Model):
     Activity = db.relationship("Activity", back_populates="Project", cascade='all, delete-orphan')
     Budget = db.relationship('Budget', back_populates='Project', cascade='all, delete-orphan')
     Item = db.relationship('Item', back_populates='Project', cascade='all, delete-orphan')
-    Research = db.relationship('ResearchPaper', backref='Research')
+    Research = db.relationship('ResearchPaper', backref='Project')
     def totalBudget(self):
         # Calculates and returns the total budget for the project.
         return sum(budget.Amount for budget in self.Budget)

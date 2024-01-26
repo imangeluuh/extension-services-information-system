@@ -102,6 +102,7 @@
                                 {{ form.project_proposal(class="form-control")}}
                             </div>
                         </div>
+                        <!-- {%#if form.research_title.choices != [] #}
                         <div class="col-12 col-md-12">
                             <div class="mb-3 d-flex">
                                 <div class="form-check form-switch">
@@ -112,14 +113,15 @@
                         </div>
                         <div  class="col-12 col-md-23" >
                             <div class="mb-3" id="research-title" style="display: none;">
-                                {{form.research_title.label(class="form-label")}}
-                                <select id="{{form.research_title.id}}" name="{{form.research_title.name}}" class="form-select">
-                                {% for choice in form.research_title.choices %}
-                                <option value="{{choice[0]}}">{{choice[1]}}</option>
-                                {% endfor %}
+                                {#form.research_title.label(class="form-label")#}
+                                <select id="{#form.research_title.id#}" name="{#form.research_title.name#}" class="form-select">
+                                {# for choice in form.research_title.choices #}
+                                <option value="{#choice[0]#}">{#choice[1]#}</option>
+                                {# endfor #}
                                 </select>
                             </div>
                         </div>
+                        {# endif #} -->
                         <div class="col-12 col-md-6">
                             <div class="mb-3">
                                 <label for="approved_budget" class="form-label">Budget Amount</label>
