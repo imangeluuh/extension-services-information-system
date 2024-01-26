@@ -71,7 +71,7 @@ activity_model = api.model("Activity", {
     # "EndTime": fields.DateTime(dt_format='%H:%M:%S'),
     "Description": fields.String,
     "ImageUrl": fields.String,
-    "Speaker": fields.Raw,
+    # "Speaker": fields.Raw,
     "Location": fields.Nested(location_model),
 })
 
