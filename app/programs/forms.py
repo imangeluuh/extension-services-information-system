@@ -40,7 +40,7 @@ class ProjectForm(FlaskForm):
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
     project_proposal = FileField('Project Proposal', validators=[FileAllowed(['docx', 'pdf', 'docs'])])
     research_based = BooleanField('Research-based Project')
-    # research_title = SelectField('Research Title')
+    research_title = SelectField('Research Title')
     extension_program = HiddenField()
     submit = SubmitField("Save Project")
 
@@ -50,7 +50,7 @@ class ProjectForm(FlaskForm):
         with current_app.app_context():
             self.collaborator.choices = [(collaborator.CollaboratorId, collaborator.Organization) for collaborator in Collaborator.query.all()]
             self.project_team.choices = [(str(faculty.FacultyId), faculty.FirstName + ' ' + faculty.LastName) for faculty in Faculty.query.all()]
-            # self.research_title.choices = [(research.id, research.title) for research in ResearchPaper.query.filter_by(extension="For Extension").all()]
+            self.research_title.choices = [(research.id, research.title) for research in ResearchPaper.query.filter_by(extension="For Extension").all()]
 
 class ActivityForm(FlaskForm):
     activity_name = StringField("Activity Name", validators=[DataRequired()])
