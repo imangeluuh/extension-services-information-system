@@ -16,7 +16,7 @@ class AnnouncementForm(FlaskForm):
     publish = SubmitField("Publish") 
     draft = SubmitField("Save as Draft") 
     medium = BooleanField("Email")
-    recipient = MultiCheckboxField("Recipient", choices=[('2', 'Beneficiaries'), ('3', 'Students')])
+    recipient = MultiCheckboxField("Recipient", choices=[('2', 'Beneficiaries'), ('3', 'Students'), ('5', 'Alumni')])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
 
     def __init__(self, *args, **kwargs):

@@ -1,12 +1,15 @@
+{% if current_user.RoleId == 1 %}
+{% extends 'admin/base.html' %}
+{% else %}
 {% extends 'base.html' %}
-
+{% endif %}
 {% block head %}
 <title>PUPQC Extension Programs</title>
 
 {% endblock %}
 
 {% block content %}
-<div class="page-header d-print-none">
+<div class="page-header d-print-none mb-3">
     <div class="container-xl">
         <div class="row g-2 align-items-center">
             <div class="col">
@@ -20,6 +23,7 @@
 <div class="page-body">
     <div class="container-xl">
         <div class="row g-4">
+            {% if extension_programs %}
             {% for ext_program in extension_programs %}
             <div class="col-sm-6 col-lg-4">
             <a href="{{ url_for('programs.extensionProgram', id=ext_program.ExtensionProgramId) }}" class="text-decoration-none ">
@@ -40,6 +44,9 @@
             </a>
             </div>
             {% endfor %}
+            {% else %}
+            No extension programs found.
+            {% endif %}
         </div>
     </div>
 </div>

@@ -62,6 +62,27 @@ def saveImage(image, imagepath):
 def getPrograms():
     return ExtensionProgram.query.filter_by(IsArchived=False).all()
 
+
+@bp.route('archived/extension-programs')
+@login_required(role=["Admin"])
+def archivedExtensionPrograms():
+    extension_programs = ExtensionProgram.query.filter_by(IsArchived=True).all()
+    programs = Course.query.all()
+    agendas = Agenda.query.all()
+    return render_template('programs/ext_programs_list.html', extension_programs=extension_programs, programs=programs, agendas=agendas)
+
+@bp.route('archived/projects')
+@login_required(role=["Admin"])
+def archivedProjects():
+    projects = Project.query.filter_by(IsArchived=True).all()
+    return render_template('programs/projects_list.html', projects=projects)
+
+@bp.route('archived/activities')
+@login_required(role=["Admin"])
+def archivedActivities():
+    activities = Activity.query.filter_by(IsArchived=True).order_by(Activity.Date.desc()).all()
+    return render_template('programs/activities.html', activities=activities)
+
 @bp.route('/pupqc/extension-programs')
 @login_required(role=["Admin", "Faculty"])
 def programs():
