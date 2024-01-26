@@ -60,7 +60,7 @@ def saveImage(image, imagepath):
 
 # @cache.cached(timeout=1800, key_prefix='getPrograms')
 def getPrograms():
-    return ExtensionProgram.query.all()
+    return ExtensionProgram.query.filter_by(IsArchived=False).all()
 
 @bp.route('/pupqc/extension-programs')
 @login_required(role=["Admin", "Faculty"])
@@ -76,7 +76,7 @@ def programs():
 def viewExtensionProgram(id):
     ext_program_form = ProgramForm()
     form = ProjectForm()
-    ext_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
+    ext_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id, IsArchived=False).first()
 
     # fill the edit form with extension program details
     ext_program_form.program_name.data = ext_program.Name
@@ -252,7 +252,7 @@ def insertExtensionProgram():
 @login_required(role=["Admin", "Faculty"])
 def updateExtensionProgram(id):
     form = ProgramForm()
-    extension_program = ExtensionProgram.query.get_or_404(id)
+    extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id, IsArchived=False)
     if form.validate_on_submit():
         if form.image.data is not None:
             # If extension program has previous image, remove it from imagekit
@@ -298,7 +298,7 @@ def updateExtensionProgram(id):
 def deleteExtensionProgram(id):
     extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
     try:
-        db.session.delete(extension_program)
+        extension_program.IsArchived = True
         db.session.commit()
         flash('Extension program is successfully deleted.', category='success')
     except Exception as e:
@@ -403,11 +403,11 @@ def insertProject():
 def viewProject(id):
     form = ProjectForm()
     activity_form = ActivityForm()
-    project = Project.query.get_or_404(id)
+    project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
     project_budget = Budget.query.filter_by(ProjectId=id).all()
     registered = Registration.query.filter_by(ProjectId=project.ProjectId).all()
     # for calendar - temp
-    events = Activity.query.filter_by(ProjectId=id).all()
+    events = Activity.query.filter_by(ProjectId=id, IsArchived=False).all()
     
     form.title.data = project.Title
     form.implementer.data = project.Implementer
@@ -426,7 +426,7 @@ def viewProject(id):
 @login_required(role=["Admin", "Faculty"])
 def updateProject(id):
     form = ProjectForm()
-    extension_project = Project.query.get_or_404(id)
+    extension_project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
     project_budget = Budget.query.filter_by(ProjectId=id).all()
     if form.validate_on_submit():
         if form.image.data is not None:
@@ -538,18 +538,14 @@ def updateProject(id):
 @bp.route('/delete/project/<int:id>', methods=['POST'])
 @login_required(role=["Admin", "Faculty"])
 def deleteProject(id):
-    project = Project.query.get_or_404(id)
+    project = Project.query.filter_by(ProjectId=id).first()
     ext_program_id = project.ExtensionProgram.ExtensionProgramId
     try:
-        if project.ImageFileId is not None:
-            status = purgeImage(project.ImageFileId)
-        if project.ProjectProposalFileId is not None:
-            status = purgeImage(project.ProjectProposalFileId)
-        db.session.delete(project)
+        project.IsArchived = True
         db.session.commit()
         flash('Extension project is successfully deleted.', category='success')
     except Exception as e:
-        flash(f'There was an issue deleting the extension project. {e}', category='error')
+        flash('There was an issue deleting the extension project.', category='error')
 
     return redirect(url_for('programs.viewExtensionProgram', id=ext_program_id))
 
@@ -616,7 +612,7 @@ def insertActivity(id):
 @login_required(role=["Admin", "Faculty"])
 def updateActivity(id):
     form = ActivityForm()
-    activity = Activity.query.filter_by(ActivityId=id).first()
+    activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
     if form.validate_on_submit():
         if form.image.data is not None:
             # If extension project has previous image, remove it from imagekit
@@ -682,12 +678,10 @@ def updateActivity(id):
 @bp.route('/delete/activity/<int:id>', methods=['POST'])
 @login_required(role=["Admin", "Faculty"])
 def deleteActivity(id):
-    activity = Activity.query.get_or_404(id)
+    activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
     project_id = activity.ProjectId
     try:
-        if activity.ImageFileId is not None:
-            status = purgeImage(activity.ImageFileId)
-        db.session.delete(activity)
+        activity.IsArchived = True
         db.session.commit()
         flash('Activity is successfully deleted.', category='success')
     except Exception as e:
@@ -699,7 +693,7 @@ def deleteActivity(id):
 @login_required(role=["Admin", "Faculty"])
 def viewActivity(id):
     activity_form = ActivityForm()
-    activity = Activity.query.get_or_404(id)
+    activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
     attendance = Attendance.query.filter_by(ActivityId=id).all()
     current_date = datetime.utcnow().date()
     return render_template('programs/view_activity.html', activity=activity, attendance=attendance, activity_form=activity_form, current_date=current_date)
@@ -708,12 +702,12 @@ def viewActivity(id):
 @bp.route('/calendar')
 @login_required(role=["Admin", "Faculty"])
 def calendar():
-    projects = Project.query.all()
+    projects = Project.query.filter_by(IsArchived=False).all()
     selected_project_id = request.args.get('project_id', None)
     # Call a function to fetch activities based on the selected project
-    activities = Activity.query.all()
+    activities = Activity.query.filter_by(IsArchived=False).all()
     if selected_project_id:
-        activities = Activity.query.filter_by(ProjectId=selected_project_id).order_by(Activity.Date.asc()).all()
+        activities = Activity.query.filter_by(ProjectId=selected_project_id, IsArchived=False).order_by(Activity.Date.asc()).all()
     
     return render_template('programs/activity_calendar.html', projects=projects, events=activities, selected_project_id=selected_project_id)
 
@@ -723,16 +717,16 @@ def calendar():
 def budgetAllocation():
     projects = None 
     if current_user.Role.RoleName == "Faculty":
-        projects = Project.query.filter_by(LeadProponentId= current_user.UserId).all()
+        projects = Project.query.filter_by(LeadProponentId=current_user.UserId, IsArchived=False).all()
     else:
-        projects = Project.query.all()
+        projects = Project.query.filter_by(IsArchived=False).all()
     return render_template('programs/budget_allocation.html', projects=projects)
 
 @bp.route('/budget-allocation/<int:id>', methods=['GET', 'POST'])
 @login_required(role=["Admin", "Faculty"])
 def projectBudget(id):
     form = ItemForm()
-    project = Project.query.filter_by(ProjectId=id).first()
+    project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
     to_be_purchased_items = []
     purchased_items = []
     if project.Item:
@@ -942,7 +936,7 @@ def cert(id):
 @bp.route('/extension-programs')
 @role_excluded(role=["Admin", "Faculty"])
 def extensionPrograms():
-    extension_programs = ExtensionProgram.query.all()
+    extension_programs = ExtensionProgram.query.filter_by(IsArchived=False).all()
     programs = Course.query.all()
     agendas = Agenda.query.all()
     return render_template('programs/ext_programs_list.html', extension_programs=extension_programs, programs=programs, agendas=agendas)
@@ -950,11 +944,12 @@ def extensionPrograms():
 @bp.route('/extension-program/view/<int:id>')
 @role_excluded(role=["Admin", "Faculty"])
 def extensionProgram(id):
-    extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
-    projects = Project.query.filter_by(ExtensionProgramId=id).order_by(Project.EndDate.desc()).all()
+    extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id, IsArchived=False).first()
+    projects = Project.query.filter_by(ExtensionProgramId=id, IsArchived=False).order_by(Project.EndDate.desc()).all()
     project_ids = [project.ProjectId for project in projects]
     events = Activity.query.filter(Activity.ProjectId.in_(project_ids),
-                                    Activity.Date>datetime.utcnow().date()).order_by(Activity.Date.desc()).limit(5).all()
+                                    Activity.Date>datetime.utcnow().date(),
+                                    Activity.IsArchived==False).order_by(Activity.Date.desc()).limit(5).all()
     current_date = datetime.utcnow().date()
     # Get all the faculty in each project in current extension program
     project_team = getProjectTeam(projects)
@@ -965,14 +960,14 @@ def extensionProgram(id):
 @bp.route('/projects')
 @role_excluded(role=["Admin", "Faculty"])
 def projects():
-    projects = Project.query.all()
+    projects = Project.query.filter_by(IsArchived=False).all()
     return render_template('programs/projects_list.html', projects=projects)
 
 @bp.route('/projects/<int:id>')
 @role_excluded(role=["Admin", "Faculty"])
 def project(id):
-    project = Project.query.filter_by(ProjectId=id).first()
-    activities = Activity.query.filter_by(ProjectId=id).order_by(Activity.Date.desc()).all()
+    project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
+    activities = Activity.query.filter_by(ProjectId=id, IsArchived=False).order_by(Activity.Date.desc()).all()
     events = [activity for activity in activities if activity.Date > datetime.utcnow().date()]
     # arrange upcoming activities in ascending order
     events.reverse()
@@ -1020,17 +1015,18 @@ def cancelRegistration(project_id):
 @bp.route('/activities')
 @role_excluded(role=["Admin", "Faculty"])
 def activities():
-    activities = Activity.query.order_by(Activity.Date.desc()).all()
+    activities = Activity.query.filter_by(IsArchived=False).order_by(Activity.Date.desc()).all()
     return render_template('programs/activities.html', activities=activities)
 
 @bp.route('/activities/<int:id>')
 @role_excluded(role=["Admin", "Faculty"])
 def activity(id):
-    activity = Activity.query.filter_by(ActivityId=id).first()
+    activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
     current_date = datetime.utcnow().date()
     suggestions = Activity.query.filter(Activity.Date > current_date,
                                         Activity.ProjectId==activity.ProjectId,
-                                        Activity.ActivityId!=activity.ActivityId ).order_by(func.random()).limit(3).all()
+                                        Activity.ActivityId!=activity.ActivityId,
+                                         Activity.IsArchived==False ).order_by(func.random()).limit(3).all()
     evaluation_id = None
     bool_is_evaluation_taken = False
     if current_user.is_authenticated and current_user.Role.RoleId==2:
@@ -1042,7 +1038,7 @@ def activity(id):
 
 @bp.route('/activities/<int:id>/map')
 def activity_map(id):
-    activity = Activity.query.filter_by(ActivityId=id).first()
+    activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
 
     # Create a map with a marker for the activity location
     mapObj = folium.Map(location=[float(activity.Location.Latitude), float(activity.Location.Longitude)], zoom_start=15, tiles=None)
@@ -1067,14 +1063,14 @@ def activity_map(id):
 @bp.route('/project/management/<int:id>')
 @login_required(role=["Student"])
 def studentProjectManage(id):
-    project = Project.query.filter_by(ProjectId=id).first()
+    project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
     return render_template('programs/student_manager.html', project=project)
 
 @bp.route('project/<int:project_id>/activity/<int:activity_id>/attendance')
 @login_required(role=["Student"])
 def manageAttendance(project_id, activity_id):
-    project = Project.query.filter_by(ProjectId=project_id).first()
-    activity = Activity.query.filter_by(ActivityId=activity_id).first()
+    project = Project.query.filter_by(ProjectId=project_id, IsArchived=False).first()
+    activity = Activity.query.filter_by(ActivityId=activity_id, IsArchived=False).first()
     attendance = [attendance.UserId for attendance in Attendance.query.filter_by(ActivityId=activity_id).all()]
     registered_users = Registration.query.filter_by(ProjectId=project_id).all()
     beneficiaries = []
