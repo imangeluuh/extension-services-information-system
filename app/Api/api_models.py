@@ -101,7 +101,7 @@ extension_project_model = api.model("ExtensionProject", {
     "ProjectProposalUrl": fields.String,
     "LeadProponent": fields.Nested(user_model),
     "Collaborator": fields.Nested(collaborator_model),
-    "Activity": fields.List(fields.Nested(activity_model)),
+    # "Activity": fields.List(fields.Nested(activity_model)),
 })
 
 course_model = api.model("Course", {
