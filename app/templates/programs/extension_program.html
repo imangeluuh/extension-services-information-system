@@ -138,7 +138,9 @@
             <span class="fs-1 fw-bold">Upcoming Activities</span>
             <hr class="mt-2 mb-3">
             {% for event in events %}
-            {% include 'components/_event.html' %}
+            <div class="mb-2">
+                {% include 'components/_event.html' %}
+            </div>
             {% endfor %}
         </div>
     </section>

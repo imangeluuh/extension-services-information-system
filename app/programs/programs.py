@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os, folium
 from folium.plugins import MarkerCluster
+from ..email import certificate
 
 env_path = Path(".") / ".env"
 load_dotenv(dotenv_path=env_path)
@@ -190,7 +191,7 @@ def insertExtensionProgram():
             budget_to_add = Budget(FundType=fund_type,
                                     Amount=approved_budget,
                                     ProjectId=int_project_id,
-                                    CollaboratorId=form.collaborator.data if fund_type=='External' else None)
+                                    CollaboratorId=form.project.collaborator.data if fund_type=='External' else None)
             db.session.add(budget_to_add)
 
         # Insert Activity
@@ -711,6 +712,8 @@ def calendar():
     selected_project_id = request.args.get('project_id', None)
     # Call a function to fetch activities based on the selected project
     activities = Activity.query.all()
+    if selected_project_id:
+        activities = Activity.query.filter_by(ProjectId=selected_project_id).order_by(Activity.Date.asc()).all()
     
     return render_template('programs/activity_calendar.html', projects=projects, events=activities, selected_project_id=selected_project_id)
 
@@ -859,71 +862,77 @@ def assignStudent():
 @bp.route('/cert/<int:id>', methods=['GET', 'POST'])
 @login_required(role=["Admin", "Faculty"])
 def cert(id):
-    fillpdfs.get_form_fields(os.path.join(current_app.config["UPLOAD_FOLDER"], "e-cert (beneficiary) (FILLABLE).pdf"))
+    certificate(id)
+    # fillpdfs.get_form_fields(os.path.join(current_app.config["UPLOAD_FOLDER"], "e-cert (beneficiary) (FILLABLE).pdf"))
     # Get all the registered beneficiaries in the project
-    beneficiaries_id = [registration.UserId for registration in Registration.query.filter_by(ProjectId=id).all()]
-    registered_beneficiaries = [User.query.filter_by(UserId=beneficiary_id).first() for beneficiary_id in beneficiaries_id]
+    # beneficiaries_id = [registration.UserId for registration in Registration.query.filter_by(ProjectId=id).all()]
+    # registered_beneficiaries = [User.query.filter_by(UserId=beneficiary_id).first() for beneficiary_id in beneficiaries_id]
+    # beneficiaries = [registration.User for registration in Registration.query.filter_by(ProjectId=id).all() if registration.User.RoleId == 2]
+    # print(beneficiaries)
+    # for user in beneficiaries:
+    #     print(user.Beneficiary.FirstName)
+    # # Get the project proponent's name for the certificate
+    # project = Project.query.filter_by(ProjectId=id).first()
+    # project_proponent = User.query.filter_by(UserId=project.LeadProponentId).first()
+    # proponent_name = project_proponent.Faculty.FirstName + ' '
+    # if project_proponent.Faculty.MiddleName:
+    #     proponent_name += project_proponent.Faculty.MiddleName[0] + '. '
+    # proponent_name += project_proponent.Faculty.LastName
+
+    # # Get the extension program's name for the certificate
+    # extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=project.ExtensionProgramId).first()
     
-    # Get the project proponent's name for the certificate
-    project = Project.query.filter_by(ProjectId=id).first()
-    project_proponent = User.query.filter_by(UserId=project.LeadProponentId).first()
-    proponent_name = project_proponent.Faculty.FirstName + ' '
-    if project_proponent.Faculty.MiddleName:
-        proponent_name += project_proponent.Faculty.MiddleName[0] + '. '
-    proponent_name += project_proponent.Faculty.LastName
-
-    # Get the extension program's name for the certificate
-    extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=project.ExtensionProgramId).first()
-    
-    # Generate certificate for each beneficiary registered in the project
-    for beneficiary in registered_beneficiaries:
-        # Get the name of the beneficiary for the certificate
-        beneficiary_name = beneficiary.Beneficiary.FirstName + ' '
-        if beneficiary.Beneficiary.MiddleName:
-            beneficiary_name += beneficiary.Beneficiary.MiddleName[0] + '. '
-        beneficiary_name += beneficiary.Beneficiary.LastName
-        data_dict = {'Text-n_L-ntAGRy': beneficiary_name,
-                    'Text-Pnb29VfGWk': extension_program.Name,
-                    'Date-jWSJ8ZAYJ_': datetime.utcnow(),
-                    'Text-tf2etyjp87': proponent_name,
-                    'Text-bcixq7yk8z': 'Jaime P. Gutierrez, Jr.'}
+    # # Generate certificate for each beneficiary registered in the project
+    # for beneficiary in registered_beneficiaries:
+    #     # Get the name of the beneficiary for the certificate
+    #     beneficiary_name = beneficiary.Beneficiary.FirstName + ' '
+    #     if beneficiary.Beneficiary.MiddleName:
+    #         beneficiary_name += beneficiary.Beneficiary.MiddleName[0] + '. '
+    #     beneficiary_name += beneficiary.Beneficiary.LastName
+    #     data_dict = {'Text-n_L-ntAGRy': beneficiary_name,
+    #                 'Text-Pnb29VfGWk': extension_program.Name,
+    #                 'Date-jWSJ8ZAYJ_': datetime.utcnow(),
+    #                 'Text-tf2etyjp87': proponent_name,
+    #                 'Text-bcixq7yk8z': 'Jaime P. Gutierrez, Jr.'}
         
-        # Get the initials of the beneficiary
-        beneficiary_initials = ''.join([word[0] for word in beneficiary_name.split()])
-        # Fill the pdf with the required information
-        filepath = os.path.join(current_app.root_path, "media") + "\\" + extension_program.Name + "-" + beneficiary_initials + " CERTIFICATE.pdf"
-        fillpdfs.write_fillable_pdf(os.path.join(current_app.config["UPLOAD_FOLDER"], "e-cert (beneficiary) (FILLABLE).pdf"), filepath, data_dict, flatten=True)
+    #     # Get the initials of the beneficiary
+    #     beneficiary_initials = ''.join([word[0] for word in beneficiary_name.split()])
+    #     # Fill the pdf with the required information
+    #     filepath = os.path.join(current_app.root_path, "media") + "\\" + extension_program.Name + "-" + beneficiary_initials + " CERTIFICATE.pdf"
+    #     fillpdfs.write_fillable_pdf(os.path.join(current_app.config["UPLOAD_FOLDER"], "e-cert (beneficiary) (FILLABLE).pdf"), filepath, data_dict, flatten=True)
 
-        # Upload cert pdf to cloud
-        status = uploadImage(filepath, extension_program.Name + "-" + beneficiary_initials + " CERTIFICATE.pdf")
+    #     # Upload cert pdf to cloud
+    #     status = uploadImage(filepath, extension_program.Name + "-" + beneficiary_initials + " CERTIFICATE.pdf")
 
-        # Get the url and file id of the uploaded certificate
-        str_cert_url = None
-        str_cert_file_id = None
-        if status.error is not None:
-            flash("Error in releasing certificates", category="error")
-            return url_for('programs.viewProject', id=id)
-        else:
-            str_cert_url = status.url
-            str_cert_file_id = status.file_id
+    #     # Get the url and file id of the uploaded certificate
+    #     str_cert_url = None
+    #     str_cert_file_id = None
+    #     if status.error is not None:
+    #         flash("Error in releasing certificates", category="error")
+    #         return url_for('programs.viewProject', id=id)
+    #     else:
+    #         str_cert_url = status.url
+    #         str_cert_file_id = status.file_id
 
-        # Delete file from local storage after uploading to cloud
-        if os.path.exists(filepath):
-            os.remove(filepath)
+    #     # Delete file from local storage after uploading to cloud
+    #     if os.path.exists(filepath):
+    #         os.remove(filepath)
 
-        # Save certificate to database
-        cert_to_add = Certificate(CertificateUrl=str_cert_url, 
-                                CertificateFileId = str_cert_file_id, 
-                                UserId=beneficiary.UserId, 
-                                ProjectId=id)
+    #     # Save certificate to database
+    #     cert_to_add = Certificate(CertificateUrl=str_cert_url, 
+    #                             CertificateFileId = str_cert_file_id, 
+    #                             UserId=beneficiary.UserId, 
+    #                             ProjectId=id)
         
-        db.session.add(cert_to_add)
-    try:
-        db.session.commit()
-        flash('Certificate is successfully released', category='success')
-    except Exception as e:
-        print(e)
-    return redirect(request.referrer)
+    #     db.session.add(cert_to_add)
+    # try:
+    #     db.session.commit()
+    #     flash('Certificate is successfully released', category='success')
+    # except Exception as e:
+    #     print(e)
+
+    flash('Releasing of certificates is in progress', category='info')
+    return redirect(url_for('programs.viewProject', id=id))
 
 
 # =========================================================
@@ -945,7 +954,7 @@ def extensionProgram(id):
     projects = Project.query.filter_by(ExtensionProgramId=id).order_by(Project.EndDate.desc()).all()
     project_ids = [project.ProjectId for project in projects]
     events = Activity.query.filter(Activity.ProjectId.in_(project_ids),
-                                    Activity.Date>datetime.utcnow().date()).order_by(Activity.Date.desc()).all()
+                                    Activity.Date>datetime.utcnow().date()).order_by(Activity.Date.desc()).limit(5).all()
     current_date = datetime.utcnow().date()
     # Get all the faculty in each project in current extension program
     project_team = getProjectTeam(projects)
@@ -967,6 +976,7 @@ def project(id):
     events = [activity for activity in activities if activity.Date > datetime.utcnow().date()]
     # arrange upcoming activities in ascending order
     events.reverse()
+    events = events[:5] # limit events to 5 data
     user_id = current_user.UserId if current_user.is_authenticated else None
     registration = Registration.query.filter_by(ProjectId=id, UserId=user_id).first()
     current_date = datetime.utcnow().date()

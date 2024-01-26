@@ -22,7 +22,6 @@
 </style>
 
 <div id="calendar" class="p-4 bg-white rounded-2 shadow"></div>
-
 <!-- Modal -->
 <!-- <div id="eventModal" class="modal">
         <div class="modal-content w-100 max-w-md">
@@ -37,18 +36,17 @@
 </div> -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>    
-    document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
         // Get all the activities
         let eventsData = [
             {% for event in events %}
             {
+                
                 title: '{{ event.ActivityName }}',
                 start: '{{ event.Date~'T'~event.StartTime }}', 
                 end: '{{ event.Date~'T'~event.EndTime }}', 
-                project: '{{ event.Project.Title }}', 
-                url: '{{ url_for("programs.activity", id=event.ActivityId) if current_user.is_authenticated and current_user.RoleId in [2, 3] else url_for("programs.viewProject", id=event.ProjectId)}}'
+                url: '{{ url_for("programs.viewActivity", id=event.ActivityId) if current_user.is_authenticated and current_user.RoleId in [1, 4] else url_for("programs.activity", id=event.ActivityId) }}'
             },
             {% endfor %}
         ];
@@ -63,6 +61,5 @@
             events: eventsData,
         });
         calendar.render();
-    });
 
 </script> 

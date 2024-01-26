@@ -17,9 +17,9 @@
         </div>  
         <div class="row d-flex">
             <div class="col-12 col-md-5 order-last d-flex justify-content-end " style="height: fit-content">
-                <div class="bg-white p-4 rounded-3 shadow" style="width: 95%">
+                <div class="bg-white p-3 rounded-3 shadow" style="width: 95%">
                     <form action="{{url_for('programs.calendar')}}"method="GET">
-                        <select name="project_id" id="projectFilter" class="d-block w-100 p-2border border-secondary-subtle  rounded-xl" onchange="this.form.submit()">
+                        <select name="project_id" id="projectFilter" class="d-block w-100 p-2 form-select" onchange="this.form.submit()">
                             <option value="">All Projects</option>
                             {% for project in projects %}
                                 <option value="{{ project.ProjectId }}">{{ project.Title }}</option>

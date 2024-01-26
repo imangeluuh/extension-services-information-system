@@ -325,7 +325,7 @@ class Activity(db.Model):
     Speaker = db.Column(db.JSON, nullable=False)
     IsArchived = db.Column(db.Boolean, default=False)
     LocationId = db.Column(db.Integer, db.ForeignKey('ESISLocation.LocationId', ondelete='CASCADE'))
-    ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), nullable=False)
+    ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), index=True, nullable=False)
     Project = db.relationship('Project', back_populates='Activity', passive_deletes='all')
     Location = db.relationship('Location', back_populates='Activity', passive_deletes='all')
     Evaluation = db.relationship("Evaluation", back_populates='Activity', cascade='all, delete-orphan', lazy=True)
@@ -399,10 +399,10 @@ class Registration(db.Model):
     __tablename__ = 'ESISRegistration'
 
     RegistrationId = db.Column(db.Integer, primary_key=True)
-    RegistrationDate = db.Column(db.Date, default=datetime.utcnow, nullable=False)
+    RegistrationDate = db.Column(db.Date, default=datetime.utcnow, index=True, nullable=False)
     IsAssigned = db.Column(db.Boolean, default=False, nullable=False)
-    ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), nullable=False)
-    UserId = db.Column(db.String(36), db.ForeignKey('ESISUser.UserId', ondelete='CASCADE'), nullable=False)
+    ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), index=True, nullable=False)
+    UserId = db.Column(db.String(36), db.ForeignKey('ESISUser.UserId', ondelete='CASCADE'), index=True, nullable=False)
     User = db.relationship('User', back_populates='Registration', passive_deletes=True)
 
 

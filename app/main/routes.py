@@ -21,5 +21,5 @@ def home():
             Announcement.IsLive
         ).order_by(Announcement.Created.desc()).limit(5).all()
     extension_programs = ExtensionProgram.query.all()
-    events = Activity.query.filter(Activity.Date > datetime.utcnow().date()).limit(5).all()
+    events = Activity.query.filter(Activity.Date > datetime.utcnow().date()).order_by(Activity.Date.asc()).limit(5).all()
     return render_template('index.html', latest_announcements=latest_announcements, extension_programs=extension_programs, events=events)
