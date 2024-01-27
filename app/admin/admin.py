@@ -22,19 +22,19 @@ def saveImage(image, imagepath):
     return uploadImage(imagepath, imagename)
 
 
-@cache.cached(timeout=600, key_prefix='getStatusCount')
-def getStatusCount():
-    current_date = datetime.utcnow().date()
+# @cache.cached(timeout=600, key_prefix='getStatusCount')
+# def getStatusCount():
+#     current_date = datetime.utcnow().date()
 
-    upcoming_projects = Project.query.filter(Project.StartDate > current_date).count()
-    ongoing_projects = Project.query.filter(Project.StartDate <= current_date, Project.EndDate >= current_date).count()
-    completed_projects = Project.query.filter(Project.EndDate < current_date).count()
+#     upcoming_projects = Project.query.filter(Project.StartDate > current_date).count()
+#     ongoing_projects = Project.query.filter(Project.StartDate <= current_date, Project.EndDate >= current_date).count()
+#     completed_projects = Project.query.filter(Project.EndDate < current_date).count()
 
-    upcoming_activities = Activity.query.filter(Activity.Date > current_date).count()
-    ongoing_activities = Activity.query.filter(Activity.Date <= current_date, Activity.Date >= current_date).count()
-    completed_activities = Activity.query.filter(Activity.Date < current_date).count()
+#     upcoming_activities = Activity.query.filter(Activity.Date > current_date).count()
+#     ongoing_activities = Activity.query.filter(Activity.Date <= current_date, Activity.Date >= current_date).count()
+#     completed_activities = Activity.query.filter(Activity.Date < current_date).count()
 
-    return [upcoming_projects, ongoing_projects, completed_projects, upcoming_activities, ongoing_activities, completed_activities]
+#     return [upcoming_projects, ongoing_projects, completed_projects, upcoming_activities, ongoing_activities, completed_activities]
 
 @cache.cached(timeout=600, key_prefix='getParticipants')
 def getParticipants():
@@ -258,14 +258,14 @@ def viewFaculty(id):
 @bp.route('/dashboard')
 @login_required(role=["Admin", "Faculty"])
 def dashboard():
-    statusCount = getStatusCount()
-    upcoming_projects = statusCount[0]
-    ongoing_projects = statusCount[1]
-    completed_projects = statusCount[2]
+    # statusCount = getStatusCount()
+    # upcoming_projects = statusCount[0]
+    # ongoing_projects = statusCount[1]
+    # completed_projects = statusCount[2]
 
-    upcoming_activities = statusCount[3]
-    ongoing_activities = statusCount[4]
-    completed_activities = statusCount[5]
+    # upcoming_activities = statusCount[3]
+    # ongoing_activities = statusCount[4]
+    # completed_activities = statusCount[5]
 
     participants = getParticipants()
 
@@ -285,12 +285,12 @@ def dashboard():
                             data_for_chart_projects=data_for_chart_projects,
                             data_for_bar_graph=data_for_bar_graph,
                             sorted_years=sorted_years,
-                            upcoming_projects=upcoming_projects,
-                            ongoing_projects=ongoing_projects,
-                            completed_projects=completed_projects,
-                            upcoming_activities=upcoming_activities,
-                            ongoing_activities=ongoing_activities,
-                            completed_activities=completed_activities,
+                            # upcoming_projects=upcoming_projects,
+                            # ongoing_projects=ongoing_projects,
+                            # completed_projects=completed_projects,
+                            # upcoming_activities=upcoming_activities,
+                            # ongoing_activities=ongoing_activities,
+                            # completed_activities=completed_activities,
                             last_5_months_projects_engagement=last_5_months_projects_engagement,
                             last_5_months_programs_engagement=last_5_months_programs_engagement)
 
