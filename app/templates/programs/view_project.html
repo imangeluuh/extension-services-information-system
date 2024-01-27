@@ -155,9 +155,7 @@ object-fit: cover;">
                                     <th data-priority="2">Middle Name</th>
                                     <th data-priority="3">Last Name</th>
                                     <th data-priority="4">Role</th>
-                                    {% if current_user.Role.RoleName == 'Admin' %}
                                     <th data-priority="5">Action</th>
-                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
@@ -170,12 +168,12 @@ object-fit: cover;">
                                         {{ user.User.Student.MiddleName if user.User.Student.MiddleName else 'N/A' }}
                                         {% endif %}
                                     </td>
-                                    <td>{{ user.User.Beneficiary.LastName if user.User.Role.RoleName == "Beneficiary" else user.User.Student.LastName}}</td>
+                                    <td>{{ user.User.Beneficiary.LastName if user.User.RoleId == 2 else user.User.Student.LastName}}</td>
                                     <td>{{ user.User.Role.RoleName }}</td>
-                                    {% if current_user.Role.RoleName == 'Admin' %}
                                     <td class="d-flex">
-                                        {% if user.User.Role.RoleName == 'Student' %}
+                                        {% if user.User.RoleId == 3 %}
                                         <a href="{{ url_for('admin.viewStudent', id=user.User.Student.StudentNumber) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">View</a>
+                                        {% if current_user.UserId == project.LeadProponentId %}
                                         <form action="{{ url_for('programs.assignStudent')}}" method="post">
                                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
                                             <input type="hidden" name="id" value="{{user.RegistrationId}}">
@@ -183,9 +181,9 @@ object-fit: cover;">
                                             <input type="hidden" name="project_id" value="{{project.ProjectId}}">
                                             <input type="submit" value="{{'Assign' if user.IsAssigned == 0 else 'Unassign' }}" class="btn {{'btn-success' if user.IsAssigned == 0 else 'btn-danger'}} me-2 px-2 py-1 rounded-2">
                                         </form>
+                                        {% endif %}
                                         {% else %}
                                         <a href="{{ url_for('admin.viewBeneficiary', id=user.User.Beneficiary.BeneficiaryId) }}" class="btn btn-success me-2 px-2 py-1 rounded-2">View</a>
-                                        {% endif %}
                                     </td>
                                     {% endif %}
                                 </tr>

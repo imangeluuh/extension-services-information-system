@@ -42,6 +42,7 @@
         {% if ext_program.Projects %}
         <div class="list-group list-group-flush overflow-auto" style="max-height: 35rem">
             {% for project in ext_program.Projects %}
+            {% if project.IsArchived == False %}
             <div class="list-group-item">
                 {% if current_user.Role.RoleName == "Faculty" %}
                     {% if project.LeadProponentId == current_user.UserId %}
@@ -71,6 +72,7 @@
                 </a>
                 {% endif %}
             </div>
+            {% endif %}
             {% endfor %}
         </div>
         {% else %}
