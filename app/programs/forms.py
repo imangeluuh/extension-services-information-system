@@ -1,10 +1,10 @@
 from flask import current_app
 from flask_wtf import FlaskForm
 from flask_ckeditor import CKEditorField
-from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField, BooleanField
+from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField, BooleanField, ValidationError
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed
-from ..models import Agenda, Collaborator, Location, User, Faculty, Course, Alumni, ResearchPaper
+from ..models import Agenda, Collaborator, Location, Project, User, Faculty, Course, Alumni, ResearchPaper
 from app import cache
 import requests
 
@@ -52,6 +52,10 @@ class ProjectForm(FlaskForm):
             self.project_team.choices = [(str(faculty.FacultyId), faculty.FirstName + ' ' + faculty.LastName) for faculty in Faculty.query.all()]
             self.research_title.choices = [(research.id, research.title) for research in ResearchPaper.query.filter_by(extension="For Extension").all()]
 
+    def validate_end_date(self, end_date):
+        if end_date.data <= self.start_date.data:
+            raise ValidationError("End date must be later than start date.")
+    
 class ActivityForm(FlaskForm):
     activity_name = StringField("Activity Name", validators=[DataRequired()])
     date = DateField("Date", validators=[DataRequired()])
@@ -61,6 +65,7 @@ class ActivityForm(FlaskForm):
     activity_description =  CKEditorField("Description", validators=[DataRequired()])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
     speaker = SelectMultipleField('Speaker', validators=[DataRequired()])
+    project = HiddenField('Project', validators=[DataRequired()])
     save = SubmitField("Save Activity") 
 
     def __init__(self, *args, **kwargs):
@@ -71,6 +76,13 @@ class ActivityForm(FlaskForm):
             speakers = [(str(faculty.FacultyId), faculty.FirstName + ' ' + faculty.LastName + ' - Faculty') for faculty in Faculty.query.all()]
             speakers += [(str(alumni.id), alumni.first_name + ' ' + alumni.last_name + ' - Alumni') for alumni in Alumni.query.filter_by(role="alumni").all()]
             self.speaker.choices = speakers
+    
+    def validate_date(self, date):
+        project = Project.query.get(self.project.data)
+        if not project:
+            raise ValidationError("Invalid project ID.")
+        if date.data < project.StartDate or date.data > project.EndDate:
+            raise ValidationError("Activity date must be within project timeframe.")
             
 class CombinedForm(FlaskForm):
     extension_program = FormField(ProgramForm)

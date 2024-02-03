@@ -1,5 +1,5 @@
 from app.programs import bp
-from flask import render_template, url_for, request, redirect, flash, current_app
+from flask import render_template, url_for, request, redirect, flash, current_app, session
 from flask_login import current_user
 from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance, Course, Faculty, Speaker
 from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm
@@ -409,13 +409,13 @@ def insertProject():
                                         ProjectId=int_project_id,
                                         CollaboratorId=form.collaborator.data if fund_type=='External' else None)
                 db.session.add(budget_to_add)
-
             db.session.commit()
             flash('Extension project is successfully inserted.', category='success')
-            return redirect(request.referrer)
         if form.errors != {}: # If there are errors from the validations
             for field, error in form.errors.items():
-                flash(f"Field '{field}' has an error: {error}", category='error')
+                print(f"Field '{field}' has an error: {error}")
+                flash(error, category='error')
+        return redirect(request.referrer)
     return redirect(url_for("programs.programs"))
 
 
@@ -439,6 +439,11 @@ def viewProject(id):
     form.end_date.data = project.EndDate
     form.impact_statement.data = project.ImpactStatement
     form.objectives.data = project.Objectives
+
+    # Get input from session if saving activity has error/s
+    # if session['activity']:
+        
+
 
     return render_template('programs/view_project.html', project=project, form=form, activity_form=activity_form, registered=registered, events=events, project_budget=project_budget)
 
@@ -725,11 +730,15 @@ def viewActivity(id):
 def calendar():
     projects = Project.query.filter_by(IsArchived=False).all()
     selected_project_id = request.args.get('project_id', None)
-    # Call a function to fetch activities based on the selected project
-    activities = Activity.query.filter_by(IsArchived=False).all()
+    # Get all activities
+    if current_user.RoleId == 1:
+        activities = Activity.query.filter_by(IsArchived=False).all()
+    else:
+        activities = Activity.query.filter_by(IsArchived=False, LeadProponentId=current_user.UserId).all()
+    # Fetch activities based on the selected project
     if selected_project_id:
         activities = Activity.query.filter_by(ProjectId=selected_project_id, IsArchived=False).order_by(Activity.Date.asc()).all()
-    
+    print([activity.Date for activity in activities])
     return render_template('programs/activity_calendar.html', projects=projects, events=activities, selected_project_id=selected_project_id)
 
 
