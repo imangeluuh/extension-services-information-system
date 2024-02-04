@@ -4,7 +4,7 @@ from flask_ckeditor import CKEditorField
 from wtforms import StringField, DateField, SelectField, SubmitField, TextAreaField, HiddenField, TimeField, FormField, SelectMultipleField, DecimalField, BooleanField, ValidationError
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed
-from ..models import Agenda, Collaborator, Location, Project, User, Faculty, Course, Alumni, ResearchPaper
+from ..models import Agenda, Collaborator, Location, Project, User, Faculty, Course, Alumni, ResearchPaper, Activity
 from app import cache
 import requests
 
@@ -93,7 +93,14 @@ class CombinedForm(FlaskForm):
 class ItemForm(FlaskForm):
     item = StringField("Item", validators=[DataRequired()])
     amount = DecimalField("Amount", validators=[DataRequired()])
+    particulars = TextAreaField("Particulars", validators=[DataRequired()])
     date = DateField("Date Purchased")
-    project = HiddenField("Project", validators=[DataRequired()])
+    activity = SelectField("Activity", validators=[DataRequired()])
     receipt = FileField("Receipt", validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        with current_app.app_context():
+            self.activity.choices = [(activity.ActivityId, activity.ActivityName) for activity in Activity.query.filter_by(IsArchived=False).all()]
     

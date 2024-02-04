@@ -45,8 +45,8 @@
                         <div class="mb-3">
                             {% set project_team = [] %}
 
-                            {% for key, value in project.ProjectTeam.items() %}
-                                {% set _ = project_team.append(key) %}
+                            {% for faculty in project_team %}
+                                {% set _ = project_team.append(faculty.FacultyId) %}
                             {% endfor %}
                             <!-- project team -->
                             <div class="form-group">

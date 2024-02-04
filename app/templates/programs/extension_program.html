@@ -153,12 +153,12 @@
         </div>
         <div class="card-body mt-3">
             <div class="row g-3">
-                {% for faculty in project_team    %}
+                {% for faculty in project_team %}
                 <div class="col-auto col-md-4">
                 <div class="row g-3 align-items-center">
-                    <span class="avatar avatar-md" style="background-image: url( 'https://lh3.googleusercontent.com/d/{{faculty.ProfilePic}}');"></span>
+                    <span class="avatar avatar-md" style="background-image: url( 'https://lh3.googleusercontent.com/d/{{faculty.Faculty.ProfilePic}}');"></span>
                     <div class="col text-truncate">
-                    <span class="fs-2 text-reset d-block text-truncate">{{ faculty.FirstName }} {{ faculty.LastName }}</span>
+                    <span class="fs-2 text-reset d-block text-truncate">{{ faculty.Faculty.FirstName }} {{ faculty.Faculty.LastName }}</span>
                     </div>
                 </div>
                 </div>

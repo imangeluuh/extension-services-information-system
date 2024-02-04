@@ -43,9 +43,9 @@
         <div class="list-group list-group-flush overflow-auto" style="max-height: 35rem">
             {% for project in ext_program.Projects %}
             {% if project.IsArchived == False %}
-            <div class="list-group-item">
-                {% if current_user.Role.RoleName == "Faculty" %}
-                    {% if project.LeadProponentId == current_user.UserId %}
+            {% if current_user.Role.RoleName == "Faculty" %}
+            {% if project.LeadProponentId == current_user.UserId %}
+                <div class="list-group-item">
                     <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}">
                         <div class="row">
                             <div class="col-auto">
@@ -57,8 +57,10 @@
                             </div>
                         </div>
                     </a>
-                    {% endif %}
-                {% else %}
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="list-group-item">
                 <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}">
                     <div class="row">
                         <div class="col-auto">
@@ -70,8 +72,8 @@
                         </div>
                     </div>
                 </a>
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
             {% endif %}
             {% endfor %}
         </div>

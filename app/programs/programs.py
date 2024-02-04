@@ -1,7 +1,7 @@
 from app.programs import bp
 from flask import render_template, url_for, request, redirect, flash, current_app, session
 from flask_login import current_user
-from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance, Course, Faculty, Speaker
+from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance, Course, Faculty, Speaker, ProjectTeam
 from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm
 import calendar
 from datetime import datetime
@@ -25,13 +25,13 @@ load_dotenv(dotenv_path=env_path)
 # ============== Admin/Faculty views ===========================
 
 
-# Function to add project team input to dictionary
-def getProjectTeamInput(selected_values, choices):
-    project_team ={}
-    for choice in choices:
-        if choice[0] in selected_values:
-            project_team[choice[0]] = choice[1]
-    return project_team
+def getProjectTeamInput(selected_values, choices, project_id):
+    if selected_values:
+        for choice in choices:
+            if choice[0] in selected_values:
+                faculty_to_add = ProjectTeam(ProjectId=project_id,
+                                        FacultyId=choice[0])
+                db.session.add(faculty_to_add)
 
 # Function to save image/file to local and upload it to cloud
 def saveImage(image, imagepath):
@@ -179,12 +179,11 @@ def insertExtensionProgram():
         if os.path.exists(imagepath):
             os.remove(imagepath)
      
-        project_team = getProjectTeamInput(form.project.project_team.data, form.project.project_team.choices)
+        
         project_to_add = Project(Title = form.project.title.data,
                                 Implementer = form.project.implementer.data,
                                 LeadProponentId = current_user.UserId,
                                 CollaboratorId = form.project.collaborator.data,
-                                ProjectTeam = project_team,
                                 TargetGroup = form.project.target_group.data,
                                 ProjectType = form.project.project_type.data,
                                 StartDate = form.project.start_date.data,
@@ -203,6 +202,9 @@ def insertExtensionProgram():
         # Get the id of the recently added project
         db.session.flush()
         int_project_id = project_to_add.ProjectId
+
+        # Save project team
+        getProjectTeamInput(form.project.project_team.data, form.project.project_team.choices, int_project_id)
 
         # Add budget of the project
         approved_budgets = request.form.getlist('approved_budget')
@@ -373,13 +375,10 @@ def insertProject():
             if os.path.exists(imagepath):
                 os.remove(imagepath)
 
-            project_team = getProjectTeamInput(form.project_team.data, form.project_team.choices)
-
             project_to_add = Project(Title = form.title.data,
                                     Implementer = form.implementer.data,
                                     LeadProponentId = current_user.UserId,
                                     CollaboratorId = form.collaborator.data,
-                                    ProjectTeam = project_team,
                                     TargetGroup = form.target_group.data,
                                     ProjectType = form.project_type.data,
                                     StartDate = form.start_date.data,
@@ -398,6 +397,9 @@ def insertProject():
             # Get the id of the recently added project
             db.session.flush()
             int_project_id = project_to_add.ProjectId
+
+            # Save project team
+            getProjectTeamInput(form.project_team.data, form.project_team.choices, int_project_id)
 
             # Add budget of the project
             approved_budgets = request.form.getlist('approved_budget')
@@ -425,6 +427,7 @@ def viewProject(id):
     form = ProjectForm()
     activity_form = ActivityForm()
     project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
+    project_team = ProjectTeam.query.filter_by(ProjectId=id).all()
     project_budget = Budget.query.filter_by(ProjectId=id).all()
     registered = Registration.query.filter_by(ProjectId=project.ProjectId).all()
     # for calendar - temp
@@ -440,12 +443,13 @@ def viewProject(id):
     form.impact_statement.data = project.ImpactStatement
     form.objectives.data = project.Objectives
 
+
     # Get input from session if saving activity has error/s
     # if session['activity']:
         
 
 
-    return render_template('programs/view_project.html', project=project, form=form, activity_form=activity_form, registered=registered, events=events, project_budget=project_budget)
+    return render_template('programs/view_project.html', project=project, form=form, activity_form=activity_form, registered=registered, events=events, project_budget=project_budget, project_team=project_team)
 
 
 @bp.route('/project/update/<int:id>', methods=['POST'])
@@ -738,7 +742,7 @@ def calendar():
     # Fetch activities based on the selected project
     if selected_project_id:
         activities = Activity.query.filter_by(ProjectId=selected_project_id, IsArchived=False).order_by(Activity.Date.asc()).all()
-    print([activity.Date for activity in activities])
+
     return render_template('programs/activity_calendar.html', projects=projects, events=activities, selected_project_id=selected_project_id)
 
 
@@ -757,20 +761,25 @@ def budgetAllocation():
 def projectBudget(id):
     form = ItemForm()
     project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
+    # Get all project's activities
+    # activities = project.Activity
     to_be_purchased_items = []
     purchased_items = []
-    if project.Item:
-        for item in project.Item:
-            if item.IsPurchased==0:
-                to_be_purchased_items.append(item)
-            else:
-                purchased_items.append(item)
+    if project.Activity:
+        for activity in project.Activity:
+            if activity.Item:
+                for item in activity.Item:
+                    if item.IsPurchased==0:
+                        to_be_purchased_items.append(item)
+                    else:
+                        purchased_items.append(item)
 
     if request.method == 'POST':
         if form.validate_on_submit():
             item_to_add = Item(ItemName=form.item.data,
                                 Amount=form.amount.data,
-                                ProjectId=form.project.data)
+                                Particulars=form.particulars.data,
+                                ActivityId=form.activity.data)
             try:
                 db.session.add(item_to_add)
                 db.session.commit()
@@ -780,7 +789,8 @@ def projectBudget(id):
 
         if form.errors != {}: # If there are errors from the validations
             for field, error in form.errors.items():
-                flash(f"Field '{field}' has an error: {error}", category='error')
+                print(f"Field '{field}' has an error: {error}")
+                flash(error, category='error')
         
         return redirect(url_for('programs.projectBudget', id=id))
     
@@ -794,7 +804,9 @@ def projectBudget(id):
 @login_required(role=["Admin", "Faculty"])
 def purchaseItem(status):
     item_id = request.json["itemId"]
+    project_id = request.json["projectId"]
     item = Item.query.filter_by(ItemId=item_id).first()
+    project = Project.query.filter_by(ProjectId=project_id).first()
     if item:
         item.IsPurchased = status
         if status == 1:
@@ -803,7 +815,9 @@ def purchaseItem(status):
             item.DatePurchased = None
         db.session.commit()
         return { "message": "Item status updated successfully!",
-                "amount": item.Amount}
+                "amount": item.Amount,
+                "remainingBudget": project.totalBudget() - project.totalExpense(),
+                "totalExpense": project.totalExpense()}
     else:
         return { "error": "Item not found" }, 404
 
@@ -813,8 +827,9 @@ def updateItem(id):
     form = ItemForm()
     item = Item.query.filter_by(ItemId=id).first()
     item.ItemName = form.item.data
-    item.ProjectId = form.project.data
     item.Amount = form.amount.data
+    item.Particulars = form.particulars.data
+    item.ActivityId = form.activity.data
     try:
         db.session.commit()
         flash('Item is successfully updated', category='success')
@@ -1136,13 +1151,13 @@ def recordAttendance():
 
 
 def getProjectTeam(projects):
-    faculty_team = {}
-    for project in projects:
-        faculty_team.update(project.ProjectTeam)
-        
     project_team = []
-    for faculty in faculty_team.items():
-        faculty_info = Faculty.query.filter_by(FacultyId=int(faculty[0])).first()
-        project_team.append(faculty_info)
+    for project in projects:
+        project_team += ProjectTeam.query.filter_by(ProjectId=project.ProjectId).all()
+        
+    # project_team = []
+    # for faculty in faculty_team:
+    #     faculty_info = Faculty.query.filter_by(FacultyId=int(faculty[0])).first()
+    #     project_team.append(faculty_info)
     
     return project_team

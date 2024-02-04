@@ -12,6 +12,10 @@ draggables.forEach((item) => {
     const itemId = itemIdElement.textContent;
     const previousStatus =  item.querySelector(".previous-status");
     const newStatus = item.parentElement.id === "tbp-lane" ? 0 : 1;
+    const projectId = document.getElementById("projectId").textContent;
+    const remainingBudget = document.getElementById("remaining-budget");
+    const totalExpense = document.getElementById("total-expense");
+    
 
     fetch('/purchase-item/'+newStatus, {
       method: "POST",
@@ -19,7 +23,7 @@ draggables.forEach((item) => {
         'Content-Type': 'application/json',
         'X-CSRF-token' : csrf_token
       },
-      body: JSON.stringify({ itemId }),
+      body: JSON.stringify({ itemId, projectId }),
     })
       .then((response) => {
         if (response.ok) {
@@ -54,6 +58,9 @@ draggables.forEach((item) => {
                 }
                 // Assign the new status to previousStatus element
                 previousStatus.textContent = newStatus;
+                remainingBudget.textContent = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2}).format(data.remainingBudget);
+                totalExpense.textContent = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, style: 'currency', currency: 'PHP'}).format(data.totalExpense);
+                console.log(remainingBudget.textContent)
                 window.option.series[0].data[1].value = window.remainingInternal;
                 window.option.series[0].data[0].value = window.remainingExternal;
                 // Display the chart using the configuration items and data just specified.

@@ -47,7 +47,7 @@
                     <span class="fs-2 pb-2">Project Team</span>
                     <div class="avatar-list avatar-list-stacked mt-2">
                         {% for faculty in project_team %}
-                        <span class="avatar avatar-sm rounded border-0" style="background-image: url('https://lh3.googleusercontent.com/d/{{faculty.ProfilePic}}')" data-bs-toggle="tooltip" data-bs-title="{{faculty.FirstName}} {{faculty.LastName}}"></span>
+                        <span class="avatar avatar-sm rounded border-0" style="background-image: url('https://lh3.googleusercontent.com/d/{{faculty.Faculty.ProfilePic}}')" data-bs-toggle="tooltip" data-bs-title="{{faculty.Faculty.FirstName}} {{faculty.Faculty.LastName}}"></span>
                         {% endfor %}
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                     </div>
                     <div class="col-12 col-md-11">
                         {% if current_user.is_authenticated and current_user.Role.RoleName == "Student"%}
-                        <span class="fs-2 fw-bold text-decoration-underline ps-3">Come Work With Us!</span>
+                        <span class="fs-2 fw-bold ps-3">Come Work With Us!</span>
                         <p class="fs-2 ps-3">
                             Do you love volunteer management? Check out this opportunity to be part of the extension team.
                         </p>

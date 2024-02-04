@@ -126,7 +126,6 @@ class Faculty(db.Model):
             'faculty_type': self.FacultyType,
             'rank': self.Rank,
             'units': self.Units,
-            'name': self.Name,
             'first_name': self.FirstName,
             'last_name': self.LastName,
             'middle_name': self.MiddleName,
@@ -222,7 +221,7 @@ class Project(db.Model):
     Implementer = db.Column(db.String(255), nullable=False)
     LeadProponentId = db.Column(db.String(36), db.ForeignKey('ESISUser.UserId', ondelete='CASCADE'), nullable=False)
     CollaboratorId = db.Column(db.Integer, db.ForeignKey('ESISCollaborator.CollaboratorId', ondelete='CASCADE'), nullable=False)
-    ProjectTeam = db.Column(db.JSON, nullable=False)
+    # ProjectTeam = db.Column(db.JSON, nullable=False)
     TargetGroup= db.Column(db.String(255), nullable=False)
     ProjectType = db.Column(db.String(100), nullable=False)
     StartDate = db.Column(db.Date, index=True)
@@ -244,7 +243,8 @@ class Project(db.Model):
     Certificate = db.relationship('Certificate', back_populates='Project', cascade='all, delete-orphan')
     Activity = db.relationship("Activity", back_populates="Project", cascade='all, delete-orphan')
     Budget = db.relationship('Budget', back_populates='Project', cascade='all, delete-orphan')
-    Item = db.relationship('Item', back_populates='Project', cascade='all, delete-orphan')
+    ProjectTeam = db.relationship('ProjectTeam', back_populates='Project', cascade='all, delete-orphan')
+    
     Research = db.relationship('ResearchPaper', backref='Project')
     def totalBudget(self):
         # Calculates and returns the total budget for the project.
@@ -252,7 +252,23 @@ class Project(db.Model):
     
     def totalExpense(self):
         # Calculates and returns the total budget for the project.
-        return sum(item.Amount for item in self.Item)
+        expense = []
+        for activity in self.Activity:
+            if activity.IsArchived == False:
+                for item in activity.Item:
+                    if item.IsPurchased:
+                        expense.append(item.Amount)
+        return sum(expense)
+    
+    # def expenseDict(self):
+    #     activity_expense = {}
+    #     for activity in self.Activity:
+    #         if activity.IsArchived == False:
+    #             expense = []
+    #             for item in activity.Item:
+    #                 if item.IsPurchased:
+    #                     expense.append(item.Amount)
+    #             activity_expense[activity.ActivityId]
     
     def get_participants_count_for_month(self, month_info):
         participants_count = Attendance.query \
@@ -267,11 +283,12 @@ class Project(db.Model):
             .count()
         return participants_count
 
-# class ProjectTeam(db.Model):
-#     ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId'), primary_key=True)
-#     FacultyId = db.Column(db.Integer, db.ForeignKey('FISFaculty.FacultyId'), primary_key=True)
-#     Project = db.relationship('Project', back_populates='ProjectTeam', passive_deletes=True)
-#     Faculty = db.relationship('Faculty', back_populates='ProjectTeam', passive_deletes=True)
+class ProjectTeam(db.Model):
+    __tablename__ = 'ESISProjectTeam'
+    ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId'), primary_key=True)
+    FacultyId = db.Column(db.Integer, db.ForeignKey('FISFaculty.FacultyId'), primary_key=True)
+    Project = db.relationship('Project', back_populates='ProjectTeam')
+    Faculty = db.relationship('Faculty', backref='ProjectTeam', passive_deletes=True)
 
 # Course List
 class Course(db.Model):
@@ -335,6 +352,11 @@ class Activity(db.Model):
     Evaluation = db.relationship("Evaluation", back_populates='Activity', cascade='all, delete-orphan', lazy=True)
     Attendance = db.relationship('Attendance', back_populates='Activity', cascade='all, delete-orphan')
     Speaker = db.relationship('Speaker', back_populates='Activity', cascade='all, delete-orphan')
+    Item = db.relationship('Item', back_populates='Activity', cascade='all, delete-orphan')
+
+    def totalExpense(self):
+        # Calculates and returns the total budget for the project.
+        return sum(item.Amount for item in self.Item if item.IsPurchased)
 
 class Speaker(db.Model):
     __tablename__ = 'ESISSpeaker'
@@ -361,13 +383,14 @@ class Item(db.Model):
 
     ItemId = db.Column(db.Integer, primary_key=True)
     ItemName = db.Column(db.String(50), nullable=False)
+    Particulars = db.Column(db.Text, nullable=False)
     Amount = db.Column(db.Numeric(12, 2), nullable=False)
     IsPurchased = db.Column(db.Boolean, nullable=False, default=0)
     DatePurchased = db.Column(db.DateTime)
     ReceiptUrl = db.Column(db.Text)
     ReceiptId = db.Column(db.Text)
-    ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), nullable=False)
-    Project = db.relationship("Project", back_populates="Item", passive_deletes=True)
+    ActivityId = db.Column(db.Integer, db.ForeignKey('ESISActivity.ActivityId', ondelete='CASCADE'), nullable=False)
+    Activity = db.relationship("Activity", back_populates="Item", passive_deletes=True)
 
 class Budget(db.Model):
     __tablename__ = 'ESISProjectBudget'

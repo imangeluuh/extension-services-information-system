@@ -35,73 +35,131 @@
 <!-- Page body -->
 <div class="page-body pb-4">
     <div class="container-xl">
+      <p id="projectId" class="d-none">{{project.ProjectId}}</p>
         <div class="row g-2 row-cards">
-          <div class="col-12 col-md-4">
-            <div class="card card-sm">
-              <div class="card-body">
-                <div class="row align-items-center">
-                  <div class="col-auto">
-                    <span class="bg-primary text-white avatar">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-currency-peso" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 19v-14h3.5a4.5 4.5 0 1 1 0 9h-3.5" /><path d="M18 8h-12" /><path d="M18 11h-12" /></svg>
-                    </span>
-                  </div>
-                  <div class="col">
-                    <div class="font-weight-medium">
-                      {{ "{:,.2f}".format(internal_budget) }}
+          <div class="col-12 col-md-9">
+            <div class="row">
+              <div class="col-12 col-md-3">
+                <div class="card card-sm">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="bg-primary text-white avatar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-currency-peso" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 19v-14h3.5a4.5 4.5 0 1 1 0 9h-3.5" /><path d="M18 8h-12" /><path d="M18 11h-12" /></svg>
+                        </span>
+                      </div>
+                      <div class="col">
+                        <div class="font-weight-medium">
+                          {{ "{:,.2f}".format(internal_budget) }}
+                        </div>
+                        <div class="text-secondary">
+                          Internal Budget
+                        </div>
+                      </div>
                     </div>
-                    <div class="text-secondary">
-                      Internal Budget
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="card card-sm">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="bg-primary text-white avatar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-currency-peso" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 19v-14h3.5a4.5 4.5 0 1 1 0 9h-3.5" /><path d="M18 8h-12" /><path d="M18 11h-12" /></svg>
+                        </span>
+                      </div>
+                      <div class="col">
+                        <div class="font-weight-medium">
+                          {{ "{:,.2f}".format(external_budget) }}
+                        </div>
+                        <div class="text-secondary">
+                          External Budget
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="card card-sm">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="bg-primary text-white avatar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-currency-peso" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 19v-14h3.5a4.5 4.5 0 1 1 0 9h-3.5" /><path d="M18 8h-12" /><path d="M18 11h-12" /></svg>
+                        </span>
+                      </div>
+                      <div class="col">
+                        <div class="font-weight-medium">
+                          {{ "{:,.2f}".format(internal_budget + external_budget) }}
+                        </div>
+                        <div class="text-secondary">
+                          Total Budget
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="card card-sm">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="bg-primary text-white avatar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-currency-peso" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 19v-14h3.5a4.5 4.5 0 1 1 0 9h-3.5" /><path d="M18 8h-12" /><path d="M18 11h-12" /></svg>
+                        </span>
+                      </div>
+                      <div class="col">
+                        <div class="font-weight-medium">
+                          <span id="remaining-budget">{{ "{:,.2f}".format(project.totalBudget() - project.totalExpense()) }}</span>
+                        </div>
+                        <div class="text-secondary">
+                          Remaining Budget
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            <div class="card p-0 my-3">
+                <div id="main" style="width: 100%; height: 200px"></div>
+            </div>
           </div>
-          <div class="col-12 col-md-4">
-            <div class="card card-sm">
-              <div class="card-body">
-                <div class="row align-items-center">
-                  <div class="col-auto">
-                    <span class="bg-primary text-white avatar">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-currency-peso" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 19v-14h3.5a4.5 4.5 0 1 1 0 9h-3.5" /><path d="M18 8h-12" /><path d="M18 11h-12" /></svg>
-                    </span>
+          <div class="col-12 col-md-3 pb-3">
+            <div class="card h-100">
+              <div class="card-header px-3">
+                <h3 class="card-title">Activities</h3>
+              </div>
+              <div class="card-body px-3">
+                {% if project.Activity %}
+                {% for activity in project.Activity %}
+                {% if activity.IsArchived == False %}
+                <div class="row">
+                  <div class="col-12 col-md-8 text-truncate">
+                      <span class="text-body d-block">{{activity.ActivityName}}</span>
                   </div>
-                  <div class="col">
-                    <div class="font-weight-medium">
-                      {{ "{:,.2f}".format(external_budget) }}
-                    </div>
-                    <div class="text-secondary">
-                      External Budget
-                    </div>
+                  <div class="col-12 col-md-4 d-flex justify-content-end ">
+                      <div class="fw-bold" id="activity-expense">&#8369; {{ "{:,.2f}".format(activity.totalExpense()) }}</div>
                   </div>
+                </div>
+                <hr class="my-2">
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                No activities found.
+                {% endif %}
+              </div>
+              <div class="card-footer p-2 px-3">
+                <div class="d-flex justify-content-between">
+                  <p class="fw-bold">Running Total Expense:</p>
+                  <p class="fw-bold" id="total-expense">&#8369; {{ "{:,.2f}".format(project.totalExpense()) }}</p>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-12 col-md-4">
-            <div class="card card-sm">
-              <div class="card-body">
-                <div class="row align-items-center">
-                  <div class="col-auto">
-                    <span class="bg-primary text-white avatar">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-currency-peso" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 19v-14h3.5a4.5 4.5 0 1 1 0 9h-3.5" /><path d="M18 8h-12" /><path d="M18 11h-12" /></svg>
-                    </span>
-                  </div>
-                  <div class="col">
-                    <div class="font-weight-medium">
-                      {{ "{:,.2f}".format(internal_budget + external_budget) }}
-                    </div>
-                    <div class="text-secondary">
-                      Total Budget
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card p-0 my-3">
-            <div id="main" style="width: 100%; height: 200px"></div>
         </div>
         <div class="board">    
             <div class="lanes d-flex justify-content-center ">
@@ -113,7 +171,8 @@
                     <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}">
                     <p class="id d-none">{{item.ItemId}}</p>
                     <p class="previous-status d-none">0</p>
-                    <p class="item-name mb-2" draggable="true">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{item.Amount}}</span></p>
+                    <p class="item-name mb-2" draggable="true">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{ "{:,.2f}".format(item.Amount) }}</span></p>
+                    <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
                   </div>
                   <div class="col-12 col-md-3 d-flex align-items-center">
                     <div class="row d-flex align-items-center">
@@ -142,7 +201,8 @@
                     <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}">
                     <p class="id d-none">{{item.ItemId}}</p>
                     <p class="previous-status d-none">1</p>
-                    <p class="item-name mb-2">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{item.Amount}}</span></p>
+                    <p class="item-name mb-2">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{ "{:,.2f}".format(item.Amount) }}</span></p>
+                    <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
                   </div>
                   <div class="col-12 col-md-3 d-flex align-items-center"  data-toggle="tooltip" data-placement="left" title="Receipt">
                     <div class="row">
@@ -189,10 +249,21 @@
               {{form.item(class="form-control")}}
           </div>
           <div class="col-12 mb-3">
+            {{form.particulars.label(class="form-label")}}
+            {{form.particulars(class="form-control")}}
+          </div>
+          <div class="col-12 mb-3">
             <label for="amount" class="form-label">Estimated Amount</label>
             {{form.amount(class="form-control")}}
           </div>
-          {{form.project(value=project.ProjectId)}}
+          <div class="col-12 mb-3">
+            {{form.activity.label(class="form-label")}}
+            <select name="{{form.activity.name}}" id="{{form.activity.id}}" class="form-select">
+              {% for activity in project.Activity %}
+              <option value="{{activity.ActivityId}}">{{activity.ActivityName}}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
