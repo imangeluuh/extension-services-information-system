@@ -26,12 +26,17 @@ load_dotenv(dotenv_path=env_path)
 
 
 def getProjectTeamInput(selected_values, choices, project_id):
+    # if selected_values:
+    #     for choice in choices:
+    #         if choice[0] in selected_values:
+    #             faculty_to_add = ProjectTeam(ProjectId=project_id,
+    #                                     FacultyId=choice[0])
+    #             db.session.add(faculty_to_add)
     if selected_values:
-        for choice in choices:
-            if choice[0] in selected_values:
-                faculty_to_add = ProjectTeam(ProjectId=project_id,
-                                        FacultyId=choice[0])
-                db.session.add(faculty_to_add)
+        for id in selected_values:
+            faculty_to_add = ProjectTeam(ProjectId=project_id,
+                                    FacultyId=int(id))
+            db.session.add(faculty_to_add)
 
 # Function to save image/file to local and upload it to cloud
 def saveImage(image, imagepath):
@@ -505,13 +510,21 @@ def updateProject(id):
             if os.path.exists(filepath):
                 os.remove(filepath)
 
-        project_team = getProjectTeamInput(form.project_team.data, form.project_team.choices)
+        selected_values = form.project_team.data
+        for faculty in extension_project.ProjectTeam:
+            bool_is_removed = True
+            if str(faculty.FacultyId) in selected_values:
+                selected_values.remove(str(faculty.FacultyId))
+                bool_is_removed = False
+            if bool_is_removed:
+                db.session.delete(faculty)
+
+        getProjectTeamInput(selected_values, form.project_team.choices, id)
 
         # Update project details
         extension_project.Title =form.title.data
         extension_project.Implementer = form.implementer.data
         extension_project.CollaboratorId = form.collaborator.data
-        extension_project.ProjectTeam = project_team
         extension_project.TargetGroup = form.target_group.data
         extension_project.ProjectTyFpe = form.project_type.data
         extension_project.StartDate =  form.start_date.data
@@ -1071,14 +1084,15 @@ def activity(id):
     suggestions = Activity.query.filter(Activity.Date > current_date,
                                         Activity.ProjectId==activity.ProjectId,
                                         Activity.ActivityId!=activity.ActivityId,
-                                         Activity.IsArchived==False ).order_by(func.random()).limit(3).all()
+                                        Activity.IsArchived==False ).order_by(func.random()).limit(3).all()
+    is_registered = Registration.query.filter_by(ProjectId=activity.ProjectId, UserId=current_user.UserId).first()
     evaluation_id = None
     bool_is_evaluation_taken = False
     if current_user.is_authenticated and current_user.Role.RoleId==2:
         beneficiary_id = current_user.Beneficiary.BeneficiaryId
         evaluation_id = activity.Evaluation[0].EvaluationId if activity.Evaluation else None
         bool_is_evaluation_taken = True if Response.query.filter_by(BeneficiaryId=beneficiary_id, EvaluationId=evaluation_id).first() else False
-    return render_template('programs/activity.html', activity=activity, suggestions=suggestions, current_date=current_date, bool_is_evaluation_taken=bool_is_evaluation_taken)
+    return render_template('programs/activity.html', activity=activity, suggestions=suggestions, current_date=current_date, bool_is_evaluation_taken=bool_is_evaluation_taken, is_registered=is_registered)
 
 
 @bp.route('/activities/<int:id>/map')
