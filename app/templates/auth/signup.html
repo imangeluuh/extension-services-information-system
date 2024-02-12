@@ -18,9 +18,10 @@
         <form id="signupForm"  class="card card-md" action="" method="post">
             {{ form.hidden_tag() }}
             <div class="card-body row">
-                <h2 class="card-title text-center mb-4">Create new account</h2>
+                <h2 class="card-title text-center mb-1">Create new account</h2>
+                <small class="mb-3 text-secondary text-center"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
                 <div class="mb-2 col-12 col-md-4">
-                    {{ form.first_name.label(class="form-label") }}
+                    <div class="d-flex">{{ form.first_name.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     {{ form.first_name(id="first_name", class="form-control") }}
                     <ul>
                         {% for error in form.first_name.errors %}
@@ -29,7 +30,7 @@
                     </ul>
                 </div> 
                 <div class="mb-2 col-12 col-md-4">
-                    {{ form.middle_name.label(class="form-label") }}
+                    <div class="d-flex">{{ form.middle_name.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     {{ form.middle_name(id="middle_name", class="form-control") }}
                     <ul>
                         {% for error in form.middle_name.errors %}
@@ -38,7 +39,7 @@
                     </ul>
                 </div> 
                 <div class="mb-2 col-12 col-md-4">
-                    {{ form.last_name.label(class="form-label") }}
+                    <div class="d-flex">{{ form.last_name.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     {{ form.last_name(id="last_name", class="form-control") }}
                     <ul>
                         {% for error in form.last_name.errors %}
@@ -47,7 +48,7 @@
                     </ul>
                 </div> 
                 <div class="mb-2 col-12 col-md-3">
-                    {{ form.contact_details.label(class="form-label") }}
+                    <div class="d-flex">{{ form.contact_details.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     {{ form.contact_details(id="contact_details", class="form-control") }}
                     <ul>
                         {% for error in form.contact_details.errors %}
@@ -56,7 +57,7 @@
                     </ul>
                 </div> 
                 <div class="mb-2 col-12 col-md-3">
-                    {{ form.birthdate.label(class="form-label") }}
+                    <div class="d-flex">{{ form.birthdate.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     {{ form.birthdate(id="birthdate", class="form-control") }}
                     <ul>
                         {% for error in form.birthdate.errors %}
@@ -65,7 +66,7 @@
                     </ul>
                 </div> 
                 <div class="mb-2 col-12 col-md-3">
-                    {{ form.birthplace.label(class="form-label") }}
+                    <div class="d-flex">{{ form.birthplace.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     {{ form.birthplace(id="birthplace", class="form-control") }}
                     <ul>
                         {% for error in form.birthplace.errors %}
@@ -74,7 +75,7 @@
                     </ul>
                 </div> 
                 <div class="mb-2 col-12 col-md-3">
-                    {{ form.gender.label(class="form-label") }}
+                    <div class="d-flex">{{ form.gender.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     <select name="gender" id="gender" class="form-select" required>
                         <option value="" disabled selected></option>
                         {% for option in form.gender %}
@@ -88,7 +89,7 @@
                     </ul>
                 </div> 
                 <div class="mb-2 col-12">
-                    {{ form.address.label(class="form-label") }}
+                    <div class="d-flex">{{ form.address.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     {{ form.address(id="address", class="form-control", maxlength="50") }}
                     <ul>
                         {% for error in form.address.errors %}
@@ -97,7 +98,7 @@
                     </ul>
                 </div> 
                 <div class="mb-2 col-12">
-                    {{ form.email.label(class="form-label") }}
+                    <div class="d-flex">{{ form.email.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     {{ form.email(id="email", class="form-control") }}
                     <ul>
                         {% for error in form.email.errors %}
@@ -106,7 +107,7 @@
                     </ul>
                 </div> 
                 <div class="mb-2 col-12 col-md-6">
-                    {{ form.password1.label(class="form-label") }}
+                    <div class="d-flex">{{ form.password1.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     {{ form.password1(class="form-control") }}
                     <ul>
                         {% for error in form.password1.errors %}
@@ -115,7 +116,7 @@
                     </ul>
                 </div> 
                 <div class="mb-2 col-auto col-md-6">
-                    {{ form.password2.label(class="form-label") }}
+                    <div class="d-flex">{{ form.password2.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
                     {{ form.password2(class="form-control") }}
                     <ul>
                         {% for error in form.password2.errors %}

@@ -186,10 +186,13 @@ input[type="file"]::-webkit-file-upload-button,
                     <!-- fieldsets -->
                     <fieldset>
                         <h2 class="text-uppercase fs-3">Create extension program</h2>
+                        <small class="mb-3 text-secondary text-center"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
                         <div class="row g-2">
                             <div class="col-12 text-start d-flex flex-column">
                                 <!-- name -->
-                                {{ form.extension_program.program_name.label }}
+                                <div class="d-flex">
+                                    {{ form.extension_program.program_name.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.extension_program.program_name(class="input")}}
                                 <ul>
                                     {% for error in form.extension_program.program_name.errors %}
@@ -199,7 +202,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-12 text-start d-flex flex-column">
                                 <!-- rationale -->
-                                {{ form.extension_program.rationale.label }}
+                                <div class="d-flex">
+                                    {{ form.extension_program.rationale.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.extension_program.rationale(class="form-control") }}
                                 <ul>
                                     {% for error in form.extension_program.rationale.errors %}
@@ -209,7 +214,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-auto col-md-4 text-start d-flex flex-column">
                                 <!-- image -->
-                                {{ form.extension_program.image.label }}
+                                <div class="d-flex">
+                                    {{ form.extension_program.image.label }}
+                                </div>
                                 {{ form.extension_program.image(class="form-control mt-1")}}
                                 <ul>
                                     {% for error in form.extension_program.image.errors %}
@@ -219,7 +226,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-auto col-md-4 text-start d-flex flex-column">
                                 <!-- agenda -->
-                                {{ form.extension_program.agenda.label }}
+                                <div class="d-flex">
+                                    {{ form.extension_program.agenda.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.extension_program.agenda(class="input")}}
                                 <ul>
                                     {% for error in form.extension_program.agenda.errors %}
@@ -229,7 +238,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-auto col-md-4 text-start d-flex flex-column">
                                 <!-- program -->
-                                {{ form.extension_program.program.label }}
+                                <div class="d-flex">
+                                    {{ form.extension_program.program.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.extension_program.program(class="input")}}
                                 <ul>
                                     {% for error in form.extension_program.program.errors %}
@@ -244,10 +255,13 @@ input[type="file"]::-webkit-file-upload-button,
                     <!-- Project Form -->
                     <fieldset>
                         <h2 class="text-uppercase fs-3">Project</h2>
+                        <small class="mb-3 text-secondary text-center"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
                         <div class="row g-2">
                             <div class="col-12 text-start">
                                 <!-- project title -->
-                                {{ form.project.title.label }}
+                                <div class="d-flex">
+                                    {{ form.project.title.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project.title(class="input")}}
                                 <ul>
                                     {% for error in form.project.title.errors %}
@@ -257,7 +271,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-auto col-md-6 text-start d-flex flex-column">
                                 <!-- implementer -->
-                                {{ form.project.implementer.label }}
+                                <div class="d-flex">
+                                    {{ form.project.implementer.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project.implementer(class="input")}}
                                 <ul>
                                     {% for error in form.project.implementer.errors %}
@@ -267,7 +283,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-auto col-md-3 text-start d-flex flex-column">
                                 <!-- collaborator -->
-                                {{ form.project.collaborator.label }}
+                                <div class="d-flex">
+                                    {{ form.project.collaborator.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project.collaborator(class="input")}}
                                 <ul>
                                     {% for error in form.project.collaborator.errors %}
@@ -277,7 +295,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-auto col-md-3 text-start">
                                 <!-- project type -->
-                                {{ form.project.project_type.label }}
+                                <div class="d-flex">
+                                    {{ form.project.project_type.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project.project_type(class="input")}}
                                 <ul>
                                     {% for error in form.project.project_type.errors %}
@@ -287,7 +307,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-auto col-md-7 text-start">
                                 <!-- target group -->
-                                {{ form.project.target_group.label }}
+                                <div class="d-flex">
+                                    {{ form.project.target_group.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project.target_group(class="input")}}
                                 <ul>
                                     {% for error in form.project.target_group.errors %}
@@ -298,7 +320,9 @@ input[type="file"]::-webkit-file-upload-button,
                             <div class="col-auto col-md-5 text-start">
                                 <!-- project team -->
                                 <div class="form-group m-0">
-                                    {{ form.project.project_team.label }}
+                                    <div class="d-flex">
+                                        {{ form.project.project_team.label }}<span class="ms-1 text-danger"> *</span>
+                                    </div>
                                     <select id="{{form.project.project_team.id}}" name="{{form.project.project_team.name}}" class="input" multiple="" hidden>
                                         {% for option in form.project.project_team %}
                                             {{ option }}
@@ -313,7 +337,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-auto col-md-6 text-start">
                                 <!-- start date -->
-                                {{ form.project.start_date.label }}
+                                <div class="d-flex">
+                                    {{ form.project.start_date.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project.start_date(class="input")}}
                                 <ul>
                                     {% for error in form.project.start_date.errors %}
@@ -323,7 +349,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-auto col-md-6 text-start">
                                 <!-- end date -->
-                                {{ form.project.end_date.label }}
+                                <div class="d-flex">
+                                    {{ form.project.end_date.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project.end_date(class="input")}}
                                 <ul>
                                     {% for error in form.project.end_date.errors %}
@@ -333,7 +361,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-12 text-start">
                                 <!-- impact statement -->
-                                {{ form.project.impact_statement.label }}
+                                <div class="d-flex">
+                                    {{ form.project.impact_statement.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project.impact_statement(class="input")}}
                                 <ul>
                                     {% for error in form.project.impact_statement.errors %}
@@ -343,7 +373,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-12 text-start">
                                 <!-- objectives -->
-                                {{ form.project.objectives.label }}
+                                <div class="d-flex">
+                                    {{ form.project.objectives.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project.objectives(class="input")}}
                                 <ul>
                                     {% for error in form.project.objectives.errors %}
@@ -354,24 +386,27 @@ input[type="file"]::-webkit-file-upload-button,
                             <div class="col-12 text-start">
                                 <div class="form-check form-switch">
                                     {{ form.project.research_based(class="form-check-input me-2 border-1 bg-secondary", id="checkbox")}}
-                                    {{ form.project.research_based.label }}
+                                    <div class="d-flex">
+                                        {{ form.project.research_based.label }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12 text-start" id="research-title" style="display: none">
-                                {{form.project.research_title.label}}
+                                <div class="d-flex">
+                                    {{ form.project.research_title.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 <select id="{{form.project.research_title.id}}" name="{{form.project.research_title.name}}" class="input">
                                 {% for choice in form.project.research_title.choices %}
                                 <option value="{{choice[0]}}">{{choice[1]}}</option>
                                 {% endfor %}
                                 </select>
                             </div>
-
                             <div class="col-12 col-md-6">
-                                <label for="approved_budget" class="text-start">Budget Amount</label>
+                                <label for="approved_budget" class="text-start">Budget Amount<span class="ms-1 text-danger"> *</span></label>
                                 <input type="number" name="approved_budget" class="input" required>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label for="fund_type" class="text-start">Fund Type</label>
+                                <label for="fund_type" class="text-start">Fund Type<span class="ms-1 text-danger"> *</span></label>
                                 <select name="fund_type" id="fund_type" class="input" required>
                                     <option value="Internal">Internal</option>
                                     <option value="External">External</option>
@@ -395,7 +430,9 @@ input[type="file"]::-webkit-file-upload-button,
                             </div>
                             <div class="col-auto col-md-6 text-start d-flex flex-column">
                                 <!-- project proposal -->
-                                {{ form.project.project_proposal.label }}
+                                <div class="d-flex">
+                                    {{ form.project.project_proposal.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project.project_proposal(class="form-control", required="required")}}
                                 <ul>
                                     {% for error in form.project.project_proposal.errors %}
@@ -411,10 +448,13 @@ input[type="file"]::-webkit-file-upload-button,
                 <!-- Activity Form -->
                 <fieldset>
                 <h2 class="text-uppercase fs-3">Activity</h2>
+                <small class="mb-3 text-secondary text-center"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
                 <div class="row g-2">
                     <div class="col-12 text-start">
                         <!-- name -->
-                        {{ form.activity.activity_name.label }}
+                        <div class="d-flex">
+                            {{ form.activity.activity_name.label }}<span class="ms-1 text-danger"> *</span>
+                        </div>
                         {{ form.activity.activity_name(class="input")}}
                         <ul>
                             {% for error in form.activity.activity_name.errors %}
@@ -424,7 +464,9 @@ input[type="file"]::-webkit-file-upload-button,
                     </div>
                     <div class="col-auto col-md-4 text-start d-flex flex-column">
                         <!--date -->
-                        {{ form.activity.date.label }}
+                        <div class="d-flex">
+                            {{ form.activity.date.label }}<span class="ms-1 text-danger"> *</span>
+                        </div>
                         {{ form.activity.date(class="input")}}
                         <ul>
                             {% for error in form.activity.date.errors %}
@@ -434,7 +476,9 @@ input[type="file"]::-webkit-file-upload-button,
                     </div>
                     <div class="col-12 col-md-4 text-start d-flex flex-column">
                         <!-- start time -->
-                        {{  form.activity.start_time.label }}
+                        <div class="d-flex">
+                            {{ form.activity.start_time.label }}<span class="ms-1 text-danger"> *</span>
+                        </div>
                         {{  form.activity.start_time(class="input")}}
                         <ul>
                             {% for error in form.activity.start_time.errors %}
@@ -444,7 +488,9 @@ input[type="file"]::-webkit-file-upload-button,
                     </div>
                     <div class="col-12 col-md-4 text-start d-flex flex-column">
                         <!-- end time -->
-                        {{  form.activity.end_time.label }}
+                        <div class="d-flex">
+                            {{ form.activity.end_time.label }}<span class="ms-1 text-danger"> *</span>
+                        </div>
                         {{  form.activity.end_time(class="input")}}
                         <ul>
                             {% for error in form.activity.end_time.errors %}
@@ -454,7 +500,9 @@ input[type="file"]::-webkit-file-upload-button,
                     </div>
                     <div class="col-12 col-md-6 text-start d-flex flex-column">
                         <!-- speaker-->
-                        {{ form.activity.speaker.label}}
+                        <div class="d-flex">
+                            {{ form.activity.speaker.label }}<span class="ms-1 text-danger"> *</span>
+                        </div>
                         <select id="{{form.activity.speaker.id}}" name="{{form.activity.speaker.name}}" class="input" multiple="" hidden>
                             {% for option in form.activity.speaker %}
                                 {{ option }}
@@ -463,7 +511,9 @@ input[type="file"]::-webkit-file-upload-button,
                     </div>
                     <div class="col-12 col-md-6  text-start d-flex flex-column">
                         <!-- lcoation -->
-                        {{ form.activity.location.label }}
+                        <div class="d-flex">
+                            {{ form.activity.location.label }}<span class="ms-1 text-danger"> *</span>
+                        </div>
                         {{ form.activity.location(class="input") }}
                         <ul>
                             {% for error in form.activity.location.errors %}
@@ -473,7 +523,9 @@ input[type="file"]::-webkit-file-upload-button,
                     </div>
                     <div class="col-12 text-start d-flex flex-column">
                         <!-- description -->
-                        {{ form.activity.activity_description.label }}
+                        <div class="d-flex">
+                            {{ form.activity.activity_description.label }}<span class="ms-1 text-danger"> *</span>
+                        </div>
                         {{ form.activity.activity_description(class="input") }}
                         <ul>
                             {% for error in form.activity.activity_description.errors %}
@@ -610,8 +662,7 @@ $(".next").click(function () {
             left = now * 50 + "%";
             opacity = 1 - now;
             current_fs.css({
-            transform: "scale(" + scale + ")",
-            position: "absolute"
+            transform: "scale(" + scale + ")"
             });
             next_fs.css({ left: left, opacity: opacity });
         },

@@ -9,24 +9,31 @@
             {{ form.csrf_token() }}
             <div class="modal-body">
                 <div class="row">
+                    <small class="mb-3 text-secondary"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
                     <div class="col-12">
                         <div class="mb-3">
                             <!-- name -->
-                            {{ form.title.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ form.title.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ form.title(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-6">
                         <div class="mb-3">
                             <!-- implementer -->
-                            {{ form.implementer.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ form.implementer.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ form.implementer(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-6">
                         <div class="mb-3">
                             <!-- collaborator -->
-                            {{ form.collaborator.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ form.collaborator.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             <select id="{{form.collaborator.id}}" name="{{form.collaborator.name}}" class="form-select">
                                 {% for option in form.collaborator.choices %}
                                     <option value="{{ option[0] }}" {{'selected' if option[0] == project.CollaboratorId}}>{{ option[1] }}</option>
@@ -37,23 +44,27 @@
                     <div class="col-12">
                         <div class="mb-3">
                             <!-- target_group -->
-                            {{ form.target_group.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ form.target_group.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ form.target_group(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-6">
                         <div class="mb-3">
-                            {% set project_team = [] %}
+                            {% set project_team_list = [] %}
 
                             {% for faculty in project_team %}
-                                {% set _ = project_team.append(faculty.FacultyId) %}
+                                {% set _ = project_team_list.append(faculty.FacultyId|string) %}
                             {% endfor %}
                             <!-- project team -->
                             <div class="form-group">
-                                {{ form.project_team.label(class="form-label")}}
+                                <div class="d-flex">
+                                    {{ form.project_team.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                                </div>
                                 <select id="{{form.project_team.id}}" name="{{form.project_team.name}}"  class="form-select" multiple="" hidden>
                                     {% for option in form.project_team.choices %}
-                                        <option value="{{ option[0] }}" {{'selected' if option[0] in project_team}}>{{ option[1] }}</option>
+                                        <option value="{{ option[0] }}" {{'selected' if option[0] in project_team_list}}>{{ option[1] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -62,35 +73,45 @@
                     <div class="col-auto col-md-6">
                         <div class="mb-3">
                             <!-- project type -->
-                            {{ form.project_type.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ form.project_type.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ form.project_type(class="form-select")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-6">
                         <div class="mb-3">
                             <!-- start date -->
-                            {{ form.start_date.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ form.start_date.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ form.start_date(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-6">
                         <div class="mb-3">
                             <!-- end date -->
-                            {{ form.end_date.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ form.end_date.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ form.end_date(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="mb-3">
                             <!-- impact_statement -->
-                            {{ form.impact_statement.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ form.impact_statement.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ form.impact_statement(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="mb-3">
                             <!-- objectives -->
-                            {{ form.objectives.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ form.objectives.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ form.objectives(class="form-control")}}
                         </div>
                     </div>
@@ -133,13 +154,17 @@
                     <input type="hidden" name="id" value="{{budget.BudgetId}}">
                     <div class="col-12 col-md-6">
                         <div class="mb-3">
-                            <label for="approved_budget" class="form-label">Budget Amount</label>
+                            <div class="d-flex">
+                                <label for="approved_budget" class="form-label">Budget Amount</label><span class="text-danger ms-1">*</span>
+                            </div>
                             <input type="number" name="approved_budget" value="{{budget.Amount}}" class="form-control" required>
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
                         <div class="mb-3">
-                            <label for="fund_type" class="form-label">Fund Type</label>
+                            <div class="d-flex">
+                                <label for="fund_type" class="form-label">Fund Type</label><span class="text-danger ms-1">*</span>
+                            </div>
                             <select name="fund_type" id="fund_type" class="form-select">
                                 <option value="Internal" {{'selected' if budget.FundType == 'Internal'}} required>Internal</option>
                                 <option value="External" {{'selected' if budget.FundType == 'External'}} required>External</option>

@@ -9,24 +9,31 @@
             {{ ext_program_form.csrf_token() }}
             <div class="modal-body">
                 <div class="row">
+                    <small class="mb-3 text-secondary"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
                     <div class="col-12">
                         <div class="mb-3">
                             <!-- name -->
-                            {{ ext_program_form.program_name.label(class="d-block mb-2") }}
+                            <div class="d-flex">
+                                {{ ext_program_form.program_name.label(class="d-block mb-2") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ ext_program_form.program_name(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="mb-3">
                             <!-- name -->
-                            {{ ext_program_form.rationale.label(class="d-block mb-2") }}
+                            <div class="d-flex">
+                                {{ ext_program_form.rationale.label(class="d-block mb-2") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ ext_program_form.rationale(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!-- agenda -->
-                            {{ ext_program_form.agenda.label(class="block mb-2 text-sm font-medium text-gray-900") }}
+                            <div class="d-flex">
+                                {{ ext_program_form.agenda.label(class="d-block mb-2") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             <select name="{{ ext_program_form.agenda.name }}" class="form-select">
                                 {% for option in ext_program_form.agenda.choices %}
                                     <option value="{{ option[0] }}" {{ 'selected' if option[0] == ext_program.Agenda.AgendaId }}>{{ option[1] }}</option>
@@ -44,7 +51,9 @@
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!-- program -->
-                            {{ ext_program_form.program.label(class="d-block mb-2") }}
+                            <div class="d-flex">
+                                {{ ext_program_form.program.label(class="d-block mb-2") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             <select name="{{ ext_program_form.program.name }}" class="form-select">
                                 {% for option in ext_program_form.program.choices %}
                                     <option value="{{ option[0] }}" {{ 'selected' if option[0] == ext_program.Program.ProgramId }}>{{ option[1] }}</option>

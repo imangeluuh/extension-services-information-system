@@ -205,7 +205,6 @@ def evaluation(id):
     
     evaluation = Evaluation.query.filter_by(EvaluationId=id).first()
     if evaluation.ActivityId not in list_activity_ids:
-        print('andito siya', evaluation.ActivityId)
         return redirect(url_for('programs.activity', id=evaluation.ActivityId))
 
     if not evaluation: 

@@ -12,31 +12,41 @@
                 <div class="row">
                         {{ form.csrf_token() }}
                         {{ form.extension_program(value=ext_program.ExtensionProgramId)}}
+                        <small class="mb-3 text-secondary"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
+                        
                         <div class="col-12">
                             <div class="mb-3">
                                 <!-- name -->
-                                {{ form.title.label(class="form-label") }}
+                                <div class="d-flex">
+                                    {{ form.title.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.title(class="form-control")}}
                             </div>
                         </div>
                         <div class="col-auto col-md-6">
                             <div class="mb-3">
                                 <!-- implementer -->
-                                {{ form.implementer.label(class="form-label") }}
+                                <div class="d-flex">
+                                    {{ form.implementer.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.implementer(class="form-control")}}
                             </div>
                         </div>
                         <div class="col-auto col-md-6">
                             <div class="mb-3">
                                 <!-- collaborator -->
-                                {{ form.collaborator.label(class="form-label") }}
+                                <div class="d-flex">
+                                    {{ form.collaborator.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.collaborator(class="form-select")}}
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="mb-3">
                                 <!-- target_group -->
-                                {{ form.target_group.label(class="form-label") }}
+                                <div class="d-flex">
+                                    {{ form.target_group.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.target_group(class="form-control")}}
                             </div>
                         </div>
@@ -44,7 +54,9 @@
                             <div class="mb-3">
                                 <!-- project team -->
                                 <div class="form-group">
-                                    {{ form.project_team.label(class="form-label")}}
+                                    <div class="d-flex">
+                                        {{ form.project_team.label }}<span class="ms-1 text-danger"> *</span>
+                                    </div>
                                     <select id="{{form.project_team.id}}" name="{{form.project_team.name}}" multiple="" hidden>
                                         {% for option in form.project_team %}
                                             {{ option }}
@@ -56,35 +68,45 @@
                         <div class="col-auto col-md-6">
                             <div class="mb-3">
                                 <!-- project type -->
-                                {{ form.project_type.label(class="form-label") }}
+                                <div class="d-flex">
+                                    {{ form.project_type.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project_type(class="form-select")}}
                             </div>
                         </div>
                         <div class="col-auto col-md-6">
                             <div class="mb-3">
                                 <!-- start date -->
-                                {{ form.start_date.label(class="form-label") }}
+                                <div class="d-flex">
+                                    {{ form.start_date.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.start_date(class="form-control")}}
                             </div>
                         </div>
                         <div class="col-auto col-md-6">
                             <div class="mb-3">
                                 <!-- end date -->
-                                {{ form.end_date.label(class="form-label") }}
+                                <div class="d-flex">
+                                    {{ form.end_date.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.end_date(class="form-control")}}
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="mb-3">
                                 <!-- impact_statement -->
-                                {{ form.impact_statement.label(class="form-label") }}
+                                <div class="d-flex">
+                                    {{ form.impact_statement.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.impact_statement(class="form-control")}}
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="mb-3">
                                 <!-- objectives -->
-                                {{ form.objectives.label(class="form-label") }}
+                                <div class="d-flex">
+                                    {{ form.objectives.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.objectives(class="form-control")}}
                             </div>
                         </div>
@@ -98,7 +120,9 @@
                         <div class="col-auto col-md-6">
                             <div class="mb-3">
                                 <!-- project_proposal -->
-                                {{ form.project_proposal.label(class="form-label") }}
+                                <div class="d-flex">
+                                    {{ form.project_proposal.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 {{ form.project_proposal(class="form-control")}}
                             </div>
                         </div>
@@ -113,7 +137,9 @@
                         </div>
                         <div  class="col-12 col-md-23" >
                             <div class="mb-3" id="research-title" style="display: none;">
-                                {{ form.research_title.label(class="form-label")}}
+                                <div class="d-flex">
+                                    {{ form.research_title.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 <select id="{{form.research_title.id}}" name="{{form.research_title.name}}" class="form-select">
                                 {% for choice in form.research_title.choices %}
                                 <option value="{{choice[0]}}">{{choice[1]}}</option>
@@ -124,13 +150,13 @@
                         {% endif %}
                         <div class="col-12 col-md-6">
                             <div class="mb-3">
-                                <label for="approved_budget" class="form-label">Budget Amount</label>
+                                <label for="approved_budget" class="form-label">Budget Amount<span class="ms-1 text-danger"> *</span></label>
                                 <input type="number" name="approved_budget" class="form-control" required>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="mb-3">
-                                <label for="fund_type" class="form-label">Fund Type</label>
+                                <label for="fund_type" class="form-label">Fund Type<span class="ms-1 text-danger"> *</span></label>
                                 <select name="fund_type" id="fund_type" class="form-select">
                                     <option value="Internal" required>Internal</option>
                                     <option value="External" required>External</option>

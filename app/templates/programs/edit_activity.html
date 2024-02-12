@@ -7,33 +7,43 @@
             </div>
             <form action="{{ url_for('programs.updateActivity', id=activity.ActivityId)}}" enctype="multipart/form-data" method="post">
             {{ activity_form.csrf_token() }}
+            {{ activity_form.project(class="d-none", value=activity.ProjectId)}}
             <div class="modal-body">
                 <div class="row">
+                    <small class="mb-3 text-secondary"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
                     <div class="col-12">
                         <div class="mb-3">
                             <!-- name -->
-                            {{ activity_form.activity_name.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.activity_name.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ activity_form.activity_name(class="form-control", value=activity.ActivityName)}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!--date -->
-                            {{ activity_form.date.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.date.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ activity_form.date(class="form-control", value=activity.Date)}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!-- start time -->
-                            {{ activity_form.start_time.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.start_time.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ activity_form.start_time(id="start_time", class="form-control", value=activity.StartTime.strftime('%H:%M'))}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!-- end time -->
-                            {{ activity_form.end_time.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.end_time.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             {{ activity_form.end_time(id="end_time", class="form-control", value=activity.StartTime.strftime('%H:%M'))}}
                         </div>
                     </div>
@@ -51,7 +61,9 @@
                             
                             <!-- speaker-->
                             <div class="form-group">
-                                {{ activity_form.speaker.label(class="form-label")}}
+                                <div class="d-flex">
+                                    {{ activity_form.speaker.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                                </div>
                                 <select id="{{activity_form.speaker.id}}" name="{{activity_form.speaker.name}}" multiple="" hidden>
                                     {% for option in activity_form.speaker.choices %}
                                     <option value="{{ option[0] }}" {{'selected' if option[0] in my_list}}>{{ option[1] }}</option>
@@ -63,7 +75,9 @@
                     <div class="col-auto col-md-6">
                         <div class="mb-3">
                             <!-- location -->
-                            {{activity_form.location.label(class="form-label")}}
+                            <div class="d-flex">
+                                {{ activity_form.location.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             <select id="{{activity_form.location.id}}1" name="{{activity_form.location.name}}" class="form-select">
                                 {% for option in activity_form.location.choices %}
                                 <option value="{{ option[0] }}" {{'selected' if option[0] == activity.LocationId}}>{{ option[1] }}</option>
@@ -74,7 +88,9 @@
                     <div class="col-12">
                         <div class="mb-3">
                             <!-- description -->
-                            {{ activity_form.activity_description.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.activity_description.label(class="form-label") }}<span class="text-danger ms-1">*</span>
+                            </div>
                             <textarea name="{{ activity_form.activity_description.name }}" class="form-control">{{ activity.Description }}</textarea>
                         </div>
                     </div>

@@ -42,14 +42,15 @@
         <form method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <fieldset>
+                <small class="mb-3 text-secondary text-center"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
                 <div class="row d-flex align-items-center mb-3">
                     <label class="col-auto col-md-3">Evaluation Name</label>
-                    <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">* required</span>
+                    <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">*</span>
                     <input name="name" class="col-auto col-md-6 p-2 text-secondary rounded border border-secondary-subtle" placeholder="Evaluation name" required>
                 </div>
                 <div class="row d-flex align-items-center mb-3">
                     <label class="col-auto col-md-3">Activity</label>
-                    <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">* required</span>
+                    <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">*</span>
                     <div class="form-group col-auto col-md-6 p-0 ">
                         <select id="activity" name="activity" class="p-2 text-secondary bg-secondary-subtle rounded border border-secondary-subtle" required hidden>
                             <option value="" selected disabled>Please select an activity...</option>
@@ -61,7 +62,7 @@
                 </div>
                 <div class="row d-flex align-items-center mb-3">
                     <label class="col-auto col-md-3">Evaluation Type</label>
-                    <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">* required</span>
+                    <span class="col-auto col-md-3 order-md-last text-danger fs-5 d-flex align-items-start">*</span>
                     <div class="form-group col-auto col-md-6 p-0 ">
                         <select id="type" name="type" class="p-2 text-secondary bg-secondary-subtle rounded border border-secondary-subtle" required hidden>
                             <option value="" selected disabled>Please select an evaluation type...</option>
@@ -76,7 +77,7 @@
                     <div class="col-auto col-md-6">
                         <i>Select the questions you wish to include.</i>
                     </div>
-                    <span class="col-auto col-md-3 text-danger fs-5 d-flex align-items-start">* required</span>
+                    <span class="col-auto col-md-3 text-danger fs-5 d-flex align-items-start">*</span>
                 </div>
                 {% for question in questions %}
                 <div class="row mb-3">

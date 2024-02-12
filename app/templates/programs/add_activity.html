@@ -9,31 +9,40 @@
             {{ activity_form.csrf_token() }}
             <div class="modal-body">
                 <div class="row">
+                    <small class="mb-3 text-secondary"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
                     <div class="col-12">
                         <div class="mb-3">
                             <!-- name -->
-                        {{ activity_form.activity_name.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.activity_name.label }}<span class="ms-1 text-danger"> *</span>
+                            </div>
                         {{ activity_form.activity_name(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!--date -->
-                            {{ activity_form.date.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.date.label }}<span class="ms-1 text-danger"> *</span>
+                            </div>
                             {{ activity_form.date(class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!-- start time -->
-                            {{ activity_form.start_time.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.start_time.label }}<span class="ms-1 text-danger"> *</span>
+                            </div>
                             {{ activity_form.start_time(id="start_time", class="form-control")}}
                         </div>
                     </div>
                     <div class="col-auto col-md-4">
                         <div class="mb-3">
                             <!-- end time -->
-                            {{ activity_form.end_time.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.end_time.label }}<span class="ms-1 text-danger"> *</span>
+                            </div>
                             {{ activity_form.end_time(id="start_time", class="form-control")}}
                         </div>
                     </div>
@@ -41,7 +50,9 @@
                         <div class="mb-3">
                             <!-- speaker-->
                             <div class="form-group">
-                                {{ activity_form.speaker.label(class="form-label")}}
+                                <div class="d-flex">
+                                    {{ activity_form.speaker.label }}<span class="ms-1 text-danger"> *</span>
+                                </div>
                                 <select id="{{activity_form.speaker.id}}" name="{{activity_form.speaker.name}}" multiple="" hidden required>
                                     {% for option in activity_form.speaker %}
                                         {{ option }}
@@ -53,14 +64,18 @@
                     <div class="col-auto col-md-6">
                         <div class="mb-3">
                             <!-- location -->
-                            {{ activity_form.location.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.location.label }}<span class="ms-1 text-danger"> *</span>
+                            </div>
                             {{ activity_form.location(class="form-select")}}
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="mb-3">
+                        <div class="mb-3"> 
                             <!-- description -->
-                            {{ activity_form.activity_description.label(class="form-label") }}
+                            <div class="d-flex">
+                                {{ activity_form.activity_description.label }}<span class="ms-1 text-danger"> *</span>
+                            </div>
                             {{ activity_form.activity_description(class="form-control")}}
                         </div>
                     </div>

@@ -25,13 +25,7 @@ load_dotenv(dotenv_path=env_path)
 # ============== Admin/Faculty views ===========================
 
 
-def getProjectTeamInput(selected_values, choices, project_id):
-    # if selected_values:
-    #     for choice in choices:
-    #         if choice[0] in selected_values:
-    #             faculty_to_add = ProjectTeam(ProjectId=project_id,
-    #                                     FacultyId=choice[0])
-    #             db.session.add(faculty_to_add)
+def getProjectTeamInput(selected_values, project_id):
     if selected_values:
         for id in selected_values:
             faculty_to_add = ProjectTeam(ProjectId=project_id,
@@ -209,7 +203,7 @@ def insertExtensionProgram():
         int_project_id = project_to_add.ProjectId
 
         # Save project team
-        getProjectTeamInput(form.project.project_team.data, form.project.project_team.choices, int_project_id)
+        getProjectTeamInput(form.project.project_team.data, int_project_id)
 
         # Add budget of the project
         approved_budgets = request.form.getlist('approved_budget')
@@ -404,7 +398,7 @@ def insertProject():
             int_project_id = project_to_add.ProjectId
 
             # Save project team
-            getProjectTeamInput(form.project_team.data, form.project_team.choices, int_project_id)
+            getProjectTeamInput(form.project_team.data, int_project_id)
 
             # Add budget of the project
             approved_budgets = request.form.getlist('approved_budget')
@@ -519,7 +513,7 @@ def updateProject(id):
             if bool_is_removed:
                 db.session.delete(faculty)
 
-        getProjectTeamInput(selected_values, form.project_team.choices, id)
+        getProjectTeamInput(selected_values, id)
 
         # Update project details
         extension_project.Title =form.title.data
