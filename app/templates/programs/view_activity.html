@@ -41,7 +41,7 @@ object-fit: cover;">
         <h3 class="card-title">Details</h3>
         <div class="d-flex justify-content-end w-100">
             {% if activity.Project.LeadProponentId == current_user.UserId %}
-            <button type="button" data-bs-toggle="modal" data-bs-target="#edit-activity-{{activity.ActivityId}}" class="btn btn-primary rounded-2 d-flex align-items-center me-2 py-1 px-2">
+            <button type="button" data-bs-toggle="modal" data-bs-target="#edit-activity-{{activity.ActivityId}}" class="btn btn-warning rounded-2 d-flex align-items-center me-2 py-1 px-2">
                 <iconify-icon class="me-2" icon="bx:edit"></iconify-icon>
                 Edit
             </button>

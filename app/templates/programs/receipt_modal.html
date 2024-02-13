@@ -7,8 +7,11 @@
             </div>
             <form action="{{url_for('programs.uploadReceipt', id=item.ItemId)}}" method="post" enctype="multipart/form-data" >
             {{form.hidden_tag()}}
-            <div class="modal-body">
-            {{form.receipt.label(class="form-label")}}
+            <div class="modal-body pt-2">
+            <small class="mb-3 text-secondary"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
+            <div class="d-flex mt-3">
+                {{form.receipt.label(class="form-label")}}<span class="text-danger ms-1">*</span>
+            </div>
             <input type="file" name="{{form.receipt.name}}" id="{{form.receipt.id}}" class="form-control" required>
             {% if item.ReceiptUrl %}
             <div class="d-flex mt-3">

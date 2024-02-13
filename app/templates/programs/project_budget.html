@@ -23,7 +23,7 @@
         <!-- Page title actions -->
         <div class="col-auto ms-auto d-print-none">
             <div class="d-flex">
-            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-item">
+            <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-item">
                 <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
                 Add Item
@@ -207,7 +207,7 @@
                   <div class="col-12 col-md-3 d-flex align-items-center"  data-toggle="tooltip" data-placement="left" title="Receipt">
                     <div class="row">
                       <div class="col-12 col-md-4">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#edit-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#edit-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-warning">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
                         </a>
                       </div>
@@ -217,7 +217,7 @@
                         </a>
                       </div>
                       <div class="col-12 col-md-4">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#receipt-{{item.ItemId}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="40" d="M160 336V48l32 16l32-16l31.94 16l32.37-16L320 64l31.79-16l31.93 16L416 48l32.01 16L480 48v224"/><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32" d="M480 272v112a80 80 0 0 1-80 80a80 80 0 0 1-80-80v-48H48a15.86 15.86 0 0 0-16 16c0 64 6.74 112 80 112h288"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M224 144h192m-128 80h128"/></svg></a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#receipt-{{item.ItemId}}" class="text-success "><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="40" d="M160 336V48l32 16l32-16l31.94 16l32.37-16L320 64l31.79-16l31.93 16L416 48l32.01 16L480 48v224"/><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32" d="M480 272v112a80 80 0 0 1-80 80a80 80 0 0 1-80-80v-48H48a15.86 15.86 0 0 0-16 16c0 64 6.74 112 80 112h288"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M224 144h192m-128 80h128"/></svg></a>
                       </div>
                     </div>
                   </div>
@@ -244,23 +244,34 @@
       {{form.csrf_token()}}
       <div class="modal-body">
         <div class="row">
+          <small class="mb-3 text-secondary"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
           <div class="col-12 mb-3">
-              {{form.item.label(class="form-label")}}
+            <div class="d-flex">
+              {{form.item.label(class="form-label")}}<span class="text-danger ms-1">*</span>
+            </div>
               {{form.item(class="form-control")}}
           </div>
           <div class="col-12 mb-3">
-            {{form.particulars.label(class="form-label")}}
+            <div class="d-flex">
+              {{form.particulars.label(class="form-label")}}<span class="text-danger ms-1">*</span>
+            </div>
             {{form.particulars(class="form-control")}}
           </div>
           <div class="col-12 mb-3">
-            <label for="amount" class="form-label">Estimated Amount</label>
+            <div class="d-flex">
+              <label for="amount" class="form-label">Estimated Amount</label><span class="text-danger ms-1">*</span>
+            </div>
             {{form.amount(class="form-control")}}
           </div>
           <div class="col-12 mb-3">
-            {{form.activity.label(class="form-label")}}
+            <div class="d-flex">
+              {{form.activity.label(class="form-label")}}<span class="text-danger ms-1">*</span>
+            </div>
             <select name="{{form.activity.name}}" id="{{form.activity.id}}" class="form-select">
               {% for activity in project.Activity %}
+              {% if activity.IsArchived == False %}
               <option value="{{activity.ActivityId}}">{{activity.ActivityName}}</option>
+              {%endif%}
               {% endfor %}
             </select>
           </div>

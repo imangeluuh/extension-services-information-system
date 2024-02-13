@@ -1,24 +1,37 @@
 <div class="modal modal-blur fade" id="edit-item-{{item.ItemId}}" tabindex="-1" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Item</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
         <form action="{{url_for('programs.updateItem', id=item.ItemId)}}", method="post">
         <div class="modal-body">
             {{ form.hidden_tag() }}
             <div class="row">
+              <small class="mb-3 text-secondary"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
               <div class="col-12 mb-3">
-                {{form.item.label(class="form-label")}}
+                <div class="d-flex">
+                  {{form.item.label(class="form-label")}}<span class="text-danger ms-1">*</span>
+                </div>
                 {{form.item(class="form-control", value=item.ItemName)}}
               </div>
               <div class="col-12 mb-3">
-                {{form.particulars.label(class="form-label")}}
+                <div class="d-flex">
+                  {{form.particulars.label(class="form-label")}}<span class="text-danger ms-1">*</span>
+                </div>
                 {{form.particulars(class="form-control", value=item.Particulars)}}
               </div>
               <div class="col-12 mb-3">
-                <label for="amount" class="form-label">Amount</label>
+                <div class="d-flex">
+                  <label for="amount" class="form-label">{{'Amount' if item.IsPurchased else 'Estimated Amount' }}</label><span class="text-danger ms-1">*</span>
+                </div>
                 {{form.amount(class="form-control", value=item.Amount)}}
               </div>
               <div class="col-12 mb-3">
-                {{form.activity.label(class="form-label")}}
+                <div class="d-flex">
+                  {{form.activity.label(class="form-label")}}<span class="text-danger ms-1">*</span>
+                </div>
                 <select name="{{form.activity.name}}" id="{{form.activity.id}}" class="form-select">
                   {% for activity in project.Activity %}
                   <option value="{{activity.ActivityId}}" {{'selected' if item.ActivityId == activity.ActivityId}}>{{activity.ActivityName}}</option>

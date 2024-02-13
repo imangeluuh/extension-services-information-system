@@ -18,9 +18,9 @@
             {% for project in projects %}
             <tr>
                 <td class="title">{{project.Title}}</td>
-                <td class="lead">{{project.totalBudget()}}</td>
-                <td class="agency">{{project.totalExpense()}}</td>
-                <td class="time">{{project.totalBudget() - project.totalExpense()}}</td>
+                <td class="lead text-end pe-4">&#8369;{{ "{:,.2f}".format(project.totalBudget())}}</td>
+                <td class="agency text-end pe-4">&#8369;{{"{:,.2f}".format(project.totalExpense())}}</td>
+                <td class="time text-end pe-4">&#8369;{{"{:,.2f}".format(project.totalBudget() - project.totalExpense())}}</td>
             </tr>
             {% endfor %}
         </tbody>

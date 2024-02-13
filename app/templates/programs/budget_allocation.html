@@ -38,15 +38,15 @@
                         <tr>
                             <td>{{ project.Title }}</td>
                             <td>{{ project.ExtensionProgram.Name }}</td>
-                            <td class="approved"> {{ "{:,.2f}".format(project.totalBudget()) }}</td>
-                            <td class="flex"><a href="{{ url_for('programs.projectBudget', id=project.ProjectId) }}" class="btn btn-success me-2 px-2 py-1 rounded">View</a></td>
+                            <td class="approved text-end pe-4"> {{ "{:,.2f}".format(project.totalBudget()) }}</td>
+                            <td class="flex"><a href="{{ url_for('programs.projectBudget', id=project.ProjectId) }}" class="btn btn-primary me-2 px-2 py-1 rounded">View</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr>
                             <td class="fw-bold" colspan="2" style="padding: 0.75rem!important;">Total</td>
-                            <td class="fw-bold" id="total-approved" style="padding: 0.75rem!important;"></td>
+                            <td class="fw-bold text-end pe-4" id="total-approved"></td>
                             <td></td>
                         </tr>
                     </tfoot>

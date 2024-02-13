@@ -402,7 +402,8 @@ def createCollaborator():
 @login_required(role=["Admin"])
 def viewCollaborator(id):
     collaborator = Collaborator.query.filter_by(CollaboratorId=id).first()
-    return render_template('admin/view_collaborator.html', collaborator=collaborator)
+    current_date = datetime.utcnow().date()
+    return render_template('admin/view_collaborator.html', collaborator=collaborator, current_date=current_date)
 
 @bp.route('/collaborators/update/<int:id>', methods=['POST'])
 @login_required(role=["Admin"])

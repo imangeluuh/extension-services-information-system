@@ -9,21 +9,28 @@
         {{form.hidden_tag()}}
         <div class="modal-body">
             <div class="row">
+                <small class="mb-3 text-secondary"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
                 <div class="col-12">
                     <div class="mb-3">
-                        {{form.organization.label(class="form-label")}}
+                        <div class="d-flex">
+                            {{form.organization.label(class="form-label")}}<span class="text-danger ms-1">*</span>
+                        </div>
                         {{form.organization(class="form-control", value=collaborator.Organization)}}
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="mb-3">
-                        {{form.location.label(class="form-label")}}
+                        <div class="d-flex">
+                            {{form.location.label(class="form-label")}}<span class="text-danger ms-1">*</span>
+                        </div>
                         {{form.location(class="form-control", value=collaborator.Location)}}
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
                     <div>
-                        {{form.signed_moa.label(class="form-label")}}
+                        <div class="d-flex">
+                            {{form.signed_moa.label(class="form-label")}}<span class="text-danger ms-1">*</span>
+                        </div>
                         {{form.signed_moa(class="form-control")}}
                     </div>
                 </div>

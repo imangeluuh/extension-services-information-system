@@ -3,7 +3,7 @@
         <h3 class="card-title" id="card-title">Details</h3>
         {% if current_user.RoleId == 1 and request.blueprint != 'reports' %}
         <div id="edit-btn" class="d-flex justify-content-end w-100">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#edit-ext-program" class="btn btn-primary d-flex align-items-center ">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#edit-ext-program" class="btn btn-warning d-flex align-items-center ">
                 <iconify-icon icon="bx:edit" class="fs-2 me-1"></iconify-icon>
                 Edit Details
             </a>
