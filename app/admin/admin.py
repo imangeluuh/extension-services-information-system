@@ -2,7 +2,7 @@ from app.admin import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
 from flask_login import current_user, login_user, login_required, logout_user
 from .forms import LoginForm, CollaboratorForm, SpeakerForm
-from ..models import Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity, Speaker, Faculty, Beneficiary, Student
+from ..models import Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity, Speaker, Faculty, Beneficiary, Student, Attendance
 from ..Api.resources import AdminLoginApi
 from ..decorators.decorators import login_required
 from app import db, cache
@@ -231,7 +231,8 @@ def viewBeneficiary(id):
     .all()
     )
     current_date = datetime.utcnow().date()
-    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
+    attendance = [attendance.ActivityId for attendance in Attendance.query.filter_by(UserId=user.User[0].UserId).all()]
+    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date, attendance=attendance)
 
 @bp.route('/students/<string:id>')
 @login_required(role=["Admin"])
@@ -245,7 +246,8 @@ def viewStudent(id):
     .all()
     )
     current_date = datetime.utcnow().date()
-    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
+    attendance = [attendance.ActivityId for attendance in Attendance.query.filter_by(UserId=user.User[0].UserId).all()]
+    return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date, attendance=attendance)
 
 @bp.route('/faculty/<int:id>')
 @login_required(role=["Admin"])

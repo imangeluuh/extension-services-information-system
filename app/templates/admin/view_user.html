@@ -13,12 +13,12 @@
         <!--Container-->
         <div class="container w-100 mx-auto py-5">
             <!--Card-->
-            <div class="rounded shadow bg-white">
+            <div class="rounded shadow bg-white pb-3">
                 <h1 class="d-flex align-items-center fw-semibold px-4 py-4 fs-1">
                     {{ user.FirstName }} {{ user.LastName}}'s Information
                 </h1>
                 <!-- Tabs -->
-                <div class="card mx-3 shadow-none  ">
+                <div class="card mx-3 shadow-none">
                     <div class="card-header ">
                         <ul class="nav nav-tabs card-header-tabs bg-white " data-bs-toggle="tabs" role="tablist">
                             <li class="nav-item" role="presentation">
@@ -180,7 +180,7 @@
                                                     Ongoing
                                                     {% endif %}
                                                 </td>
-                                                <td><a href="{{ url_for('programs.viewProject', id=project.ProjectId) }}" class="btn btn-success">View</a></td>
+                                                <td><a href="{{ url_for('programs.viewProject', id=project.ProjectId) }}" class="btn btn-primary">View</a></td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -200,22 +200,30 @@
                                                 </h2>
                                                 <div id="collapse-{{project.ProjectId}}" class="accordion-collapse collapse" data-bs-parent="#project-accordion" style="">
                                                     <div class="accordion-body pt-0">
+                                                        {% if project.Activity %}
                                                         {% for activity in project.Activity %}
                                                         <div class="d-flex justify-content-between p-3"> 
                                                             <p class="mb-2">{{ activity.ActivityName }}</p>
                                                             <div class="d-flex align-items-center">
-                                                                {% if activity.Attendance[0] and activity.Attendance[0].HasAttended == True %}
-                                                                <span class="text-success fw-semibold pe-2">Attended</span>
-                                                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/8b/Eo_circle_green_white_checkmark.svg" alt="" width="18">
-                                                                {% elif activity.Attendance[0] and activity.Attendance[0].HasAttended == False %}
-                                                                <span class="text-danger fs-semibold pe-2">Absent</span>
-                                                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Cross_red_circle.svg/768px-Cross_red_circle.svg.png" alt="" width="18">
+                                                                {% if activity.Date < current_date %}
+                                                                    {% if activity.ActivityId in attendance %}
+                                                                    <span class="text-success fw-semibold pe-2">Attended</span>
+                                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8b/Eo_circle_green_white_checkmark.svg" alt="" width="18">
+                                                                    {% else %}
+                                                                    <span class="text-danger fs-semibold pe-2">Absent</span>
+                                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Cross_red_circle.svg/768px-Cross_red_circle.svg.png" alt="" width="18">
+                                                                    {% endif %}
                                                                 {% else %}
                                                                 <span class="text-secondary fs-semibold">Activity has not yet started</span>
                                                                 {% endif %}
                                                             </div>
                                                         </div>
                                                         {% endfor %}
+                                                        {% else %}
+                                                        <div class="d-flex justify-content-between p-3"> 
+                                                            No activities found.
+                                                        </div>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             {% endfor %}
