@@ -35,11 +35,11 @@
                     <div class="col-12 col-md-9 datagrid-item">
                         <div class="datagrid-content fw-bold">
                             {% if current_user.RoleId == 2 %}
-                            {{current_user.Beneficiary.BeneficiaryId}}
+                            {{current_user.BeneficiaryId}}
                             {% elif current_user.RoleId == 3 %}
-                            {{current_user.Student.StudentId}}
+                            {{current_user.StudentId}}
                             {% else %}
-                            {{current_user.Faculty.FacultyId}}
+                            {{current_user.FacultyId}}
                             {% endif %}
                         </div>
                     </div>
@@ -85,11 +85,11 @@
                     <div class="col-12 col-md-9 datagrid-item">
                         <div class="datagrid-content fw-bold">
                             {% if current_user.RoleId == 2 %}
-                            {{current_user.Beneficiary.DateOfBirth}}
+                            {{current_user.Beneficiary.DateOfBirth.strftime('%m/%d/%Y')}}
                             {% elif current_user.RoleId == 3 %}
-                            {{current_user.Student.DateOfBirth}}
+                            {{current_user.Student.DateOfBirth.strftime('%m/%d/%Y')}}
                             {% else %}
-                            {{current_user.Faculty.BirthDate}}
+                            {{current_user.Faculty.BirthDate.strftime('%m/%d/%Y')}}
                             {% endif %}
                         </div>
                     </div>

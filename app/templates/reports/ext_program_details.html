@@ -23,7 +23,7 @@
                     <td class="title">{{project.Title}}</td>
                     <td class="lead">{{project.LeadProponent.Faculty.FirstName}} {{project.LeadProponent.Faculty.LastName}}</td>
                     <td class="agency">{{project.Collaborator.Organization}}</td>
-                    <td class="time">{{project.StartDate}} - {{project.EndDate}}</td>
+                    <td class="time">{{project.StartDate.strftime('%B %d, %Y')}} - {{project.EndDate.strftime('%B %d, %Y')}}</td>
                 </tr>
                 {% endif %}
                 {% endfor %}

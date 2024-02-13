@@ -45,7 +45,7 @@
                     <tr>
                         <td>{{ evaluation.EvaluationName }}</td>
                         <td>{{ evaluation.Activity.ActivityName }}</td>
-                        <td>{{ evaluation.CreatedAt.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td>{{ evaluation.CreatedAt.strftime("%m/%d/%Y, %I:%M %p") }}</td>
                         {% if current_user.Role.RoleName == 'Admin'%}
                         <td>{{ evaluation.Creator.Faculty.FirstName ~ ' ' ~ evaluation.Creator.Faculty.LastName }}</td>
                         {% endif %}
@@ -87,7 +87,7 @@
                     <tr>
                         <td>{{ evaluation.EvaluationName }}</td>
                         <td>{{ evaluation.Activity.ActivityName }}</td>
-                        <td>{{ evaluation.CreatedAt.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td>{{ evaluation.CreatedAt.strftime("%m/%d/%Y, %I:%M %p") }}</td>
                         {% if current_user.Role.RoleName == 'Admin'%}
                         <td>{{ evaluation.Creator.Faculty.FirstName ~ ' ' ~ evaluation.Creator.Faculty.LastName }}</td>
                         {% endif %}

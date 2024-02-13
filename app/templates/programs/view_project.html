@@ -121,11 +121,11 @@ object-fit: cover;">
                         </div>
                         <div class="col-auto col-md-2">
                             <div class="datagrid-title">Start Date</div>
-                            <div class="datagrid-content">{{project.StartDate}}</div>
+                            <div class="datagrid-content">{{project.StartDate.strftime('%B %d, %Y')}}</div>
                         </div>
                         <div class="col-auto col-md-2">
                             <div class="datagrid-title">End Date</div>
-                            <div class="datagrid-content">{{project.EndDate}}</div>
+                            <div class="datagrid-content">{{project.EndDate.strftime('%B %d, %Y')}}</div>
                         </div>
                         <div class="col-8">
                             <div class="datagrid-title">Target Group</div>
