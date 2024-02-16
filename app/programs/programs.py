@@ -944,10 +944,10 @@ def uploadReceipt(id):
 @login_required(role=["Admin", "Faculty"])
 def assignStudent():
     student_registration = Registration.query.filter_by(RegistrationId=int(request.form.get('id'))).first()
-    student_registration.IsAssigned = True if request.form.get('is_assigned') == 'Assign' else False
+    student_registration.IsAssigned = bool(request.form.get('is_assigned'))
     try:
         db.session.commit()
-        if request.form.get('is_assigned') == 'Assign':
+        if request.form.get('is_assigned'):
             flash('Student is successfully assigned to manage attendance and evaluations', category='success')
         else:
             flash('Student is successfully unassigned from managing attendance and evaluations', category='success')

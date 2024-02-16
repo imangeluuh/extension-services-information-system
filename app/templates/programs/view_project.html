@@ -184,7 +184,7 @@ object-fit: cover;">
                                         <form action="{{ url_for('programs.assignStudent')}}" method="post">
                                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
                                             <input type="hidden" name="id" value="{{user.RegistrationId}}">
-                                            <input type="hidden" name="is_assigned" value="{{1 if user.IsAssigned == 0 else 0}}">
+                                            <input type="hidden" name="is_assigned" value="{{0 if user.IsAssigned else 1}}">
                                             <input type="hidden" name="project_id" value="{{project.ProjectId}}">
                                             <input type="submit" value="{{'Assign' if user.IsAssigned == 0 else 'Unassign' }}" class="btn {{'btn-danger' if user.IsAssigned else 'btn-success'}} me-2 px-2 py-1 rounded-2">
                                         </form>
