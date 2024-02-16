@@ -15,7 +15,7 @@
             <div class="col">
                 <div class="mb-1">
                 <ol class="breadcrumb bg-transparent p-0" aria-label="breadcrumbs">
-                    <li class="breadcrumb-item"><a href="{{url_for('announcement.manageAnnouncements') if current_user.is_authenticated and current_user.Role.RoleName in ["Admin", "Faculty"] }}">Announcements</a></li>
+                    <li class="breadcrumb-item"><a href="{{url_for('announcement.manageAnnouncements') if current_user.is_authenticated and current_user.RoleId in [1, 4] else url_for('announcement.announcement') }}">Announcements</a></li>
                     <li class="breadcrumb-item active" aria-current="page"><a href="#">{{ announcement.Title }}</a></li>
                 </ol>
                 </div>

@@ -5,12 +5,13 @@
 {% endblock%}
 
 {% block content %}
-    <div class="container-xl p-0">
+    <div class="container-xl p-0 mb-5">
         <h1 class="page-title mb-4 mt-4">Announcements</h1>
+        <div class="container">
         {% if announcements %}
         <div class="row row-cards">
             <div class="col-12">
-                <div class="card">
+                <div class="card h-100">
                     <div class="row ">
                         <div class="col-md-4">
                             <div class="img-wrapper">
@@ -18,7 +19,7 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            <div class="card-body">
+                            <div class="card-body h-100">
                                 <h2 class="card-title">{{ announcements[0].Title }}</h2>
                                 <p class="card-text">{{ announcements[0].Content[:100]|safe }}...</p>
                                 <p class="card-text"><small class="text-muted">Posted by {{ announcements[0].Creator.Faculty.FirstName }} {{ announcements[0].Creator.Faculty.LastName }} at {{ announcements[0].Updated.strftime('%b %d, %Y') }}</small></p>
@@ -30,29 +31,29 @@
             </div>
             {% for announcement in announcements[1:] %}
             <div class="col-12 col-md-6">
-                <div class="card">
-                    <div class="row row-0">
+                <div class="card h-100">
+                    <div class="row row-0 h-100">
                         <div class="col-12 col-md-4 p-0">
                         <!-- Photo -->
                         <img src="{{ announcement.ImageUrl if announcement.ImageUrl else url_for('static', filename='images/announcement.png') }}" class="w-100 h-100 " alt="{{ announcement.Title }}">
                         </div>
                         <div class="col-12 col-md-8 p-0">
-                        <div class="card-body">
-                            <h3 class="card-title">{{ announcement.Title }}</h3>
-                            <p class="card-text">{{ announcement.Content[:100]|safe }}...</p>
-                                <p class="card-text"><small class="text-muted">Posted by {{ announcement.Creator.Faculty.FirstName }} {{ announcement.Creator.Faculty.LastName }} at {{ announcement.Updated.strftime('%b %d, %Y') }}</small></p>
-                                <a href="{{ url_for('announcement.viewAnnouncement', id=announcement.AnnouncementId, slug=announcement.Slug) }}" class="btn btn-primary">Read More</a>
-                        </div>
+                            <div class="card-body h-100">
+                                <h3 class="card-title">{{ announcement.Title }}</h3>
+                                <p class="card-text">{{ announcement.Content[:100]|safe }}...</p>
+                                    <p class="card-text"><small class="text-muted">Posted by {{ announcement.Creator.Faculty.FirstName }} {{ announcement.Creator.Faculty.LastName }} at {{ announcement.Updated.strftime('%b %d, %Y') }}</small></p>
+                                    <a href="{{ url_for('announcement.viewAnnouncement', id=announcement.AnnouncementId, slug=announcement.Slug) }}" class="btn btn-primary align-self-end ">Read More</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             {% endfor %}
         {% else %}
-        <p>No announcements available at the moment.</p>
+            <p>No announcements available at the moment.</p>
         {% endif %}
         </div>
-
+        </div>
     </div>
 </body>
 </html>
