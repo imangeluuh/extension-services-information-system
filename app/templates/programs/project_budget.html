@@ -167,17 +167,18 @@
                 <h3 class="heading">To Be Purchased</h3>
                 {% for item in to_be_purchased_items %}
                 <div class="item row user-select-none">
-                  <div class="col-12 col-md-9">
+                  <div class="col-12 col-md-9 d-flex flex-column ">
                     <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}">
                     <p class="id d-none">{{item.ItemId}}</p>
                     <p class="previous-status d-none">0</p>
-                    <p class="item-name mb-2" draggable="true">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{ "{:,.2f}".format(item.Amount) }}</span></p>
-                    <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
+                    <p class="item-name mb-1" draggable="true">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{ "{:,.2f}".format(item.Amount) }}</span></p>
+                    <span class="text-secondary fs-4 mb-2">{{item.Particulars}}</span>
+                    <span class="text-secondary fs-5">Activity: {{item.Activity.ActivityName}}</span>
                   </div>
                   <div class="col-12 col-md-3 d-flex align-items-center">
                     <div class="row d-flex align-items-center">
                       <div class="col-12 col-md-4">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#edit-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-primary">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#edit-item-{{item.ItemId}}" data-toggle="tooltip" data-placement="bottom" title="Edit" class="me-2 text-decoration-none text-warning">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/><path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/></svg>
                         </a>
                       </div>
@@ -197,12 +198,13 @@
                 <h3 class="heading">Purchased</h3>
                 {% for item in purchased_items %}
                 <div class="item row user-select-none" draggable="true">
-                  <div class="col-12 col-md-9">
+                  <div class="col-12 col-md-9 d-flex flex-column ">
                     <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}">
                     <p class="id d-none">{{item.ItemId}}</p>
                     <p class="previous-status d-none">1</p>
-                    <p class="item-name mb-2">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{ "{:,.2f}".format(item.Amount) }}</span></p>
-                    <small class="text-secondary ">Activity: {{item.Activity.ActivityName}}</small>
+                    <p class="item-name mb-1">{{item.ItemName}} - <span class="text-secondary ">&#8369;{{ "{:,.2f}".format(item.Amount) }}</span></p>
+                    <span class="text-secondary fs-4 mb-2">{{item.Particulars}}</span>
+                    <span class="text-secondary fs-5">Activity: {{item.Activity.ActivityName}}</span>
                   </div>
                   <div class="col-12 col-md-3 d-flex align-items-center"  data-toggle="tooltip" data-placement="left" title="Receipt">
                     <div class="row">

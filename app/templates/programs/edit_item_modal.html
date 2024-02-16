@@ -20,7 +20,7 @@
                 <div class="d-flex">
                   {{form.particulars.label(class="form-label")}}<span class="text-danger ms-1">*</span>
                 </div>
-                {{form.particulars(class="form-control", value=item.Particulars)}}
+                <textarea class="form-control" name="{{form.particulars.name}}" id="{{form.particulars.id}}" rows="5">{{item.Particulars}}</textarea>
               </div>
               <div class="col-12 mb-3">
                 <div class="d-flex">
