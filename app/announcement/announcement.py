@@ -23,8 +23,11 @@ def generateSlug(title, separator='-', lower=True):
 @login_required(role=["Admin", "Faculty"])
 def extensionProgram():
     program_abbreviation = request.args.get('program')
-    program = Course.query.filter_by(CourseCode=program_abbreviation).first()
-    ext_programs = [ext_program for ext_program in program.ExtensionPrograms]
+    print("abv",program_abbreviation)
+    program = Course.query.filter_by(CourseId=program_abbreviation).first()
+    ext_programs = [ext_program for ext_program in ExtensionProgram.query.filter_by(IsArchived=False, ProgramId=program.CourseId).all()]
+    print(ext_programs)
+
     return render_template('announcement/ext_program_options.html', ext_programs=ext_programs)
 
 @bp.route('filter/project')
@@ -36,7 +39,7 @@ def project():
     if current_user.RoleId == 1:
         projects = [project for project in ext_program.Projects]
     else:
-        projects = [project for project in Project.query.filter_by(ExtensionProgramId=ext_program_id, LeadProponentId=current_user.UserId).all()]
+        projects = [project for project in Project.query.filter_by(ExtensionProgramId=ext_program_id, LeadProponentId=current_user.UserId, IsArchived=False).all()]
     return render_template('announcement/project_options.html', projects=projects)
 
 @bp.route('filter/announcement')

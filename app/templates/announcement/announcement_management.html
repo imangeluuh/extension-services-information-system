@@ -21,9 +21,9 @@
         <div class="col-auto col-md-3 d-flex flex-column">
             <span class="fs-4">Program</span>
             <select name="program" id="program" hx-trigger="change" hx-get="/filter/extension-program" hx-target="#extension-program" class="border border-secondary-subtle  text-secondary rounded-3 p-1 w-100">
-                <option selected disabled></option>
+                <option selected disabled>Select a program</option>
                 {% for program in programs %}
-                <option value="{{program.Abbreviation}}">{{program.Abbreviation}}</option>
+                <option value="{{program.CourseId}}">{{program.CourseCode}}</option>
                 {% endfor %}
             </select>
         </div>
