@@ -429,8 +429,9 @@ def viewProject(id):
     project_team = ProjectTeam.query.filter_by(ProjectId=id).all()
     project_budget = Budget.query.filter_by(ProjectId=id).all()
     registered = Registration.query.filter_by(ProjectId=project.ProjectId).all()
-    # for calendar - temp
     events = Activity.query.filter_by(ProjectId=id, IsArchived=False).all()
+    is_certificate_released = True if Certificate.query.filter_by(ProjectId=id).first() else False
+    current_date = datetime.utcnow().date()
     
     form.title.data = project.Title
     form.implementer.data = project.Implementer
@@ -442,13 +443,10 @@ def viewProject(id):
     form.impact_statement.data = project.ImpactStatement
     form.objectives.data = project.Objectives
 
-
     # Get input from session if saving activity has error/s
     # if session['activity']:
         
-
-
-    return render_template('programs/view_project.html', project=project, form=form, activity_form=activity_form, registered=registered, events=events, project_budget=project_budget, project_team=project_team)
+    return render_template('programs/view_project.html', project=project, form=form, activity_form=activity_form, registered=registered, events=events, project_budget=project_budget, project_team=project_team, current_date=current_date, is_certificate_released=is_certificate_released)
 
 
 @bp.route('/project/update/<int:id>', methods=['POST'])
