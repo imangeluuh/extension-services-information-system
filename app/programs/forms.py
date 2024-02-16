@@ -83,6 +83,10 @@ class ActivityForm(FlaskForm):
             raise ValidationError("Invalid project ID.")
         if date.data < project.StartDate or date.data > project.EndDate:
             raise ValidationError("Activity date must be within project timeframe.")
+        
+    def validate_end_time(self, end_time):
+        if self.start_time.data > end_time.data:
+            raise ValidationError('Start time must precede end time.')
             
 class CombinedForm(FlaskForm):
     extension_program = FormField(ProgramForm)

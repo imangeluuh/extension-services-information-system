@@ -586,12 +586,60 @@ def deleteProject(id):
 
     return redirect(url_for('programs.viewExtensionProgram', id=ext_program_id))
 
+def validateSpeakerSchedule(selected_values, choices, date, start_time, end_time):
+    for choice in choices:
+        if len(selected_values) == 0:
+            break
+        if choice[0] in selected_values:
+            role = choice[1].split(" - ")[-1]
+            if role == "Alumni":
+                speakers = Speaker.query.join(Activity, Speaker.ActivityId == Activity.ActivityId).filter(
+                    db.and_(
+                        Activity.Date == date,
+                        db.or_(
+                            Activity.StartTime.between(start_time, end_time),
+                            Activity.EndTime.between(start_time, end_time),
+                            Activity.StartTime <= start_time,
+                            Activity.EndTime >= start_time
+                        ),
+                        Speaker.AlumniId == choice[0]
+                    )
+                ).all()
+                if speakers:
+                    for speaker in speakers:
+                        flash(f'{speaker.Alumni.first_name} {speaker.Alumni.last_name} has a conflicting schedule with {speaker.Activity.ActivityName}', category='error')
+            else:
+                speakers = Speaker.query.join(Activity, Speaker.ActivityId == Activity.ActivityId).filter(
+                    db.and_(
+                        Activity.Date == date,
+                        db.or_(
+                            Activity.StartTime.between(start_time, end_time),
+                            Activity.EndTime.between(start_time, end_time),
+                            Activity.StartTime <= start_time,
+                            Activity.EndTime >= start_time
+                        ),
+                        Speaker.FacultyId == choice[0]
+                    )
+                ).all()
+                if speakers:
+                    for speaker in speakers:
+                        print(type(speaker.Activity.StartTime))
+                        print(type(start_time))
+                        flash(f'{speaker.Faculty.FirstName} {speaker.Faculty.LastName} has a conflicting schedule with {speaker.Activity.ActivityName}', category='error')
+            selected_values.remove(choice[0])
+    return True if speakers else False
+
 @bp.route('<int:id>/activity/create', methods=['POST'])
 @login_required(role=["Admin", "Faculty"])
 def insertActivity(id):
     form = ActivityForm()
 
     if form.validate_on_submit():
+        # Validate speaker schedule
+        selected_values = form.speaker.data
+        if validateSpeakerSchedule(selected_values, form.speaker.choices, form.date.data, form.start_time.data, form.end_time.data): # If speaker/s have conflicting schedule, return to requesting page
+            return redirect(request.referrer)
+
         str_image_url = None
         str_image_file_id = None
         if form.image.data is not None:
@@ -625,7 +673,6 @@ def insertActivity(id):
         db.session.flush()
         activity_id = activity_to_create.ActivityId
 
-        selected_values = form.speaker.data
         for choice in form.speaker.choices:
             if choice[0] in selected_values:
                 role = choice[1].split(" - ")[-1]
@@ -651,6 +698,10 @@ def updateActivity(id):
     form = ActivityForm()
     activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
     if form.validate_on_submit():
+        # Validate speaker schedule
+        selected_values = form.speaker.data
+        if validateSpeakerSchedule(selected_values, form.speaker.choices, form.date.data, form.start_time.data, form.end_time.data): # If speaker/s have conflicting schedule, return to requesting page
+            return redirect(request.referrer)
         if form.image.data is not None:
             # If extension project has previous image, remove it from imagekit
             if activity.ImageFileId is not None:
