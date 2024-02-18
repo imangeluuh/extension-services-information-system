@@ -1,6 +1,6 @@
 from app.programs import bp
 from flask import render_template, url_for, request, redirect, flash, current_app, session
-from flask_login import current_user
+from flask_login import current_user, login_required
 from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance, Course, Faculty, Speaker, ProjectTeam
 from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm
 import calendar
@@ -9,7 +9,7 @@ from app import db, cache
 from ..store import uploadImage, purgeImage
 from werkzeug.utils import secure_filename
 import os, requests
-from ..decorators.decorators import login_required, role_excluded
+from ..decorators.decorators import role_excluded, requires_module_access
 from ..Api.resources import ExtensionProgramListApi
 from sqlalchemy import func
 from fillpdf import fillpdfs
@@ -49,7 +49,7 @@ def saveImage(image, imagepath):
 
 #     # Set up headers with the API key in the 'API Key' authorization header
 #     headers = {
-#         'Authorization': f"Bearer {data['result']['access_token']}",  
+#         'Authorization': f"Bearer {data['result']['access_token']}",
 #         'Content-Type': 'application/json'  # Adjust content type as needed
 #     }
 #     url = os.getenv('RIS_FOR_API')
@@ -63,7 +63,8 @@ def getPrograms():
 
 
 @bp.route('archived/extension-programs')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Archived Extension Services')
 def archivedExtensionPrograms():
     extension_programs = ExtensionProgram.query.filter_by(IsArchived=True).all()
     programs = Course.query.all()
@@ -71,28 +72,36 @@ def archivedExtensionPrograms():
     return render_template('programs/ext_programs_list.html', extension_programs=extension_programs, programs=programs, agendas=agendas)
 
 @bp.route('archived/projects')
-@login_required(role=["Admin"])
+# @login_required(role=["Admin"])
+@login_required
+@requires_module_access('Archived Extension Services')
 def archivedProjects():
     projects = Project.query.filter_by(IsArchived=True).all()
     return render_template('programs/projects_list.html', projects=projects)
 
 @bp.route('archived/activities')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Archived Extension Services')
+# @login_required(role=["Admin"])
 def archivedActivities():
     activities = Activity.query.filter_by(IsArchived=True).order_by(Activity.Date.desc()).all()
     return render_template('programs/activities.html', activities=activities)
 
 @bp.route('/pupqc/extension-programs')
-@login_required(role=["Admin", "Faculty"])
+@login_required
+# @login_required(role=["Admin", "Faculty"])
+@requires_module_access('Extension Services Management')
 def programs():
     form = ProgramForm()
     project_form = ProjectForm()
-    programs = getPrograms()    
-    
+    programs = getPrograms()
+
     return render_template('programs/program_management.html', programs=programs, form=form, project_form=project_form)
 
 @bp.route('/extension-program/<int:id>', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def viewExtensionProgram(id):
     ext_program_form = ProgramForm()
     form = ProjectForm()
@@ -105,7 +114,9 @@ def viewExtensionProgram(id):
     return render_template('programs/view_ext_program.html', ext_program=ext_program, ext_program_form=ext_program_form, form=form)
 
 @bp.route('/extension-program/insert', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def insertExtensionProgram():
     form = CombinedForm()
     if request.method == 'POST':
@@ -164,10 +175,10 @@ def insertExtensionProgram():
         imagepath = os.path.join(
                 current_app.config["UPLOAD_FOLDER"], secure_filename(form.project.project_proposal.data.filename)
             )
-        
-        # Save project proposal to local and upload to cloud 
+
+        # Save project proposal to local and upload to cloud
         status = saveImage(form.project.project_proposal.data, imagepath)
-        
+
         if status.error is not None:
             flash("Project proposal upload failed", category="error")
             return redirect(request.referrer)
@@ -177,8 +188,8 @@ def insertExtensionProgram():
         # Delete file from local storage
         if os.path.exists(imagepath):
             os.remove(imagepath)
-     
-        
+
+
         project_to_add = Project(Title = form.project.title.data,
                                 Implementer = form.project.implementer.data,
                                 LeadProponentId = current_user.UserId,
@@ -197,7 +208,7 @@ def insertExtensionProgram():
                                 ProjectProposalFileId = str_proposal_file_id,
                                 ExtensionProgramId = int_program_id)
         db.session.add(project_to_add)
-        
+
         # Get the id of the recently added project
         db.session.flush()
         int_project_id = project_to_add.ProjectId
@@ -235,7 +246,7 @@ def insertExtensionProgram():
             # Delete file from local storage
             if os.path.exists(imagepath):
                 os.remove(imagepath)
-                
+
         activity_to_create = Activity(ActivityName=form.activity.activity_name.data,
                                         Date=form.activity.date.data,
                                         StartTime=form.activity.start_time.data,
@@ -271,7 +282,9 @@ def insertExtensionProgram():
 
 
 @bp.route('/extension-program/update/<int:id>', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def updateExtensionProgram(id):
     form = ProgramForm()
     extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id, IsArchived=False)
@@ -307,7 +320,7 @@ def updateExtensionProgram(id):
             flash('There was an issue updating the extension program.', category='error')
 
         return redirect(request.referrer)
-    
+
     if form.errors != {}: # If there are errors from the validations
         for err_msg in form.errors.values():
             flash(err_msg, category='error')
@@ -316,7 +329,9 @@ def updateExtensionProgram(id):
 
 
 @bp.route('/extension-program/delete/<int:id>', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def deleteExtensionProgram(id):
     extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
     try:
@@ -330,7 +345,9 @@ def deleteExtensionProgram(id):
     return redirect(url_for('programs.programs'))
 
 @bp.route('/extension-program/project/insert', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def insertProject():
     form = ProjectForm()
     if request.method == "POST":
@@ -362,7 +379,7 @@ def insertProject():
             imagepath = os.path.join(
                     current_app.config["UPLOAD_FOLDER"], secure_filename(form.project_proposal.data.filename)
                 )
-            # Save project proposal to local and upload to cloud 
+            # Save project proposal to local and upload to cloud
             status = saveImage(form.project_proposal.data, imagepath)
             if status.error is not None:
                 flash("Project proposal upload failed", category="error")
@@ -392,7 +409,7 @@ def insertProject():
                                     ProjectProposalFileId = str_proposal_file_id,
                                     ExtensionProgramId = form.extension_program.data)
             db.session.add(project_to_add)
-            
+
             # Get the id of the recently added project
             db.session.flush()
             int_project_id = project_to_add.ProjectId
@@ -421,7 +438,9 @@ def insertProject():
 
 
 @bp.route('/project/<int:id>', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def viewProject(id):
     form = ProjectForm()
     activity_form = ActivityForm()
@@ -432,7 +451,7 @@ def viewProject(id):
     events = Activity.query.filter_by(ProjectId=id, IsArchived=False).all()
     is_certificate_released = True if Certificate.query.filter_by(ProjectId=id).first() else False
     current_date = datetime.utcnow().date()
-    
+
     form.title.data = project.Title
     form.implementer.data = project.Implementer
     form.project_team.data = project.ProjectTeam
@@ -445,12 +464,14 @@ def viewProject(id):
 
     # Get input from session if saving activity has error/s
     # if session['activity']:
-        
+
     return render_template('programs/view_project.html', project=project, form=form, activity_form=activity_form, registered=registered, events=events, project_budget=project_budget, project_team=project_team, current_date=current_date, is_certificate_released=is_certificate_released)
 
 
 @bp.route('/project/update/<int:id>', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def updateProject(id):
     form = ProjectForm()
     extension_project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
@@ -538,8 +559,8 @@ def updateProject(id):
                 # If the id is not in request form, the budget has been removed
                 if str(budget.BudgetId) not in ids:
                     db.session.delete(budget) # Delete the budget from the database
-        
-        count = 0 # Initial index 
+
+        count = 0 # Initial index
         for approved_budget, fund_type in budget_data:
             # Update the data of first n budget/s in budget_data with id in database
             if count < len(ids):
@@ -562,7 +583,7 @@ def updateProject(id):
             flash('There was an issue updating the extension project.', category='error')
 
         return redirect(url_for('programs.viewProject', id=extension_project.ProjectId))
-    
+
     if form.errors != {}: # If there are errors from the validations
         for err_msg in form.errors.values():
             flash(err_msg, category='error')
@@ -571,7 +592,9 @@ def updateProject(id):
 
 
 @bp.route('/delete/project/<int:id>', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def deleteProject(id):
     project = Project.query.filter_by(ProjectId=id).first()
     ext_program_id = project.ExtensionProgram.ExtensionProgramId
@@ -628,7 +651,9 @@ def validateSpeakerSchedule(selected_values, choices, date, start_time, end_time
     return True if speakers else False
 
 @bp.route('<int:id>/activity/create', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def insertActivity(id):
     form = ActivityForm()
 
@@ -657,7 +682,7 @@ def insertActivity(id):
             # Delete file from local storage
             if os.path.exists(imagepath):
                 os.remove(imagepath)
-                
+
         activity_to_create = Activity(ActivityName=form.activity_name.data,
                                         Date=form.date.data,
                                         StartTime=form.start_time.data,
@@ -691,7 +716,9 @@ def insertActivity(id):
     return redirect(url_for('programs.viewProject', id=id))
 
 @bp.route('/activity/<int:id>', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def updateActivity(id):
     form = ActivityForm()
     activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
@@ -762,7 +789,9 @@ def updateActivity(id):
     return redirect(url_for('programs.viewProject', id=activity.ProjectId))
 
 @bp.route('/delete/activity/<int:id>', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def deleteActivity(id):
     activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
     project_id = activity.ProjectId
@@ -776,7 +805,9 @@ def deleteActivity(id):
     return redirect(url_for('programs.viewProject', id=project_id))
 
 @bp.route('/view/activity/<int:id>')
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def viewActivity(id):
     activity_form = ActivityForm()
     activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
@@ -786,7 +817,9 @@ def viewActivity(id):
 
 
 @bp.route('/calendar')
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Activity Calendar')
+# @login_required(role=["Admin", "Faculty"])
 def calendar():
     projects = Project.query.filter_by(IsArchived=False).all()
     selected_project_id = request.args.get('project_id', None)
@@ -803,9 +836,11 @@ def calendar():
 
 
 @bp.route('/budget-allocation')
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Budget Allocation')
+# @login_required(role=["Admin", "Faculty"])
 def budgetAllocation():
-    projects = None 
+    projects = None
     if current_user.Role.RoleName == "Faculty":
         projects = Project.query.filter_by(LeadProponentId=current_user.UserId, IsArchived=False).all()
     else:
@@ -813,7 +848,9 @@ def budgetAllocation():
     return render_template('programs/budget_allocation.html', projects=projects)
 
 @bp.route('/budget-allocation/<int:id>', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Budget Allocation')
+# @login_required(role=["Admin", "Faculty"])
 def projectBudget(id):
     form = ItemForm()
     project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
@@ -847,9 +884,9 @@ def projectBudget(id):
             for field, error in form.errors.items():
                 print(f"Field '{field}' has an error: {error}")
                 flash(error, category='error')
-        
+
         return redirect(url_for('programs.projectBudget', id=id))
-    
+
     external_budget = Budget.query.filter_by(ProjectId=id, FundType='External').first()
     internal_budget = Budget.query.filter_by(ProjectId=id, FundType='Internal').first()
     external_budget = external_budget.Amount if external_budget else 0
@@ -857,7 +894,9 @@ def projectBudget(id):
     return render_template('programs/project_budget.html', project=project, form=form, external_budget=external_budget, internal_budget=internal_budget, to_be_purchased_items=to_be_purchased_items, purchased_items=purchased_items)
 
 @bp.route("/purchase-item/<int:status>", methods=["POST"])
-@login_required(role=["Admin", "Faculty"])
+# @login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Budget Allocation')
 def purchaseItem(status):
     item_id = request.json["itemId"]
     project_id = request.json["projectId"]
@@ -878,7 +917,9 @@ def purchaseItem(status):
         return { "error": "Item not found" }, 404
 
 @bp.route("/update-item/<int:id>", methods=["POST"])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Budget Allocation')
+# @login_required(role=["Admin", "Faculty"])
 def updateItem(id):
     form = ItemForm()
     item = Item.query.filter_by(ItemId=id).first()
@@ -894,7 +935,9 @@ def updateItem(id):
     return redirect(request.referrer)
 
 @bp.route("/delete-item/<int:id>", methods=["POST"])
-@login_required(role=["Admin", "Faculty"])
+# @login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Budget Allocation')
 def deleteItem(id):
     item = Item.query.filter_by(ItemId=id).first()
     try:
@@ -905,11 +948,13 @@ def deleteItem(id):
         flash('Item is successfully deleted.', category='success')
     except Exception as e:
         flash('There was an issue deleting the item', category='error')
-    
+
     return redirect(request.referrer)
 
 @bp.route("/upload-receipt/<int:id>", methods=["POST"])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Budget Allocation')
+# @login_required(role=["Admin", "Faculty"])
 def uploadReceipt(id):
     form = ItemForm()
     item = Item.query.filter_by(ItemId=id).first()
@@ -941,7 +986,9 @@ def uploadReceipt(id):
     return redirect(request.referrer)
 
 @bp.route('/assign-student', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def assignStudent():
     student_registration = Registration.query.filter_by(RegistrationId=int(request.form.get('id'))).first()
     student_registration.IsAssigned = bool(request.form.get('is_assigned'))
@@ -958,7 +1005,9 @@ def assignStudent():
 
 
 @bp.route('/cert/<int:id>', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def cert(id):
     certificate(id)
     # fillpdfs.get_form_fields(os.path.join(current_app.config["UPLOAD_FOLDER"], "e-cert (beneficiary) (FILLABLE).pdf"))
@@ -979,7 +1028,7 @@ def cert(id):
 
     # # Get the extension program's name for the certificate
     # extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=project.ExtensionProgramId).first()
-    
+
     # # Generate certificate for each beneficiary registered in the project
     # for beneficiary in registered_beneficiaries:
     #     # Get the name of the beneficiary for the certificate
@@ -992,7 +1041,7 @@ def cert(id):
     #                 'Date-jWSJ8ZAYJ_': datetime.utcnow(),
     #                 'Text-tf2etyjp87': proponent_name,
     #                 'Text-bcixq7yk8z': 'Jaime P. Gutierrez, Jr.'}
-        
+
     #     # Get the initials of the beneficiary
     #     beneficiary_initials = ''.join([word[0] for word in beneficiary_name.split()])
     #     # Fill the pdf with the required information
@@ -1017,11 +1066,11 @@ def cert(id):
     #         os.remove(filepath)
 
     #     # Save certificate to database
-    #     cert_to_add = Certificate(CertificateUrl=str_cert_url, 
-    #                             CertificateFileId = str_cert_file_id, 
-    #                             UserId=beneficiary.UserId, 
+    #     cert_to_add = Certificate(CertificateUrl=str_cert_url,
+    #                             CertificateFileId = str_cert_file_id,
+    #                             UserId=beneficiary.UserId,
     #                             ProjectId=id)
-        
+
     #     db.session.add(cert_to_add)
     # try:
     #     db.session.commit()
@@ -1038,7 +1087,7 @@ def cert(id):
 # =========================================================
 
 @bp.route('/extension-programs')
-@role_excluded(role=["Admin", "Faculty"])
+@requires_module_access('Extension Services')
 def extensionPrograms():
     extension_programs = ExtensionProgram.query.filter_by(IsArchived=False).all()
     programs = Course.query.all()
@@ -1046,7 +1095,7 @@ def extensionPrograms():
     return render_template('programs/ext_programs_list.html', extension_programs=extension_programs, programs=programs, agendas=agendas)
 
 @bp.route('/extension-program/view/<int:id>')
-@role_excluded(role=["Admin", "Faculty"])
+@requires_module_access('Extension Services')
 def extensionProgram(id):
     extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id, IsArchived=False).first()
     projects = Project.query.filter_by(ExtensionProgramId=id, IsArchived=False).order_by(Project.EndDate.desc()).all()
@@ -1057,18 +1106,18 @@ def extensionProgram(id):
     current_date = datetime.utcnow().date()
     # Get all the faculty in each project in current extension program
     project_team = getProjectTeam(projects)
-    
+
     return render_template('programs/extension_program.html', extension_program=extension_program, projects=projects, events=events, project_team=project_team, current_date=current_date)
 
 
 @bp.route('/projects')
-@role_excluded(role=["Admin", "Faculty"])
+@requires_module_access('Extension Services')
 def projects():
     projects = Project.query.filter_by(IsArchived=False).all()
     return render_template('programs/projects_list.html', projects=projects)
 
 @bp.route('/projects/<int:id>')
-@role_excluded(role=["Admin", "Faculty"])
+@requires_module_access('Extension Services')
 def project(id):
     project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
     activities = Activity.query.filter_by(ProjectId=id, IsArchived=False).order_by(Activity.Date.desc()).all()
@@ -1086,7 +1135,9 @@ def project(id):
     return render_template('programs/project_reg.html', project=project, events=events,activities=activities, project_team=project_team, registration=registration, current_date=current_date)
 
 @bp.route('/registration/<int:project_id>', methods=['POST'])
-@login_required(role=["Beneficiary", "Student"])
+@login_required
+@requires_module_access('Extension Services')
+# @login_required(role=["Beneficiary", "Student"])
 def registration(project_id):
     user_id = current_user.UserId
     registration_to_create = Registration(ProjectId = project_id,
@@ -1101,7 +1152,9 @@ def registration(project_id):
     return redirect(url_for('programs.project', id=project_id))
 
 @bp.route('/registration/cancel/<int:project_id>', methods=['POST'])
-@login_required(role=["Beneficiary", "Student"])
+@login_required
+@requires_module_access('Extension Services')
+# @login_required(role=["Beneficiary", "Student"])
 def cancelRegistration(project_id):
     user_id = current_user.UserId if current_user.is_authenticated else None
     registration = Registration.query.filter_by(ProjectId=project_id, UserId=user_id).first()
@@ -1117,13 +1170,13 @@ def cancelRegistration(project_id):
 
 
 @bp.route('/activities')
-@role_excluded(role=["Admin", "Faculty"])
+@requires_module_access('Extension Services')
 def activities():
     activities = Activity.query.filter_by(IsArchived=False).order_by(Activity.Date.desc()).all()
     return render_template('programs/activities.html', activities=activities)
 
 @bp.route('/activities/<int:id>')
-@role_excluded(role=["Admin", "Faculty"])
+@requires_module_access('Extension Services')
 def activity(id):
     activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
     current_date = datetime.utcnow().date()
@@ -1152,7 +1205,7 @@ def activity_map(id):
     folium.TileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
                     name='CartoDB.DarkMatter', attr="CartoDB.DarkMatter").add_to(mapObj)
     folium.TileLayer('openstreetmap').add_to(mapObj)
-    
+
     folium.LayerControl().add_to(mapObj)
 
     folium.Marker(
@@ -1166,13 +1219,17 @@ def activity_map(id):
     return render_template('programs/activity_map.html', activity=activity)
 
 @bp.route('/project/management/<int:id>')
-@login_required(role=["Student"])
+@login_required
+@requires_module_access('Student Volunteer')
+# @login_required(role=["Student"])
 def studentProjectManage(id):
     project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
     return render_template('programs/student_manager.html', project=project)
 
 @bp.route('project/<int:project_id>/activity/<int:activity_id>/attendance')
-@login_required(role=["Student"])
+@login_required
+@requires_module_access('Student Volunteer')
+# @login_required(role=["Student"])
 def manageAttendance(project_id, activity_id):
     project = Project.query.filter_by(ProjectId=project_id, IsArchived=False).first()
     activity = Activity.query.filter_by(ActivityId=activity_id, IsArchived=False).first()
@@ -1192,11 +1249,13 @@ def manageAttendance(project_id, activity_id):
                 beneficiaries.append([user, 1])
             else:
                 beneficiaries.append([user, 0])
-    
+
     return render_template('programs/record_attendance.html', project=project, activity=activity, beneficiaries=beneficiaries, students=students)
 
 @bp.route('/activity/record-attendance', methods=["POST"])
-@login_required(role=["Student"])
+@login_required
+@requires_module_access('Student Volunteer')
+# @login_required(role=["Student"])
 def recordAttendance():
     attendance_to_add = Attendance(UserId=request.form.get('user_id'),
                                 ActivityId=request.form.get('activity_id'))
@@ -1206,7 +1265,7 @@ def recordAttendance():
         flash('Attendance is successfully recorded.', category='success')
     except:
         flash('There was an issue recording the attendance.', category='error')
-    
+
     return redirect(url_for('programs.manageAttendance', project_id=request.form.get('project_id'), activity_id=request.form.get('activity_id')))
 
 
@@ -1214,10 +1273,10 @@ def getProjectTeam(projects):
     project_team = []
     for project in projects:
         project_team += ProjectTeam.query.filter_by(ProjectId=project.ProjectId).all()
-        
+
     # project_team = []
     # for faculty in faculty_team:
     #     faculty_info = Faculty.query.filter_by(FacultyId=int(faculty[0])).first()
     #     project_team.append(faculty_info)
-    
+
     return project_team

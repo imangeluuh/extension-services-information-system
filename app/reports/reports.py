@@ -1,16 +1,18 @@
 from app.reports import bp
 from flask import render_template, url_for, request, redirect, flash, current_app
-from flask_login import current_user
+from flask_login import current_user, login_required
 from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance, Course, Faculty
 from datetime import datetime
 from app import db, cache
-from ..decorators.decorators import login_required
+from ..decorators.decorators import requires_module_access
 from sqlalchemy import asc
 import os, folium
 from folium.plugins import MarkerCluster
 
 @bp.route('/extensio-programs-report')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Reports')
+# @login_required(role=["Admin"])
 def extensionPrograms():
     extension_programs = ExtensionProgram.query.filter_by(IsArchived=False).order_by(ExtensionProgram.ExtensionProgramId.asc()).all()
     ext_program = extension_programs[0]
@@ -20,12 +22,16 @@ def extensionPrograms():
                         , extension_programs=extension_programs)
 
 @bp.route('/program-participation')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Reports')
+# @login_required(role=["Admin"])
 def programParticipation():    
     return render_template('reports/program_participation.html')
 
 @bp.route('/project-expense')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Reports')
+# @login_required(role=["Admin"])
 def projectExpense():    
     extension_programs = ExtensionProgram.query.filter_by(IsArchived=False).order_by(ExtensionProgram.ExtensionProgramId.asc()).all()
     ext_program = extension_programs[0]
@@ -35,7 +41,9 @@ def projectExpense():
                         , extension_programs=extension_programs)
 
 @bp.route('/get-expense')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Reports')
+# @login_required(role=["Admin"])
 def getExpense():
     filter_value = int(request.args.get("program"))
 
@@ -67,7 +75,9 @@ def getExpense():
                                                         , project_remaining=project_remaining)
 
 @bp.route('/get-details')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Reports')
+# @login_required(role=["Admin"])
 def getDetails():
     current_date = datetime.utcnow().date()
     filter_value = int(request.args.get("program"))

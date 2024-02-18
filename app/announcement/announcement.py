@@ -1,7 +1,7 @@
 from app.announcement import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
-from flask_login import current_user
-from ..decorators.decorators import login_required
+from flask_login import current_user, login_required
+from ..decorators.decorators import requires_module_access
 from ..models import Project, ExtensionProgram,  Announcement, Registration, User, Course, Beneficiary, Student
 from .forms import AnnouncementForm
 from ..email import sendEmail
@@ -20,7 +20,9 @@ def generateSlug(title, separator='-', lower=True):
 
 # Announcement filter
 @bp.route('filter/extension-program')
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def extensionProgram():
     program_abbreviation = request.args.get('program')
     print("abv",program_abbreviation)
@@ -31,7 +33,9 @@ def extensionProgram():
     return render_template('announcement/ext_program_options.html', ext_programs=ext_programs)
 
 @bp.route('filter/project')
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def project():
     ext_program_id = request.args.get('extension-program')
     ext_program = ExtensionProgram.query.filter_by(ExtensionProgramId=ext_program_id).first()
@@ -43,7 +47,9 @@ def project():
     return render_template('announcement/project_options.html', projects=projects)
 
 @bp.route('filter/announcement')
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def filterAnnouncement():
     project_id = request.args.get('project')
     if project_id:
@@ -76,13 +82,17 @@ def filterAnnouncement():
 
 @bp.route('/announcements/<string:project>')
 @bp.route('/announcements', defaults={'project': None})
-@login_required(role=["Admin", "Faculty"])
+# @login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
 def manageAnnouncements(project):    
     programs = Course.query.all()
     return render_template('announcement/announcement_management.html', programs=programs)
 
 @bp.route('/announcement/create', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def createAnnouncement():
     form = AnnouncementForm()
     recipients_string = ""
@@ -182,12 +192,15 @@ def createAnnouncement():
     return render_template('announcement/announcement_form.html', form=form, faculty_projects=faculty_projects)
 
 @bp.route('/announcement/<int:id>/<string:slug>')
+@login_required
 def viewAnnouncement(id, slug):
     announcement = Announcement.query.filter_by(AnnouncementId=id, Slug=slug).first()
     return render_template('announcement/view_announcement.html', announcement=announcement)
 
 @bp.route('/unpublish/announcement/<int:id>', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def unpublishAnnouncement(id):
     announcement = Announcement.query.get_or_404(id)
     announcement.IsLive = 0
@@ -200,7 +213,9 @@ def unpublishAnnouncement(id):
     return redirect(url_for('announcement.manageAnnouncements'))
 
 @bp.route('/delete/announcement/<int:id>', methods=['POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def deleteAnnouncement(id):
     announcement = Announcement.query.get_or_404(id)
     try:
@@ -213,7 +228,9 @@ def deleteAnnouncement(id):
     return redirect(url_for('announcement.manageAnnouncements'))
 
 @bp.route('/announcement/update/<int:id>', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Extension Services Management')
+# @login_required(role=["Admin", "Faculty"])
 def updateAnnouncement(id):
     form = AnnouncementForm()
     announcement = Announcement.query.get_or_404(id)
@@ -284,6 +301,7 @@ def updateAnnouncement(id):
     return render_template('announcement/announcement_form.html', form=form, announcement=announcement, current_url_path=current_url_path)
 
 @bp.route('/announcement')
+@login_required
 def announcement():
     user_role_id = current_user.RoleId if current_user.is_authenticated else None
 

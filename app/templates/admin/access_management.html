@@ -1,0 +1,91 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+    <title>PUPQC-ESIS Collaborators</title>
+    <!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
+{% endblock %}
+
+{% block content %}
+<!--Container-->
+<div class="container w-100 mx-auto p-3 mt-3">
+    <!--Title-->
+    <h1 class="d-flex align-items-center justify-content-between fw-semibold fs-1">
+        <span>Access Management</span>
+        <a href="#" class="btn btn-success d-none d-sm-inline-block" data-bs-toggle="modal" data-bs-target="#modal-role">
+            <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
+            Add role
+        </a>
+    </h1>
+    {% include 'admin/add_role.html' %}
+    <!--Card-->
+    <div class="p-3 mt-3 rounded shadow bg-white">
+        <table id="role-access" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+            <thead>
+                <tr>
+                    <th class="text-start">Role</th>
+                    <th class="text-start">Access</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for role in roles %}
+                <tr>
+                    <td>{{ role.RoleName }}</td>
+                    <td>
+                        {% if role.RoleAccess %}
+                        <ul class="row mb-0">
+                            {% for module in role.RoleAccess %}
+                                <li class="col-12 col-md-6">{{ module.Module.Name }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </td>
+                    <td class="d-flex align-items-center">
+                        {% if role.RoleName != 'Admin' %}
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{role.RoleId}}" class="btn btn-warning rounded-2 d-flex align-items-center me-2 py-1 px-2">
+                            Edit
+                        </button>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#delete-{{role.RoleId}}" class="btn btn-danger rounded-2 d-flex align-items-center  py-1 px-2">
+                            Delete
+                        </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% include 'admin/edit_role.html' %}
+                {% if role.RoleName != 'Admin' %}
+                    {% include 'admin/delete_role.html' %}
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!--/Card-->
+</div>
+<!--/container-->
+
+{% endblock %}
+
+{% block script %}
+	<!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+        var table = $('#role-access').DataTable({
+                responsive: true,
+                "columns": [
+                    { "width": "20%" },
+                    { "width": "70%" },
+                    { "width": "10%" },
+                ]
+            })
+            .responsive.recalc()
+        });
+    </script>
+{% endblock %}

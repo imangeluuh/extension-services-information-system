@@ -1,11 +1,12 @@
 from app.evaluation import bp
 from flask import render_template, url_for, request, redirect, flash, make_response
-from flask_login import current_user
+from flask_login import current_user, login_required
 from ..models import Registration, Activity, Question, Evaluation, Response, Project
 from app import db
 from ..store import uploadImage, purgeImage
 from werkzeug.utils import secure_filename
-from ..decorators.decorators import login_required
+from ..decorators.decorators import requires_module_access
+# from ..decorators.decorators import login_required
 
 # =========================================================
 # ||                 ADMIN/FACULTY VIEWS                 ||
@@ -13,7 +14,9 @@ from ..decorators.decorators import login_required
 
 
 @bp.route('/questions')
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Evaluation Management')
+# @login_required(role=["Admin", "Faculty"])
 def questions():
     mandatory_questions = None
     optional_questions = None
@@ -28,7 +31,9 @@ def questions():
 
 #delete question - deletest question from pool and redirects back to questions
 @bp.route("/questions/delete/<id>")
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Evaluation Management')
+# @login_required(role=["Admin", "Faculty"])
 def deleteQuestion(id):
 
     question = Question.query.filter_by(QuestionId=id).first()
@@ -42,7 +47,9 @@ def deleteQuestion(id):
 
 
 @bp.route('/questions/add', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Evaluation Management')
+# @login_required(role=["Admin", "Faculty"])
 def addQuestions():
     if request.method == "POST":
         question_text = request.form["question"]
@@ -75,7 +82,9 @@ def addQuestions():
 
 
 @bp.route('/evaluations')
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Evaluation Management')
+# @login_required(role=["Admin", "Faculty"])
 def evaluations():
     active_evaluations = None
     inactive_evaluations = None
@@ -90,7 +99,9 @@ def evaluations():
 
 
 @bp.route('/evaluations/add', methods=['GET', 'POST'])
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Evaluation Management')
+# @login_required(role=["Admin", "Faculty"])
 def addEvaluation():
     questions = Question.query.filter_by(State = 1, CreatorId=current_user.UserId).all()
     
@@ -126,7 +137,9 @@ def addEvaluation():
 
 #close evaluation - makes evaluation inactive and redirects to evaluations page
 @bp.route("/evaluations/close/<id>")
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Evaluation Management')
+# @login_required(role=["Admin", "Faculty"])
 def closeEvaluation(id):
     evaluation = Evaluation.query.filter_by(EvaluationId=id).first()
 
@@ -141,7 +154,9 @@ def closeEvaluation(id):
     return redirect(url_for("evaluation.evaluations"))
 
 @bp.route("/view/evaluation/<id>")
-@login_required(["Admin", "Faculty"])
+@login_required
+@requires_module_access('Evaluation Management')
+# @login_required(role=["Admin", "Faculty"])
 def viewEvaluation(id):
     evaluation = Evaluation.query.filter_by(EvaluationId=id).first()
     questions = []
@@ -153,7 +168,9 @@ def viewEvaluation(id):
 
 #results page - show evaluation results
 @bp.route("/results/<id>")
-@login_required(["Admin", "Faculty"])
+@login_required
+@requires_module_access('Evaluation Management')
+# @login_required(role=["Admin", "Faculty"])
 def results(id):
 
     list_activities = [r.Project.Activity for r in Registration.query.filter_by(UserId=current_user.UserId).all()]
@@ -188,7 +205,9 @@ def results(id):
 
 #evaluatoin page - allows responses to be collected
 @bp.route("/evaluation/<id>", methods=["GET", "POST"])
-@login_required(role=["Beneficiary"])
+@login_required
+@requires_module_access('Extension Evaluation')
+# @login_required(role=["Beneficiary"])
 def evaluation(id):
     
     #check whether user is registered in project and hasn't already taken evaluation
@@ -254,7 +273,9 @@ def evaluation(id):
 
 #evaluatoin page - allows responses to be collected
 @bp.route("student/evaluation/<id>", methods=["GET", "POST"])
-@login_required(role=["Student"])
+@login_required
+@requires_module_access('Student Volunteer')
+# @login_required(role=["Student"])
 def studentEvaluation(id):    
     evaluation = Evaluation.query.filter_by(EvaluationId=id).first()
 

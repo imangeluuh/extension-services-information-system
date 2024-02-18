@@ -4,7 +4,7 @@ from flask_ckeditor import CKEditorField
 from wtforms import StringField, PasswordField, SubmitField, DateField, SelectField, TextAreaField, IntegerField, HiddenField, SelectMultipleField, widgets
 from wtforms.validators import Length, Email, DataRequired, Optional
 from flask_wtf.file import FileField, FileAllowed
-from ..models import Project
+from ..models import Role
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -40,5 +40,16 @@ class SpeakerForm(FlaskForm):
     last_name = StringField("Last Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
     contact_details = StringField("Contact Details", validators=[DataRequired()])
+
+class RoleForm(FlaskForm):
+    role = SelectField("Role", validators=[DataRequired()])
+    submit = SubmitField("Save") 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        with current_app.app_context():
+            self.role.choices = [(role.RoleId, role.RoleName) for role in Role.query.all()]
+    
 
 

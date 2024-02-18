@@ -1,0 +1,55 @@
+<div class="modal modal-blur fade" id="edit-{{role.RoleId}}" tabindex="-1" style="display: none;" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+      <div class="modal-header">
+          <h5 class="modal-title">Edit role access</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{{url_for('admin.editRole', id=role.RoleId)}}" method="post">
+      <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+      <div class="modal-body">
+          <div class="row">
+              <small class="mb-3 text-secondary"><em>Fields marked with <span class="text-danger ">*</span> are mandatory.</em></small>
+              <div class="col-12">
+                  <div class="mb-3">
+                      <div class="d-flex">
+                          <label for="role" class="form-label">Role</label><span class="text-danger ms-1">*</span>
+                      </div>
+                      <input type="text" name="role" class="form-control" value="{{role.RoleName}}">
+                  </div>
+              </div>
+              <div class="col-12">
+                  <div class="mb-3">
+                      <div class="d-flex mb-2">
+                          <label for="access">Access</label><span class="text-danger ms-1">*</span>
+                      </div>
+                      {% set my_list = [] %}
+                      {% for role in role.RoleAccess %}
+                          {% set _ = my_list.append(role.ModuleId) %}
+                      {% endfor %}
+                      <div class="row">
+                          {% for module in modules %}
+                          <div class="form-check form-switch col-12 col-md-6">
+                              <input class="form-check-input" name="module" type="checkbox" role="switch" id="module-{{module.ModuleId}}" value="{{module.ModuleId}}" {{'checked' if module.ModuleId in my_list }}>
+                              <label class="form-check-label" for="module-{{module.ModuleId}}">{{module.Name}}</label>
+                          </div>
+                          {% endfor %}
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+          <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+          Cancel
+          </a>
+          <button type="submit" class="btn btn-primary ms-auto">
+          <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
+          Save
+          </button>
+      </div>
+      </form>
+      </div>
+  </div>
+  </div>

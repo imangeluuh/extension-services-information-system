@@ -1,10 +1,10 @@
 from app.admin import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
 from flask_login import current_user, login_user, login_required, logout_user
-from .forms import LoginForm, CollaboratorForm, SpeakerForm
-from ..models import Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity, Speaker, Faculty, Beneficiary, Student, Attendance
+from .forms import LoginForm, CollaboratorForm, SpeakerForm, RoleForm
+from ..models import Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity, Speaker, Faculty, Beneficiary, Student, Attendance, Role, Module, RoleAccess
 from ..Api.resources import AdminLoginApi
-from ..decorators.decorators import login_required
+from ..decorators.decorators import requires_module_access
 from app import db, cache
 from ..store import uploadImage
 from werkzeug.utils import secure_filename
@@ -199,28 +199,45 @@ def logout():
     return redirect(url_for('admin.adminLogin'))
 
 @bp.route('/beneficiaries')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('User Management')
+# @login_required(role=["Admin"])
 def beneficiaries():
     users = Beneficiary.query.all()
     current_url_path = request.path
     return render_template('admin/users.html', users=users,current_url_path=current_url_path)
 
 @bp.route('/students')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('User Management')
+# @login_required(role=["Admin"])
 def students():
     users = User.query.filter_by(RoleId=3).all()
     current_url_path = request.path
     return render_template('admin/users.html', users=users,current_url_path=current_url_path)
 
 @bp.route('/faculty')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('User Management')
+# @login_required(role=["Admin"])
 def faculty():
     users = User.query.filter_by(RoleId=4).all()
     current_url_path = request.path
     return render_template('admin/users.html', users=users,current_url_path=current_url_path)
 
+# @bp.route('/user/<string:id>/role', methods=['POST'])
+# @login_required(role=["Admin"])
+# def editRole(id):
+#     form = RoleForm()
+#     user = User.query.filter_by(UserId=id).first()
+#     user.RoleId == form.role.data
+#     db.session.commit()
+#     return redirect(request.referrer)
+
 @bp.route('/beneficiaries/<int:id>')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('User Management')
+# @login_required(role=["Admin"])
 def viewBeneficiary(id):
     user = Beneficiary.query.filter_by(BeneficiaryId=id).first()
     user_projects = (
@@ -235,7 +252,9 @@ def viewBeneficiary(id):
     return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date, attendance=attendance)
 
 @bp.route('/students/<string:id>')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('User Management')
+# @login_required(role=["Admin"])
 def viewStudent(id):
     user = Student.query.filter_by(StudentNumber=id).first()
     user_projects = (
@@ -250,7 +269,9 @@ def viewStudent(id):
     return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date, attendance=attendance)
 
 @bp.route('/faculty/<int:id>')
-@login_required(role=["Admin"])
+# @login_required(role=["Admin"])
+@login_required
+@requires_module_access('User Management')
 def viewFaculty(id):
     user = Faculty.query.filter_by(FacultyId=id).first()
     current_date = datetime.utcnow().date()
@@ -258,7 +279,9 @@ def viewFaculty(id):
     return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
 
 @bp.route('/dashboard')
-@login_required(role=["Admin", "Faculty"])
+@login_required
+@requires_module_access('Dashboard')
+# @login_required(role=["Admin", "Faculty"])
 def dashboard():
     # statusCount = getStatusCount()
     # upcoming_projects = statusCount[0]
@@ -357,14 +380,18 @@ def qcmap():
 
     
 @bp.route('/collaborators')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Agency Partner Management')
+# @login_required(role=["Admin"])
 def collaborators():
     form = CollaboratorForm()
     collaborators = Collaborator.query.all()
     return render_template('admin/collaborators.html', collaborators=collaborators, form=form)
 
 @bp.route('/collaborators/create', methods=['POST'])
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Agency Partner Management')
+# @login_required(role=["Admin"])
 def createCollaborator():
     form = CollaboratorForm()
     if form.validate_on_submit():
@@ -401,14 +428,18 @@ def createCollaborator():
     return redirect(url_for('admin.collaborators'))
 
 @bp.route('/collaborators/<int:id>')
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Agency Partner Management')
+# @login_required(role=["Admin"])
 def viewCollaborator(id):
     collaborator = Collaborator.query.filter_by(CollaboratorId=id).first()
     current_date = datetime.utcnow().date()
     return render_template('admin/view_collaborator.html', collaborator=collaborator, current_date=current_date)
 
 @bp.route('/collaborators/update/<int:id>', methods=['POST'])
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Agency Partner Management')
+# @login_required(role=["Admin"])
 def updateCollaborator(id):
     form = CollaboratorForm()
     if form.validate_on_submit():
@@ -446,7 +477,9 @@ def updateCollaborator(id):
     return redirect(request.referrer)
 
 @bp.route('/collaborators/delete/<int:id>', methods=['POST'])
-@login_required(role=["Admin"])
+@login_required
+@requires_module_access('Agency Partner Management')
+# @login_required(role=["Admin"])
 def deleteCollaborator(id):
     collaborator = Collaborator.query.filter_by(CollaboratorId=id).first()
     try:
@@ -459,15 +492,82 @@ def deleteCollaborator(id):
 
     return redirect(request.referrer)
 
+
+@bp.route('/access-management')
+@login_required
+@requires_module_access('Access Management')
+def accessManagement():
+    roles = Role.query.all()
+    modules = Module.query.all()
+    return render_template('admin/access_management.html', roles=roles, modules=modules)
+
+@bp.route('/add-role', methods=['POST'])
+@login_required
+@requires_module_access('Access Management')
+def addRole():
+    role_to_add = Role(RoleName=request.form.get('role'))
+    db.session.add(role_to_add)
+    db.session.flush()
+
+    role_id = role_to_add.RoleId
+
+    for module_id in request.form.getlist('module'):
+        access_to_add = RoleAccess(RoleId=role_id,
+                                ModuleId=int(module_id))
+        db.session.add(access_to_add)
+
+    db.session.commit()
+    return redirect(request.referrer)
+
+@bp.route('/edit-role/<int:id>', methods=['POST'])
+@login_required
+@requires_module_access('Access Management')
+def editRole(id):
+    role = Role.query.filter_by(RoleId=id).first()
+    
+    role.RoleName = request.form.get('role')
+
+    selected_values = request.form.getlist('module')
+
+    for access in role.RoleAccess:
+        bool_is_removed = True
+        if str(access.ModuleId) in selected_values:
+            selected_values.remove(str(access.ModuleId))
+            bool_is_removed = False
+        if bool_is_removed:
+            db.session.delete(access)
+    if len(selected_values) != 0:
+        for module_id in selected_values:
+            access_to_add = RoleAccess(RoleId=role.RoleId,
+                                    ModuleId=int(module_id))
+            db.session.add(access_to_add)
+
+    db.session.commit()
+    flash('Role access is successfully updated', category='success')
+    return redirect(request.referrer)
+
+@bp.route('/delete-role/<int:id>', methods=['POST'])
+@login_required
+@requires_module_access('Access Management')
+def deleteRole(id):
+    role = Role.query.filter_by(RoleId=id).first()
+    db.session.delete(role)
+    db.session.commit()
+    flash('Role is successfully deleted', category='success')
+    return redirect(request.referrer)
+
+# ==================================================
 @bp.route('/speakers')
-@login_required(role=["Admin"])
+@login_required
+# @login_required(role=["Admin"])
 def speakers():
     form = SpeakerForm()
     speakers = Speaker.query.all()
     return render_template('admin/speakers.html', speakers=speakers, form=form)
 
 @bp.route('/speakers/create', methods=['POST'])
-@login_required(role=["Admin"])
+@login_required
+# @login_required(role=["Admin"])
 def createSpeaker():
     form = SpeakerForm()
     if form.validate_on_submit():
@@ -489,7 +589,8 @@ def createSpeaker():
     return redirect(url_for('admin.speakers'))
 
 @bp.route('/spakers/update/<int:id>', methods=['POST'])
-@login_required(role=["Admin"])
+@login_required
+# @login_required(role=["Admin"])
 def updateSpeaker(id):
     form = SpeakerForm()
     if form.validate_on_submit():
@@ -509,7 +610,8 @@ def updateSpeaker(id):
     return redirect(request.referrer)
 
 @bp.route('/speakers/delete/<int:id>', methods=['POST'])
-@login_required(role=["Admin"])
+# @login_required(role=["Admin"])
+@login_required
 def deleteSpeaker(id):
     speaker = Speaker.query.filter_by(SpeakerId=id).first()
     try:

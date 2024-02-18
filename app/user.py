@@ -1,14 +1,14 @@
 from flask import render_template, url_for, request, redirect, flash, current_app, Blueprint
-from flask_login import current_user
+from flask_login import current_user, login_required
 from .models import Certificate, Registration, Project, Beneficiary
 from datetime import datetime
-from .decorators.decorators import login_required
+# from .decorators.decorators import login_required
 from app import db
 
 bp = Blueprint('user', __name__, template_folder="templates", static_folder="static", static_url_path='static')
 
 @bp.route('/profile')
-@login_required()
+@login_required
 def profile():
     # Get all projects current user are registered
     if current_user.RoleId in [2, 3]:
@@ -32,7 +32,8 @@ def profile():
     return render_template('user_profile.html', projects=projects, current_date=current_date)
 
 @bp.route('/change-password', methods=["GET", "POST"])
-@login_required(role=["Beneficiary"])
+@login_required
+# @login_required(role=["Beneficiary"])
 def changePassword():
     if request.method == "POST":
         password = request.form.get('password')

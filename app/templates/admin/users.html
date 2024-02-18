@@ -59,7 +59,7 @@
                             <td>{{ user.Faculty.MiddleName if user.Faculty.MiddleName else 'N/A' }}</td>
                             <td>{{ user.Faculty.LastName }}</td>
                             <td>{{ user.Faculty.Email }}</td>
-                            <td><a href="{{ url_for('admin.viewFaculty', id=user.Faculty.FacultyId) }}" class="btn btn-success">View</a></td>
+                            <td><a href="{{ url_for('admin.viewFaculty', id=user.Faculty.FacultyId) }}" class="btn btn-primary">View</a></td>
                         </tr>
                         {% endfor %}
                         {% else %}
@@ -69,7 +69,7 @@
                             <td>{{ user.Student.MiddleName if user.Student.MiddleName else 'N/A' }}</td>
                             <td>{{ user.Student.LastName }}</td>
                             <td>{{ user.Student.Email }}</td>
-                            <td><a href="{{ url_for('admin.viewStudent', id=user.Student.StudentNumber) }}" class="btn btn-success">View</a></td>
+                            <td><a href="{{ url_for('admin.viewStudent', id=user.Student.StudentNumber) }}" class="btn btn-primary">View</a></td>
                         </tr>
                         {% endfor %}
                         {% endif %}

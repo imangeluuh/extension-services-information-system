@@ -19,6 +19,7 @@ class Role(db.Model):
     RoleId = db.Column(db.Integer, primary_key=True, autoincrement=True)
     RoleName = db.Column(db.String(20), nullable=False)
     User = db.relationship("User", back_populates='Role')
+    RoleAccess = db.relationship('RoleAccess', back_populates='Role', cascade='all, delete-orphan')
 
 class User(db.Model, UserMixin):
     __tablename__ = 'ESISUser'
@@ -43,6 +44,22 @@ class User(db.Model, UserMixin):
 
     def get_role(self):
         return(self.Role.RoleName)
+    
+class Module(db.Model):
+    __tablename__ = 'ESISModule'
+
+    ModuleId = db.Column(db.Integer, primary_key=True) 
+    Name = db.Column(db.String(50))
+    Description = db.Column(db.String(255))
+    RoleAccess = db.relationship('RoleAccess', back_populates='Module',  cascade='all, delete-orphan')
+
+class RoleAccess(db.Model):
+    __tablename__ = 'ESISRoleAccess'
+
+    RoleId = db.Column(db.Integer, db.ForeignKey('ESISRole.RoleId'), primary_key=True)
+    ModuleId = db.Column(db.Integer, db.ForeignKey('ESISModule.ModuleId'), primary_key=True)
+    Role = db.relationship('Role', back_populates='RoleAccess')
+    Module = db.relationship('Module', back_populates='RoleAccess')
     
 
 class Student(db.Model): 
@@ -343,7 +360,7 @@ class Activity(db.Model):
     Description = db.Column(db.Text, nullable=False)
     ImageUrl = db.Column(db.Text)
     ImageFileId = db.Column(db.Text)
-    Speaker = db.Column(db.JSON, nullable=False)
+    # Speaker = db.Column(db.JSON, nullable=False)
     IsArchived = db.Column(db.Boolean, default=False)
     LocationId = db.Column(db.Integer, db.ForeignKey('ESISLocation.LocationId', ondelete='CASCADE'))
     ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), index=True, nullable=False)
@@ -415,6 +432,7 @@ class Announcement(db.Model):
     Created = db.Column(db.DateTime, default=datetime.utcnow, index=True, nullable=False)
     Updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, index=True, nullable=False)
     Recipient = db.Column(db.String(50), nullable=False)
+    CallForSpeaker = db.Column(db.Boolean, default=False, index=True, nullable=False)
     ImageUrl = db.Column(db.Text)
     ImageId = db.Column(db.Text)
     ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), nullable=False)
@@ -591,3 +609,20 @@ class ResearchPaper(db.Model):
     file_path = db.Column(db.String, nullable=False)
     research_adviser = db.Column(db.String, nullable=False)
     extension = db.Column(db.String, nullable=True)
+
+class Achievement(db.Model):
+    __tablename__ = 'APMSAchievement'
+
+    # Column definitions using db.Column
+    id = db.Column(db.UUID, primary_key=True, default=uuid.uuid4)
+    created_at = db.Column(db.TIMESTAMP(timezone=True), nullable=False, server_default=db.text("now()"))
+    updated_at = db.Column(db.TIMESTAMP(timezone=True), nullable=False, server_default=db.text("now()"))
+    deleted_at = db.Column(db.TIMESTAMP(timezone=True))  # Deletion timestamp (null if not deleted)
+    user_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey('APMSUser.id', ondelete="CASCADE"))
+
+    type_of_achievement = db.Column(db.String)
+    date_of_attainment = db.Column(db.Date)
+    description = db.Column(db.String)
+    story = db.Column(db.Text)
+    link_reference = db.Column(db.String)
+    editable = db.Column(db.Boolean, nullable=False, default=False)
