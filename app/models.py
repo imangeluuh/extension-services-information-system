@@ -25,7 +25,7 @@ class User(db.Model, UserMixin):
     __tablename__ = 'ESISUser'
 
     UserId = db.Column(db.String(36), primary_key=True) 
-    RoleId = db.Column(db.Integer, db.ForeignKey('ESISRole.RoleId', ondelete='CASCADE'), nullable=False)
+    RoleId = db.Column(db.Integer, db.ForeignKey('ESISRole.RoleId', ondelete='CASCADE'), index=True, nullable=False)
     StudentId =  db.Column(db.Integer, db.ForeignKey('SPSStudent.StudentId', ondelete='CASCADE'), unique=True)
     FacultyId = db.Column(db.Integer, db.ForeignKey('FISFaculty.FacultyId', ondelete='CASCADE'), unique=True)
     BeneficiaryId = db.Column(db.Integer, db.ForeignKey('ESISBeneficiary.BeneficiaryId', ondelete='CASCADE'), unique=True)
@@ -133,7 +133,8 @@ class Faculty(db.Model):
 
     Password = db.Column(db.String(256), nullable=False)  # Password
     ProfilePic= db.Column(db.String(50),default="14wkc8rPgd8NcrqFoRFO_CNyrJ7nhmU08")  # Profile Pic
-    IsActive = db.Column(db.Boolean, default=True)
+    Status = db.Column(db.String(50), default="Deactivated")
+    Login_Attempt = db.Column(db.Integer, default=12)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
