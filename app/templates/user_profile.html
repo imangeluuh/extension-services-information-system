@@ -87,7 +87,7 @@
                             {% if current_user.RoleId == 2 %}
                             {{current_user.Beneficiary.DateOfBirth.strftime('%m/%d/%Y')}}
                             {% elif current_user.RoleId == 3 %}
-                            {{current_user.Student.DateOfBirth.strftime('%m/%d/%Y')}}
+                            {{current_user.Student.DateOfBirth.strftime('%m/%d/%Y') if current_user.Student.DateOfBirth else 'N/A'}}
                             {% else %}
                             {{current_user.Faculty.BirthDate.strftime('%m/%d/%Y')}}
                             {% endif %}

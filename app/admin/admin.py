@@ -198,12 +198,25 @@ def logout():
     logout_user()
     return redirect(url_for('admin.adminLogin'))
 
+@bp.route('/user-role/<string:id>', methods=['POST'])
+@login_required
+@requires_module_access('User Management')
+# @login_required(role=["Admin"])
+def changeUserRole(id):
+    user = User.query.filter_by(UserId=id).first()
+    form = RoleForm()
+    user.RoleId = form.role.data
+    print(form.role.data)
+    db.session.commit()
+    flash('User role is succesfully updated', category='success')
+    return redirect(request.referrer)
+
 @bp.route('/beneficiaries')
 @login_required
 @requires_module_access('User Management')
 # @login_required(role=["Admin"])
 def beneficiaries():
-    users = Beneficiary.query.all()
+    users = User.query.filter_by(RoleId=2).all()
     current_url_path = request.path
     return render_template('admin/users.html', users=users,current_url_path=current_url_path)
 
@@ -221,9 +234,10 @@ def students():
 @requires_module_access('User Management')
 # @login_required(role=["Admin"])
 def faculty():
-    users = User.query.filter_by(RoleId=4).all()
+    users = User.query.filter(~User.RoleId.in_([2, 3])).all()
+    form = RoleForm()
     current_url_path = request.path
-    return render_template('admin/users.html', users=users,current_url_path=current_url_path)
+    return render_template('admin/users.html', users=users,current_url_path=current_url_path, form=form)
 
 # @bp.route('/user/<string:id>/role', methods=['POST'])
 # @login_required(role=["Admin"])

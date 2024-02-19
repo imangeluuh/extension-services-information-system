@@ -49,7 +49,7 @@ class RoleForm(FlaskForm):
         super().__init__(*args, **kwargs)
 
         with current_app.app_context():
-            self.role.choices = [(role.RoleId, role.RoleName) for role in Role.query.all()]
+            self.role.choices = [(role.RoleId, role.RoleName) for role in Role.query.filter(~Role.RoleId.in_([2, 3])).all()]
     
 
 
