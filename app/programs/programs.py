@@ -607,11 +607,12 @@ def deleteProject(id):
 
     return redirect(url_for('programs.viewExtensionProgram', id=ext_program_id))
 
-def validateSpeakerSchedule(selected_values, choices, date, start_time, end_time):
+def validateSpeakerSchedule(selected_values, choices, date, start_time, end_time, id):
+    selected_speakers = selected_values.copy()
     for choice in choices:
-        if len(selected_values) == 0:
+        if len(selected_speakers) == 0:
             break
-        if choice[0] in selected_values:
+        if choice[0] in selected_speakers:
             role = choice[1].split(" - ")[-1]
             if role == "Alumni":
                 speakers = Speaker.query.join(Activity, Speaker.ActivityId == Activity.ActivityId).filter(
@@ -623,7 +624,8 @@ def validateSpeakerSchedule(selected_values, choices, date, start_time, end_time
                             Activity.StartTime <= start_time,
                             Activity.EndTime >= start_time
                         ),
-                        Speaker.AlumniId == choice[0]
+                        Speaker.AlumniId == choice[0],
+                        Activity.ActivityId != id
                     )
                 ).all()
                 if speakers:
@@ -639,15 +641,14 @@ def validateSpeakerSchedule(selected_values, choices, date, start_time, end_time
                             Activity.StartTime <= start_time,
                             Activity.EndTime >= start_time
                         ),
-                        Speaker.FacultyId == choice[0]
+                        Speaker.FacultyId == choice[0],
+                        Activity.ActivityId != id
                     )
                 ).all()
                 if speakers:
                     for speaker in speakers:
-                        print(type(speaker.Activity.StartTime))
-                        print(type(start_time))
                         flash(f'{speaker.Faculty.FirstName} {speaker.Faculty.LastName} has a conflicting schedule with {speaker.Activity.ActivityName}', category='error')
-            selected_values.remove(choice[0])
+            selected_speakers.remove(choice[0])
     return True if speakers else False
 
 @bp.route('<int:id>/activity/create', methods=['POST'])
@@ -660,7 +661,7 @@ def insertActivity(id):
     if form.validate_on_submit():
         # Validate speaker schedule
         selected_values = form.speaker.data
-        if validateSpeakerSchedule(selected_values, form.speaker.choices, form.date.data, form.start_time.data, form.end_time.data): # If speaker/s have conflicting schedule, return to requesting page
+        if validateSpeakerSchedule(selected_values, form.speaker.choices, form.date.data, form.start_time.data, form.end_time.data, id): # If speaker/s have conflicting schedule, return to requesting page
             return redirect(request.referrer)
 
         str_image_url = None
@@ -725,7 +726,7 @@ def updateActivity(id):
     if form.validate_on_submit():
         # Validate speaker schedule
         selected_values = form.speaker.data
-        if validateSpeakerSchedule(selected_values, form.speaker.choices, form.date.data, form.start_time.data, form.end_time.data): # If speaker/s have conflicting schedule, return to requesting page
+        if validateSpeakerSchedule(selected_values, form.speaker.choices, form.date.data, form.start_time.data, form.end_time.data, id): # If speaker/s have conflicting schedule, return to requesting page
             return redirect(request.referrer)
         if form.image.data is not None:
             # If extension project has previous image, remove it from imagekit
@@ -754,7 +755,6 @@ def updateActivity(id):
         activity.Description=form.activity_description.data
         activity.LocationId=form.location.data
 
-        selected_values = form.speaker.data
         for speaker in activity.Speaker:
             bool_is_removed = True
             if speaker.FacultyId:
@@ -786,7 +786,7 @@ def updateActivity(id):
         for field, error in form.errors.items():
             print(f"Field '{field}' has an error: {error}")
             flash(f"Field '{field}' has an error: {error}")
-    return redirect(url_for('programs.viewProject', id=activity.ProjectId))
+    return redirect(request.referrer)
 
 @bp.route('/delete/activity/<int:id>', methods=['POST'])
 @login_required
