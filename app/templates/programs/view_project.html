@@ -203,7 +203,7 @@ object-fit: cover;">
                 <div class="tab-pane" id="tabs-activity">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4>Activities</h4>
-                        {% if project.LeadProponentId == current_user.UserId %}
+                        {% if project.LeadProponentId == current_user.UserId and project.EndDate > current_date %}
                         <button type="button" data-bs-toggle="modal" data-bs-target="#add-activity" class="btn btn-success rounded-2 d-flex align-items-center me-2 py-1 px-2">
                             <iconify-icon class="w-3 h-3 mr-2" icon="ic:baseline-plus"></iconify-icon>
                             Add Activity
