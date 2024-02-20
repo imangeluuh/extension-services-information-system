@@ -13,9 +13,13 @@ def profile():
     # Get all projects current user are registered
     if current_user.RoleId in [2, 3]:
         projects_id = [registration.ProjectId for registration in Registration.query.filter_by(UserId=current_user.UserId).all()]
-        user_projects = [Project.query.filter_by(ProjectId=project_id).first() for project_id in projects_id]
+        user_projects = []
+        for project_id in projects_id:
+            project = Project.query.filter_by(ProjectId=project_id, IsArchived=False).first()
+            if project:
+                user_projects.append(project)
     else: 
-        user_projects = Project.query.filter_by(LeadProponentId=current_user.UserId).all()
+        user_projects = Project.query.filter_by(LeadProponentId=current_user.UserId, IsArchived=False).all()
     user_certificates = Certificate.query.filter_by(UserId=current_user.UserId).all()
     current_date = datetime.utcnow().date()
     
