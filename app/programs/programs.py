@@ -821,13 +821,21 @@ def viewActivity(id):
 @requires_module_access('Activity Calendar')
 # @login_required(role=["Admin", "Faculty"])
 def calendar():
-    projects = Project.query.filter_by(IsArchived=False).all()
+    if current_user.RoleId == 1:
+        projects = Project.query.filter_by(IsArchived=False).all()
+    else:
+        projects = Project.query.filter_by(IsArchived=False, LeadProponentId=current_user.UserId).all()
+
     selected_project_id = request.args.get('project_id', None)
     # Get all activities
     if current_user.RoleId == 1:
         activities = Activity.query.filter_by(IsArchived=False).all()
     else:
-        activities = Activity.query.filter_by(IsArchived=False, LeadProponentId=current_user.UserId).all()
+        activities = []
+        for project in projects:
+            for activity in project.Activity:
+                if activity.IsArchived == False:
+                    activities.append(activity)
     # Fetch activities based on the selected project
     if selected_project_id:
         activities = Activity.query.filter_by(ProjectId=selected_project_id, IsArchived=False).order_by(Activity.Date.asc()).all()
