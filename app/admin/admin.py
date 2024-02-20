@@ -36,142 +36,6 @@ def saveImage(image, imagepath):
 
 #     return [upcoming_projects, ongoing_projects, completed_projects, upcoming_activities, ongoing_activities, completed_activities]
 
-@cache.cached(timeout=600, key_prefix='getParticipants')
-def getParticipants():
-    programs = ExtensionProgram.query.all()
-    years = set()
-    programs_participants = {}
-    programs_projects = {}
-    data_for_bar_graph = []
-    for program in programs:
-        program_data = {"name": program.Name, "data": []}
-        program_projects_data = {"name": program.Name, "data": []}
-
-        for project in program.Projects:
-            registered = project.Registration
-            end_date = project.EndDate
-
-            # Extracting the year from the EndDate
-            year = end_date.year
-            years.add(year)
-
-            # Update the participants count for the corresponding year
-            year_exists_participants = any(entry["year"] == year for entry in program_data["data"])
-            year_exists_projects = any(entry["year"] == year for entry in program_projects_data["data"])
-
-            if not year_exists_participants:
-                program_data["data"].append({"year": year, "participants": 0})
-            if not year_exists_projects:
-                program_projects_data["data"].append({"year": year, "projects": 0})
-
-            for data in program_data["data"]:
-                if data["year"] == year:
-                    data["participants"] += len(registered)
-
-            for data in program_projects_data["data"]:
-                if data["year"] == year:
-                    data["projects"] += 1
-
-        programs_participants[program.Name] = program_data
-        programs_projects[program.Name] = program_projects_data
-
-    for program_name, program_data in programs_participants.items():
-        for year in years:
-            year_exists = any(entry["year"] == year for entry in program_data["data"])
-            if not year_exists:
-                program_data["data"].append({"year": year, "participants": 0})
-
-    for program_name, program_data in programs_projects.items():
-        for year in years:
-            year_exists = any(entry["year"] == year for entry in program_data["data"])
-            if not year_exists:
-                program_data["data"].append({"year": year, "projects": 0})
-
-    years = sorted(list(years))
-
-    data_for_chart_participants = [{"Year": year} for year in years]
-    data_for_chart_projects = [{"Year": year} for year in years]
-
-    # Populate data for chart
-    for program_name, program_data in programs_participants.items():
-        for data in program_data["data"]:
-            for chart_data in data_for_chart_participants:
-                if chart_data["Year"] == data["year"]:
-                    chart_data[program_name] = data["participants"]
-
-    for program_name, program_data in programs_projects.items():
-        for data in program_data["data"]:
-            for chart_data in data_for_chart_projects:
-                if chart_data["Year"] == data["year"]:
-                    chart_data[program_name] = data["projects"]
-
-    for extension_program in ExtensionProgram.query.all():
-        print("extension_program:", extension_program)
-        program_ratings = []
-        for project in extension_program.Projects:
-            for activity in project.Activity:
-                if activity.Evaluation:
-                    for evaluation in activity.Evaluation:
-                        # Check if the evaluation type is for satisfaction
-                        if evaluation.EvaluationType == "Satisfaction":
-                            for response in evaluation.Response:
-                                rating = response.Num
-                                if rating is not None:
-                                    program_ratings.append({"year": activity.Date.year, "rating": rating})
-        
-        if program_ratings:
-            # Calculate the average rating for the extension program
-            non_none_ratings = [entry["rating"] for entry in program_ratings if entry["rating"] is not None]
-            average_rating = sum(non_none_ratings) / len(non_none_ratings) if non_none_ratings else None
-            data_for_bar_graph.append({"name": extension_program.Name, "data": program_ratings, "average_rating": average_rating})
-
-    return [data_for_chart_participants, data_for_chart_projects, data_for_bar_graph]
-
-@cache.cached(timeout=600, key_prefix='getEngagement')
-def getEngagement():
-    current_date = datetime.utcnow().date()
-    last_5_months = [
-        {
-            "date": (current_date - timedelta(days=30 * i)).strftime('%Y-%m'),
-            "month_name": (current_date - timedelta(days=30 * i)).strftime('%B')
-        } for i in range(4, -1, -1)
-    ]
-
-    last_5_months_projects_engagement = []
-    last_5_months_programs_engagement = []
-
-    for project in Project.query.all():
-        engagement_data = {
-            "name": project.Title,
-            "data": []
-        }
-
-        for month in last_5_months:
-            participants_count = project.get_participants_count_for_month(month)
-            engagement_data["data"].append({"month": month["date"], "month_name": month["month_name"], "participants": participants_count})
-
-        last_5_months_projects_engagement.append(engagement_data)
-
-    for program in ExtensionProgram.query.all():
-        engagement_data = {
-            "name": program.Name,
-            "data": []
-        }
-
-        for month in last_5_months:
-            participants_count = program.get_participants_count_for_month(month)
-            engagement_data["data"].append({"month": month["date"], "month_name": month["month_name"], "participants": participants_count})
-
-        last_5_months_programs_engagement.append(engagement_data)
-
-    # Sort projects based on the participants count for the last month
-    last_5_months_projects_engagement.sort(key=lambda x: x['data'][-1]['participants'], reverse=True)
-
-    # Select the top 5 projects
-    last_5_months_projects_engagement = last_5_months_projects_engagement[:5]
-    return [last_5_months_projects_engagement, last_5_months_programs_engagement]
-
-
 @bp.route('/', methods=['GET', 'POST'])
 def adminLogin():
     form = LoginForm()
@@ -291,6 +155,144 @@ def viewFaculty(id):
     current_date = datetime.utcnow().date()
     user_projects = Project.query.filter_by(LeadProponentId=user.User[0].UserId)
     return render_template('admin/view_user.html', user=user, user_projects=user_projects, current_date=current_date)
+
+
+
+@cache.cached(timeout=600, key_prefix='getParticipants')
+def getParticipants():
+    programs = ExtensionProgram.query.filter_by(IsArchived=False).all()
+    years = set()
+    programs_participants = {}
+    programs_projects = {}
+    data_for_bar_graph = []
+    for program in programs:
+        program_data = {"name": program.Name, "data": []}
+        program_projects_data = {"name": program.Name, "data": []}
+
+        projects = [project for project in program.Projects if project.IsArchived == False]
+        for project in projects:
+            registered = project.Registration
+            end_date = project.EndDate
+
+            # Extracting the year from the EndDate
+            year = end_date.year
+            years.add(year)
+
+            # Update the participants count for the corresponding year
+            year_exists_participants = any(entry["year"] == year for entry in program_data["data"])
+            year_exists_projects = any(entry["year"] == year for entry in program_projects_data["data"])
+
+            if not year_exists_participants:
+                program_data["data"].append({"year": year, "participants": 0})
+            if not year_exists_projects:
+                program_projects_data["data"].append({"year": year, "projects": 0})
+
+            for data in program_data["data"]:
+                if data["year"] == year:
+                    data["participants"] += len(registered)
+
+            for data in program_projects_data["data"]:
+                if data["year"] == year:
+                    data["projects"] += 1
+
+        programs_participants[program.Name] = program_data
+        programs_projects[program.Name] = program_projects_data
+
+    for program_name, program_data in programs_participants.items():
+        for year in years:
+            year_exists = any(entry["year"] == year for entry in program_data["data"])
+            if not year_exists:
+                program_data["data"].append({"year": year, "participants": 0})
+
+    for program_name, program_data in programs_projects.items():
+        for year in years:
+            year_exists = any(entry["year"] == year for entry in program_data["data"])
+            if not year_exists:
+                program_data["data"].append({"year": year, "projects": 0})
+
+    years = sorted(list(years))
+
+    data_for_chart_participants = [{"Year": year} for year in years]
+    data_for_chart_projects = [{"Year": year} for year in years]
+
+    # Populate data for chart
+    for program_name, program_data in programs_participants.items():
+        for data in program_data["data"]:
+            for chart_data in data_for_chart_participants:
+                if chart_data["Year"] == data["year"]:
+                    chart_data[program_name] = data["participants"]
+
+    for program_name, program_data in programs_projects.items():
+        for data in program_data["data"]:
+            for chart_data in data_for_chart_projects:
+                if chart_data["Year"] == data["year"]:
+                    chart_data[program_name] = data["projects"]
+
+    for extension_program in ExtensionProgram.query.all():
+        print("extension_program:", extension_program)
+        program_ratings = []
+        for project in extension_program.Projects:
+            for activity in project.Activity:
+                if activity.Evaluation:
+                    for evaluation in activity.Evaluation:
+                        # Check if the evaluation type is for satisfaction
+                        if evaluation.EvaluationType == "Satisfaction":
+                            for response in evaluation.Response:
+                                rating = response.Num
+                                if rating is not None:
+                                    program_ratings.append({"year": activity.Date.year, "rating": rating})
+        
+        if program_ratings:
+            # Calculate the average rating for the extension program
+            non_none_ratings = [entry["rating"] for entry in program_ratings if entry["rating"] is not None]
+            average_rating = sum(non_none_ratings) / len(non_none_ratings) if non_none_ratings else None
+            data_for_bar_graph.append({"name": extension_program.Name, "data": program_ratings, "average_rating": average_rating})
+
+    return [data_for_chart_participants, data_for_chart_projects, data_for_bar_graph]
+
+@cache.cached(timeout=600, key_prefix='getEngagement')
+def getEngagement():
+    current_date = datetime.utcnow().date()
+    last_5_months = [
+        {
+            "date": (current_date - timedelta(days=30 * i)).strftime('%Y-%m'),
+            "month_name": (current_date - timedelta(days=30 * i)).strftime('%B')
+        } for i in range(4, -1, -1)
+    ]
+
+    last_5_months_projects_engagement = []
+    last_5_months_programs_engagement = []
+
+    for project in Project.query.filter_by(IsArchived=False).all():
+        engagement_data = {
+            "name": project.Title,
+            "data": []
+        }
+
+        for month in last_5_months:
+            participants_count = project.get_participants_count_for_month(month)
+            engagement_data["data"].append({"month": month["date"], "month_name": month["month_name"], "participants": participants_count})
+
+        last_5_months_projects_engagement.append(engagement_data)
+
+    for program in ExtensionProgram.query.filter_by(IsArchived=False).all():
+        engagement_data = {
+            "name": program.Name,
+            "data": []
+        }
+
+        for month in last_5_months:
+            participants_count = program.get_participants_count_for_month(month)
+            engagement_data["data"].append({"month": month["date"], "month_name": month["month_name"], "participants": participants_count})
+
+        last_5_months_programs_engagement.append(engagement_data)
+
+    # Sort projects based on the participants count for the last month
+    last_5_months_projects_engagement.sort(key=lambda x: x['data'][-1]['participants'], reverse=True)
+
+    # Select the top 5 projects
+    last_5_months_projects_engagement = last_5_months_projects_engagement[:5]
+    return [last_5_months_projects_engagement, last_5_months_programs_engagement]
 
 @bp.route('/dashboard')
 @login_required
