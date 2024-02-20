@@ -609,6 +609,7 @@ def deleteProject(id):
 
 def validateSpeakerSchedule(selected_values, choices, date, start_time, end_time, id):
     selected_speakers = selected_values.copy()
+    is_conflict = False
     for choice in choices:
         if len(selected_speakers) == 0:
             break
@@ -625,10 +626,12 @@ def validateSpeakerSchedule(selected_values, choices, date, start_time, end_time
                             Activity.EndTime >= start_time
                         ),
                         Speaker.AlumniId == choice[0],
-                        Activity.ActivityId != id
+                        Activity.ActivityId != id,
+                        Activity.IsArchived == False
                     )
                 ).all()
                 if speakers:
+                    is_conflict = True
                     for speaker in speakers:
                         flash(f'{speaker.Alumni.first_name} {speaker.Alumni.last_name} has a conflicting schedule with {speaker.Activity.ActivityName}', category='error')
             else:
@@ -642,14 +645,16 @@ def validateSpeakerSchedule(selected_values, choices, date, start_time, end_time
                             Activity.EndTime >= start_time
                         ),
                         Speaker.FacultyId == choice[0],
-                        Activity.ActivityId != id
+                        Activity.ActivityId != id,
+                        Activity.IsArchived == False
                     )
                 ).all()
                 if speakers:
+                    is_conflict = True
                     for speaker in speakers:
                         flash(f'{speaker.Faculty.FirstName} {speaker.Faculty.LastName} has a conflicting schedule with {speaker.Activity.ActivityName}', category='error')
             selected_speakers.remove(choice[0])
-    return True if speakers else False
+    return is_conflict
 
 @bp.route('<int:id>/activity/create', methods=['POST'])
 @login_required
