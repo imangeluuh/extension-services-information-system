@@ -139,7 +139,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a href="{{url_for('programs.project', id=project[0].ProjectId)}}" class="btn btn-primary">View</a>
+                                    <a href="{{url_for('programs.project', id=project[0].ProjectId) if current_user.RoleId in [2, 3] else url_for('programs.viewProject', id=project[0].ProjectId)}}" class="btn btn-primary">View</a>
                                     {% if project[1] %}
                                     <a href="{{project[1].CertificateUrl}}" class="btn btn-primary">Certificate</a>
                                     {% endif %}

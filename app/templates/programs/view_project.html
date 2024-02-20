@@ -178,21 +178,25 @@ object-fit: cover;">
                                     <td>{{ user.User.Beneficiary.LastName if user.User.RoleId == 2 else user.User.Student.LastName}}</td>
                                     <td>{{ user.User.Role.RoleName }}</td>
                                     <td class="d-flex">
-                                        {% if user.User.RoleId == 3 %}
-                                        <a href="{{ url_for('admin.viewStudent', id=user.User.Student.StudentNumber) }}" class="btn btn-primary me-2 px-2 py-1 rounded-2">View</a>
-                                        {% if current_user.UserId == project.LeadProponentId %}
-                                        <form action="{{ url_for('programs.assignStudent')}}" method="post">
-                                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                                            <input type="hidden" name="id" value="{{user.RegistrationId}}">
-                                            <input type="hidden" name="is_assigned" value="{{0 if user.IsAssigned else 1}}">
-                                            <input type="hidden" name="project_id" value="{{project.ProjectId}}">
-                                            <input type="submit" value="{{'Assign' if user.IsAssigned == 0 else 'Unassign' }}" class="btn {{'btn-danger' if user.IsAssigned else 'btn-success'}} me-2 px-2 py-1 rounded-2">
-                                        </form>
-                                        {% endif %}
+                                        {% if user.User.RoleId == 3%}
+                                            {% if current_user.RoleId == 1 %}
+                                            <a href="{{ url_for('admin.viewStudent', id=user.User.Student.StudentNumber) }}" class="btn btn-primary me-2 px-2 py-1 rounded-2">View</a>
+                                            {% endif %}
+                                            {% if current_user.UserId == project.LeadProponentId %}
+                                            <form action="{{ url_for('programs.assignStudent')}}" method="post">
+                                                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                                <input type="hidden" name="id" value="{{user.RegistrationId}}">
+                                                <input type="hidden" name="is_assigned" value="{{0 if user.IsAssigned else 1}}">
+                                                <input type="hidden" name="project_id" value="{{project.ProjectId}}">
+                                                <input type="submit" value="{{'Assign' if user.IsAssigned == 0 else 'Unassign' }}" class="btn {{'btn-danger' if user.IsAssigned else 'btn-success'}} me-2 px-2 py-1 rounded-2">
+                                            </form>
+                                            {% endif %}
                                         {% else %}
-                                        <a href="{{ url_for('admin.viewBeneficiary', id=user.User.Beneficiary.BeneficiaryId) }}" class="btn btn-primary me-2 px-2 py-1 rounded-2">View</a>
+                                            {% if current_user.RoleId == 1 %}
+                                            <a href="{{ url_for('admin.viewBeneficiary', id=user.User.Beneficiary.BeneficiaryId) }}" class="btn btn-primary me-2 px-2 py-1 rounded-2">View</a>
+                                            {% endif %}
+                                        {% endif %}
                                     </td>
-                                    {% endif %}
                                 </tr>
                                 {% endfor %}
                             </tbody>
