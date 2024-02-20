@@ -785,7 +785,7 @@ def updateActivity(id):
     if form.errors != {}: # If there are errors from the validations
         for field, error in form.errors.items():
             print(f"Field '{field}' has an error: {error}")
-            flash(f"Field '{field}' has an error: {error}")
+            flash(error, category='error')
     return redirect(request.referrer)
 
 @bp.route('/delete/activity/<int:id>', methods=['POST'])
@@ -1194,7 +1194,7 @@ def activity(id):
                                         Activity.ProjectId==activity.ProjectId,
                                         Activity.ActivityId!=activity.ActivityId,
                                         Activity.IsArchived==False ).order_by(func.random()).limit(3).all()
-    is_registered = Registration.query.filter_by(ProjectId=activity.ProjectId, UserId=current_user.UserId).first()
+    is_registered = Registration.query.filter_by(ProjectId=activity.ProjectId, UserId=current_user.UserId).first() if current_user.is_authenticated else None
     evaluation_id = None
     bool_is_evaluation_taken = False
     if current_user.is_authenticated and current_user.Role.RoleId==2:
