@@ -1,7 +1,7 @@
 from app.programs import bp
 from flask import render_template, url_for, request, redirect, flash, current_app, session
 from flask_login import current_user, login_required
-from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, User, Certificate, Budget, Item, Attendance, Course, Faculty, Speaker, ProjectTeam
+from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, Certificate, Budget, Item, Attendance, Course, Speaker, ProjectTeam, Achievement
 from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm
 import calendar
 from datetime import datetime
@@ -267,6 +267,12 @@ def insertExtensionProgram():
                 if role == "Alumni":
                     speaker_to_add = Speaker(ActivityId=activity_id,
                                             AlumniId=choice[0])
+                    achievement_to_add = Achievement(UserId = choice[0],
+                                                    TypeOfAchievement = 'extension',
+                                                    DateOfAttainment = form.activity.date.data,
+                                                    Description = f'successfully served as speaker in {form.activity.activity_name.data}extension',
+                                                    ExtensionID = activity_id)
+                    db.session.add(achievement_to_add)
                 else:
                     speaker_to_add = Speaker(ActivityId=activity_id,
                                             FacultyId=choice[0])
@@ -707,7 +713,13 @@ def insertActivity(id):
                 role = choice[1].split(" - ")[-1]
                 if role == "Alumni":
                     speaker_to_add = Speaker(ActivityId=activity_id,
-                                            AlumniId=choice[0])
+                                            AlumniId=choice[0]) 
+                    achievement_to_add = Achievement(UserId = choice[0],
+                                                    TypeOfAchievement = 'extension',
+                                                    DateOfAttainment = form.date.data,
+                                                    Description = f'successfully served as speaker in {form.activity_name.data} extension',
+                                                    ExtensionID = activity_id)
+                    db.session.add(achievement_to_add)
                 else:
                     speaker_to_add = Speaker(ActivityId=activity_id,
                                             FacultyId=choice[0])
@@ -780,6 +792,12 @@ def updateActivity(id):
                     if role == "Alumni":
                         speaker_to_add = Speaker(ActivityId=activity.ActivityId,
                                                 AlumniId=choice[0])
+                        achievement_to_add = Achievement(UserId = choice[0],
+                                                    TypeOfAchievement = 'extension',
+                                                    DateOfAttainment = form.date.data,
+                                                    Description = f'successfully served as speaker in {form.activity_name.data} extension',
+                                                    ExtensionID = activity.ActivityId)
+                        db.session.add(achievement_to_add)
                     else:
                         speaker_to_add = Speaker(ActivityId=activity.ActivityId,
                                                 FacultyId=choice[0])
