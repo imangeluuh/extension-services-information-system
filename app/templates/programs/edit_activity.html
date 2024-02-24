@@ -44,7 +44,7 @@
                             <div class="d-flex">
                                 {{ activity_form.end_time.label(class="form-label") }}<span class="text-danger ms-1">*</span>
                             </div>
-                            {{ activity_form.end_time(id="end_time", class="form-control", value=activity.StartTime.strftime('%H:%M'))}}
+                            {{ activity_form.end_time(id="end_time", class="form-control", value=activity.EndTime.strftime('%H:%M'))}}
                         </div>
                     </div>
                     <div class="col-auto col-md-6">
