@@ -2,7 +2,7 @@ from app.admin import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
 from flask_login import current_user, login_user, login_required, logout_user
 from .forms import LoginForm, CollaboratorForm, SpeakerForm, RoleForm
-from ..models import Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity, Speaker, Faculty, Beneficiary, Student, Attendance, Role, Module, RoleAccess
+from ..models import Project,  Registration, User, ExtensionProgram, Collaborator, Location, Activity, Speaker, Faculty, Beneficiary, Student, Attendance, Role, Module, RoleAccess, Evaluation, Response
 from ..Api.resources import AdminLoginApi
 from ..decorators.decorators import requires_module_access
 from app import db, cache
@@ -228,8 +228,7 @@ def getParticipants():
         temp = {"Year": key}
         temp.update(project_data[key]) 
         data_for_chart_projects.append(temp)
-    # print(data_for_chart_projects)
-    data_for_bar_graph = []
+    # print(data_for_chart_projects
     
 # @cache.cached(timeout=600, key_prefix='getEngagement')
 
@@ -337,7 +336,69 @@ def getParticipants():
 
     for program, months_data in program_data.items():
         program_engagement.append({'name': program, 'data': list(months_data.values())})
+
+
+    satisfaction_data = {}
+    for program in programs:
+        satisfaction_data[program[1]] = {}  # Initialize data dictionary for each program
+        for year in years:
+            satisfaction_data[program[1]][year] = {
+                'year': year,
+                'average_rating': 0
+            }
+    print(satisfaction_data)
+    records = db.session.query(
+                ExtensionProgram.Name,
+                func.extract('year', Activity.Date),
+                func.avg(Response.Num)
+            ).join(Project, ExtensionProgram.ExtensionProgramId == Project.ExtensionProgramId
+            ).join(Activity, Project.ProjectId == Activity.ProjectId
+            ).join(Evaluation, Activity.ActivityId == Evaluation.ActivityId
+            ).join(Response, Evaluation.EvaluationId == Response.EvaluationId
+            ).filter(
+                func.extract('year', Activity.Date) >= datetime.utcnow().year-4,
+                Project.IsArchived == False,
+                ExtensionProgram.IsArchived == False,
+                Evaluation.EvaluationType == 'Satisfaction',
+                Response.Num != None
+            ).group_by(
+                ExtensionProgram.Name,
+                func.extract('year', Activity.Date)
+            ).order_by(
+                ExtensionProgram.Name
+            ).all()
+    
+    for record in records:
+        program, year, average_rating = record
+        satisfaction_data[program][year]['average_rating'] = float(round(average_rating, 2))
+
+    data_for_bar_graph = []
+
+    for program, years_data in satisfaction_data.items():
+        data_for_bar_graph.append({'name': program, 'data': list(years_data.values())})
+
+    # for extension_program in ExtensionProgram.query.all():
+    #     print("extension_program:", extension_program)
+    #     program_ratings = []
+    #     for project in extension_program.Projects:
+    #         for activity in project.Activity:
+    #             if activity.Evaluation:
+    #                 for evaluation in activity.Evaluation:
+    #                     # Check if the evaluation type is for satisfaction
+    #                     if evaluation.EvaluationType == "Satisfaction":
+    #                         for response in evaluation.Response:
+    #                             rating = response.Num
+    #                             if rating is not None:
+    #                                 program_ratings.append({"year": activity.Date.year, "rating": rating})
         
+    #     if program_ratings:
+    #         # Calculate the average rating for the extension program
+    #         non_none_ratings = [entry["rating"] for entry in program_ratings if entry["rating"] is not None]
+    #         average_rating = sum(non_none_ratings) / len(non_none_ratings) if non_none_ratings else None
+    #         data_for_bar_graph.append({"name": extension_program.Name, "data": program_ratings, "average_rating": average_rating})
+
+    print('data_for_bar', data_for_bar_graph)
+
     return [data_for_chart_participants, data_for_chart_projects, data_for_bar_graph, top_5_projects, program_engagement]
 
 @bp.route('/dashboard')
@@ -362,7 +423,7 @@ def dashboard():
     data_for_bar_graph = participants[2]
 
     # # Sort years in chronological order
-    # sorted_years = sorted(set(entry["year"] for program_data in data_for_bar_graph for entry in program_data["data"]))
+    sorted_years = sorted(set(entry["year"] for program_data in data_for_bar_graph for entry in program_data["data"]))
 
     last_5_months_projects_engagement = participants[3]
     last_5_months_programs_engagement = participants[4]
@@ -373,7 +434,7 @@ def dashboard():
                             data_for_chart_participants=data_for_chart_participants,
                             data_for_chart_projects=data_for_chart_projects,
                             data_for_bar_graph=data_for_bar_graph,
-                            # sorted_years=sorted_years,
+                            sorted_years=sorted_years,
                             # # upcoming_projects=upcoming_projects,
                             # # ongoing_projects=ongoing_projects,
                             # # completed_projects=completed_projects,
