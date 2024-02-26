@@ -68,8 +68,8 @@
     var rawDataParticipants = {{ data_for_chart_participants | safe }};
     var rawDataProjects = {{ data_for_chart_projects | safe }};
     // var rawDataAverageRatings = {# data_for_bar_graph | safe #};
-    // var rawDataProjectsEngagement = {# last_5_months_projects_engagement | safe #};
-    // var rawDataProgramsEngagement = {# last_5_months_programs_engagement | safe #};
+    var rawDataProjectsEngagement = {{ last_5_months_projects_engagement | safe }};
+    var rawDataProgramsEngagement = {{ last_5_months_programs_engagement | safe }};
 
     // console.log("Raw Data Participants:", rawDataParticipants);
     // console.log("Raw Data Projects:", rawDataProjects);
@@ -162,10 +162,101 @@
         myChartProjects.setOption(optionProjects);
     }
 
+    function renderProjectsEngagementChart(rawData) {
+        var chart = echarts.init(document.getElementById('projects-engagement'));
+
+        var option = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            legend: {
+                data: rawData.map(function (item) {
+                    return item.name;
+                }),
+                formatter: function (name) {
+                    return name.length > 10 ? name.substr(0, 15) + '...' : name;
+                },
+                top: -6,
+            },
+            xAxis: {
+                type: 'category',
+                nameLocation: 'middle',
+                data: rawData[0].data.map(function (item) {
+                    return item.month_name;
+                })
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Participants'
+            },
+            series: rawData.map(function (project) {
+                return {
+                    name: project.name,
+                    type: 'line',
+                    data: project.data.map(function (item) {
+                        return item.participants;
+                    })
+                };
+            })
+        };
+
+        chart.setOption(option);
+    }
+
+    function renderProgramsEngagementChart(rawData) {
+        var chart = echarts.init(document.getElementById('programs-engagement'));
+
+        var option = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            legend: {
+                data: rawData.map(function (item) {
+                    return item.name;
+                }),
+                top: -6,
+            },
+            xAxis: {
+                type: 'category',
+                nameLocation: 'middle',
+                data: rawData[0].data.map(function (item) {
+                    return item.month_name;
+                }),
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Participants'
+            },
+            series: rawData.map(function (program) {
+                return {
+                    name: program.name,
+                    type: 'line',
+                    data: program.data.map(function (item) {
+                        return item.participants;
+                    })
+                };
+            })
+        };
+
+        chart.setOption(option);
+    }
+
     runParticipants(rawDataParticipants);
     runProjects(rawDataProjects);
-    // renderProjectsEngagementChart(rawDataProjectsEngagement);
-    // renderProgramsEngagementChart(rawDataProgramsEngagement);
+    renderProjectsEngagementChart(rawDataProjectsEngagement);
+    renderProgramsEngagementChart(rawDataProgramsEngagement);
     // runAverageRatings(rawDataAverageRatings);
 </script>
 {% endblock %}

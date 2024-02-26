@@ -162,7 +162,6 @@ def viewFaculty(id):
 
 # @cache.cached(timeout=600, key_prefix='getParticipants')
 def getParticipants():
-    start_time = time.time()
     programs = db.session.query(ExtensionProgram.ExtensionProgramId,
                                 ExtensionProgram.Name).\
                 filter(ExtensionProgram.IsArchived == False).all()
@@ -181,7 +180,6 @@ def getParticipants():
             filter(Project.IsArchived == False).\
             group_by(func.extract('year', Registration.RegistrationDate), Project.ExtensionProgramId).\
             order_by(func.extract('year', Registration.RegistrationDate)).all()
-    print(records)
 
     # Create a dictionary for the id and name of extension programs for reference later
     program_dict = {}
@@ -218,7 +216,7 @@ def getParticipants():
             filter(ExtensionProgram.IsArchived == False).\
             group_by(func.extract('year', Project.StartDate), Project.ExtensionProgramId).\
             order_by(func.extract('year', Project.StartDate)).all()
-    print(records)    
+    # print(records)    
 
     # Update the count of registration based on record's program and registration date's year in data dictionary 
     for record in records:
@@ -230,67 +228,124 @@ def getParticipants():
         temp = {"Year": key}
         temp.update(project_data[key]) 
         data_for_chart_projects.append(temp)
-    print(data_for_chart_projects)
-    end_time = time.time()
-    processing_time = end_time - start_time
-    print('processing time', processing_time)
-    
+    # print(data_for_chart_projects)
     data_for_bar_graph = []
-    return [data_for_chart_participants, data_for_chart_projects, data_for_bar_graph]
+    
+# @cache.cached(timeout=600, key_prefix='getEngagement')
 
-@cache.cached(timeout=600, key_prefix='getEngagement')
-def getEngagement():
-    current_date = datetime.utcnow().date()
-    last_5_months = [
-        {
-            "date": (current_date - timedelta(days=30 * i)).strftime('%Y-%m'),
-            "month_name": (current_date - timedelta(days=30 * i)).strftime('%B')
-        } for i in range(4, -1, -1)
-    ]
+    today = datetime.utcnow().date()
 
-    # Fetch projects and programs in a single query
-    projects = Project.query.filter_by(IsArchived=False).all()
-    programs = ExtensionProgram.query.filter_by(IsArchived=False).all()
+    months = []
+    for _ in range(5):
+        months.append({today.strftime('%Y-%m'):today.strftime('%B')})
+        today = today - timedelta(days=today.day)
+    months.reverse()
+    
+    top_projects = db.session.query(Project.Title) \
+        .join(Activity, Project.ProjectId == Activity.ProjectId) \
+        .join(Attendance, Activity.ActivityId == Attendance.ActivityId) \
+        .join(User, Attendance.UserId == User.UserId) \
+        .filter(User.RoleId == 2) \
+        .filter(Project.IsArchived == False) \
+        .filter(Activity.Date >= f'{next(iter(months[0]))}-01') \
+        .group_by(Project.Title) \
+        .order_by(db.desc(db.func.count(Attendance.AttendanceId))) \
+        .limit(5) \
+        .all()
+    top_projects = [project[0] for project in top_projects]
 
-    # Create dictionaries to store engagement data for projects and programs
-    projects_engagement = defaultdict(list)
-    programs_engagement = defaultdict(list)
+    # Initialize data dictionary
+    data = {}
+    for project in top_projects:
+        data[project] = {}  # Initialize data dictionary for each project
+        for month in months:
+            data[project][next(iter(month))] = {
+                'month': next(iter(month)),
+                'month_name': list(month.values())[0],
+                'participants': 0
+            }
 
-    # Populate engagement data for projects
-    for project in projects:
-        engagement_data = {
-            "name": project.Title,
-            "data": []
-        }
-        for month in last_5_months:
-            participants_count = project.get_participants_count_for_month(month)
-            engagement_data["data"].append({"month": month["date"], "month_name": month["month_name"], "participants": participants_count})
-        projects_engagement[project.ProjectId] = engagement_data
+    records = db.session.query(
+            Project.Title,
+            func.TO_CHAR(Activity.Date, 'YYYY-MM'),
+            func.count(Attendance.AttendanceId)
+        ).join(
+            Activity, Project.ProjectId == Activity.ProjectId
+        ).join(
+            Attendance, Activity.ActivityId == Attendance.ActivityId
+        ).join(
+            User, Attendance.UserId == User.UserId
+        ).filter(
+            User.RoleId == 2,
+            Activity.Date >= f'{next(iter(months[0]))}-01',
+            Project.Title.in_(top_projects)
+        ).group_by(
+            Project.Title,
+            func.TO_CHAR(Activity.Date, 'YYYY-MM')
+        ).order_by(
+            Project.Title
+        ).all()
 
-    # Populate engagement data for programs
+    for record in records:
+        project_title, month, participants_count = record
+        data[project_title][month]['participants'] = participants_count
+    
+    top_5_projects = []
+
+    for project, months_data in data.items():
+        top_5_projects.append({'name': project, 'data': list(months_data.values())})
+
+    program_data = {}
     for program in programs:
-        engagement_data = {
-            "name": program.Name,
-            "data": []
-        }
-        for month in last_5_months:
-            participants_count = program.get_participants_count_for_month(month)
-            engagement_data["data"].append({"month": month["date"], "month_name": month["month_name"], "participants": participants_count})
-        programs_engagement[program.ExtensionProgramId] = engagement_data
+        program_data[program[1]] = {}  # Initialize data dictionary for each project
+        for month in months:
+            program_data[program[1]][next(iter(month))] = {
+                'month': next(iter(month)),
+                'month_name': list(month.values())[0],
+                'participants': 0
+            }
 
-    # Sort projects based on the participants count for the last month
-    sorted_projects = sorted(projects_engagement.values(), key=lambda x: x['data'][-1]['participants'], reverse=True)
+    records = db.session.query(
+            ExtensionProgram.Name,
+            func.TO_CHAR(Activity.Date, 'YYYY-MM'),
+            func.count(Attendance.AttendanceId)
+        ).join(
+            Project, ExtensionProgram.ExtensionProgramId == Project.ExtensionProgramId
+        ).join(
+            Activity, Project.ProjectId == Activity.ProjectId
+        ).join(
+            Attendance, Activity.ActivityId == Attendance.ActivityId
+        ).join(
+            User, Attendance.UserId == User.UserId
+        ).filter(
+            User.RoleId == 2,
+            Activity.Date >=  f'{next(iter(months[0]))}-01',
+            Project.IsArchived == False,
+            ExtensionProgram.IsArchived == False
+        ).group_by(
+            ExtensionProgram.Name,
+            func.TO_CHAR(Activity.Date, 'YYYY-MM')
+        ).order_by(
+            ExtensionProgram.Name
+        ).all()
 
-    # Select the top 5 projects
-    top_5_projects = sorted_projects[:5]
+    for record in records:
+        program, month, participants_count = record
+        program_data[program][month]['participants'] = participants_count
+    
+    program_engagement = []
 
-    return [top_5_projects, list(programs_engagement.values())]
+    for program, months_data in program_data.items():
+        program_engagement.append({'name': program, 'data': list(months_data.values())})
+        
+    return [data_for_chart_participants, data_for_chart_projects, data_for_bar_graph, top_5_projects, program_engagement]
 
 @bp.route('/dashboard')
 @login_required
 @requires_module_access('Dashboard')
 # @login_required(role=["Admin", "Faculty"])
 def dashboard():
+    start_time = time.time()
     # statusCount = getStatusCount()
     # upcoming_projects = statusCount[0]
     # ongoing_projects = statusCount[1]
@@ -309,10 +364,11 @@ def dashboard():
     # # Sort years in chronological order
     # sorted_years = sorted(set(entry["year"] for program_data in data_for_bar_graph for entry in program_data["data"]))
 
-    # engagement = getEngagement()
-    # last_5_months_projects_engagement = engagement[0]
-    # last_5_months_programs_engagement = engagement[1]
-
+    last_5_months_projects_engagement = participants[3]
+    last_5_months_programs_engagement = participants[4]
+    end_time = time.time()
+    processing_time = end_time - start_time
+    print('processing time', processing_time)
     return render_template('admin/dashboard.html',
                             data_for_chart_participants=data_for_chart_participants,
                             data_for_chart_projects=data_for_chart_projects,
@@ -324,8 +380,8 @@ def dashboard():
                             # # upcoming_activities=upcoming_activities,
                             # # ongoing_activities=ongoing_activities,
                             # # completed_activities=completed_activities,
-                            # last_5_months_projects_engagement=last_5_months_projects_engagement,
-                            # last_5_months_programs_engagement=last_5_months_programs_engagement
+                            last_5_months_projects_engagement=last_5_months_projects_engagement,
+                            last_5_months_programs_engagement=last_5_months_programs_engagement
                             )
 
 @bp.route('/qcmap')
