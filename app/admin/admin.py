@@ -51,7 +51,7 @@ def adminLogin():
             if attempted_user and attempted_user.User[0].RoleId == 1: 
                 if check_password_hash(attempted_user.Password, form.password.data):
                     login_user(attempted_user.User[0], remember=True)
-                    return redirect(url_for('programs.programs')) 
+                    return redirect(url_for('admin.dashboard')) 
                 else:
                     flash('The password you\'ve entered is incorrect.', category='error')
             else:
@@ -160,7 +160,7 @@ def viewFaculty(id):
 
 
 
-# @cache.cached(timeout=600, key_prefix='getParticipants')
+@cache.cached(timeout=600, key_prefix='getParticipants')
 def getParticipants():
     programs = db.session.query(ExtensionProgram.ExtensionProgramId,
                                 ExtensionProgram.Name).\
@@ -216,7 +216,6 @@ def getParticipants():
             filter(ExtensionProgram.IsArchived == False).\
             group_by(func.extract('year', Project.StartDate), Project.ExtensionProgramId).\
             order_by(func.extract('year', Project.StartDate)).all()
-    # print(records)    
 
     # Update the count of registration based on record's program and registration date's year in data dictionary 
     for record in records:
@@ -228,9 +227,7 @@ def getParticipants():
         temp = {"Year": key}
         temp.update(project_data[key]) 
         data_for_chart_projects.append(temp)
-    # print(data_for_chart_projects
-    
-# @cache.cached(timeout=600, key_prefix='getEngagement')
+
 
     today = datetime.utcnow().date()
 
@@ -346,7 +343,7 @@ def getParticipants():
                 'year': year,
                 'average_rating': 0
             }
-    print(satisfaction_data)
+
     records = db.session.query(
                 ExtensionProgram.Name,
                 func.extract('year', Activity.Date),
@@ -377,28 +374,6 @@ def getParticipants():
     for program, years_data in satisfaction_data.items():
         data_for_bar_graph.append({'name': program, 'data': list(years_data.values())})
 
-    # for extension_program in ExtensionProgram.query.all():
-    #     print("extension_program:", extension_program)
-    #     program_ratings = []
-    #     for project in extension_program.Projects:
-    #         for activity in project.Activity:
-    #             if activity.Evaluation:
-    #                 for evaluation in activity.Evaluation:
-    #                     # Check if the evaluation type is for satisfaction
-    #                     if evaluation.EvaluationType == "Satisfaction":
-    #                         for response in evaluation.Response:
-    #                             rating = response.Num
-    #                             if rating is not None:
-    #                                 program_ratings.append({"year": activity.Date.year, "rating": rating})
-        
-    #     if program_ratings:
-    #         # Calculate the average rating for the extension program
-    #         non_none_ratings = [entry["rating"] for entry in program_ratings if entry["rating"] is not None]
-    #         average_rating = sum(non_none_ratings) / len(non_none_ratings) if non_none_ratings else None
-    #         data_for_bar_graph.append({"name": extension_program.Name, "data": program_ratings, "average_rating": average_rating})
-
-    print('data_for_bar', data_for_bar_graph)
-
     return [data_for_chart_participants, data_for_chart_projects, data_for_bar_graph, top_5_projects, program_engagement]
 
 @bp.route('/dashboard')
@@ -422,9 +397,6 @@ def dashboard():
     data_for_chart_projects = participants[1]
     data_for_bar_graph = participants[2]
 
-    # # Sort years in chronological order
-    sorted_years = sorted(set(entry["year"] for program_data in data_for_bar_graph for entry in program_data["data"]))
-
     last_5_months_projects_engagement = participants[3]
     last_5_months_programs_engagement = participants[4]
     end_time = time.time()
@@ -434,7 +406,6 @@ def dashboard():
                             data_for_chart_participants=data_for_chart_participants,
                             data_for_chart_projects=data_for_chart_projects,
                             data_for_bar_graph=data_for_bar_graph,
-                            sorted_years=sorted_years,
                             # # upcoming_projects=upcoming_projects,
                             # # ongoing_projects=ongoing_projects,
                             # # completed_projects=completed_projects,

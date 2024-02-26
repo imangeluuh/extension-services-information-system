@@ -297,7 +297,6 @@
             })
         };
 
-        optionAverageRatings.xAxis[0].data = {{ sorted_years | tojson | safe }};
         console.log("Option Average Ratings:", optionAverageRatings);
         myChartAverageRatings.setOption(optionAverageRatings);
     }
