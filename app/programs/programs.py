@@ -1022,7 +1022,7 @@ def uploadReceipt(id):
 # @login_required(role=["Admin", "Faculty"])
 def assignStudent():
     student_registration = Registration.query.filter_by(RegistrationId=int(request.form.get('id'))).first()
-    bool_is_assigned = True if request.form.get('is_assigned') == 1 else False
+    bool_is_assigned = True if request.form.get('is_assigned') == '1' else False
     student_registration.IsAssigned = bool_is_assigned
 
     try:
