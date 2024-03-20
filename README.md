@@ -34,12 +34,6 @@ PUPQC Extension Services Information System supports the planning, coordination,
 <!-- GETTING STARTED -->
 ## Getting Started
 
-
-# <p align="center">PUPQC-ESIS</p>
-  
-PUPQC Extension Services Information System supports the planning, coordination, and implementation of extension programs and activities that bridge the gap between the university and the broader community. 
-   
-
 ### Prerequisites
 * Flask
   ```sh
