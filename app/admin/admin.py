@@ -72,7 +72,6 @@ def changeUserRole(id):
     user = User.query.filter_by(UserId=id).first()
     form = RoleForm()
     user.RoleId = form.role.data
-    print(form.role.data)
     db.session.commit()
     flash('User role is succesfully updated', category='success')
     return redirect(request.referrer)
@@ -236,7 +235,7 @@ def getParticipants():
         months.append({today.strftime('%Y-%m'):today.strftime('%B')})
         today = today - timedelta(days=today.day)
     months.reverse()
-    
+
     top_projects = db.session.query(Project.Title) \
         .join(Activity, Project.ProjectId == Activity.ProjectId) \
         .join(Attendance, Activity.ActivityId == Attendance.ActivityId) \
@@ -274,6 +273,7 @@ def getParticipants():
         ).filter(
             User.RoleId == 2,
             Activity.Date >= f'{next(iter(months[0]))}-01',
+            Activity.Date <= datetime.now().date(),
             Project.Title.in_(top_projects)
         ).group_by(
             Project.Title,
@@ -316,6 +316,7 @@ def getParticipants():
         ).filter(
             User.RoleId == 2,
             Activity.Date >=  f'{next(iter(months[0]))}-01',
+            Activity.Date <= datetime.now().date(),
             Project.IsArchived == False,
             ExtensionProgram.IsArchived == False
         ).group_by(
@@ -381,7 +382,6 @@ def getParticipants():
 @requires_module_access('Dashboard')
 # @login_required(role=["Admin", "Faculty"])
 def dashboard():
-    start_time = time.time()
     # statusCount = getStatusCount()
     # upcoming_projects = statusCount[0]
     # ongoing_projects = statusCount[1]
@@ -399,9 +399,7 @@ def dashboard():
 
     last_5_months_projects_engagement = participants[3]
     last_5_months_programs_engagement = participants[4]
-    end_time = time.time()
-    processing_time = end_time - start_time
-    print('processing time', processing_time)
+
     return render_template('admin/dashboard.html',
                             data_for_chart_participants=data_for_chart_participants,
                             data_for_chart_projects=data_for_chart_projects,
