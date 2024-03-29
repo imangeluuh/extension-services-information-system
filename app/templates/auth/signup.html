@@ -165,7 +165,7 @@
         document.getElementById('reviewMiddleName').textContent = middle_name;
         document.getElementById('reviewLastName').textContent = last_name;
         document.getElementById('reviewContact').textContent = contact_details;
-        document.getElementById('reviewBirthdate').textContent = birthdate;
+        document.getElementById('reviewBirthdate').textContent = formatDate(birthdate);
         document.getElementById('reviewBirthplace').textContent = birthplace;
         document.getElementById('reviewGender').textContent = gender;
         document.getElementById('reviewAddress').textContent = address;
@@ -210,5 +210,20 @@
 
     // Add the form submit event listener
     signupForm.addEventListener('submit', handleSubmit);
+
+    function formatDate(inputDate) {
+        // Parse the input date string into a Date object
+        let date = new Date(inputDate);
+
+        // Get the month, day, and year from the date object
+        let month = (date.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because getMonth() returns 0-indexed month
+        let day = date.getDate().toString().padStart(2, '0');
+        let year = date.getFullYear();
+
+        // Concatenate the parts with dashes to get the desired format
+        let formattedDate = `${month}-${day}-${year}`;
+
+        return formattedDate;
+    }
 </script>
 {% endblock %}
