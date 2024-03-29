@@ -49,7 +49,7 @@
                 </div> 
                 <div class="mb-2 col-12 col-md-3">
                     <div class="d-flex">{{ form.contact_details.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
-                    {{ form.contact_details(id="contact_details", class="form-control") }}
+                    {{ form.contact_details(id="contact_details", class="form-control", pattern="^[0-9]+$") }}
                     <ul>
                         {% for error in form.contact_details.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>
