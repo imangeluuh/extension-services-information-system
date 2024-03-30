@@ -264,7 +264,7 @@ def evaluation(id):
                         error = 1
                         break
         if not error:
-            flash('Your response has been recorded successfully. Evaluatoin results will be made available to you through your dashboard when the evaluation closes.', category='success')
+            flash('Your response has been recorded successfully.', category='success')
             return redirect(url_for('evaluation.evaluation', id=evaluation.EvaluationId))
         else:
             flash('An error occured whilst recording your response. Please try again later.', category='error')
