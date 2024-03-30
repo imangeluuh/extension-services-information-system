@@ -99,7 +99,7 @@
                 </div> 
                 <div class="mb-2 col-12">
                     <div class="d-flex">{{ form.email.label(class="form-label") }}<span class="text-danger ms-1">*</span></div>
-                    {{ form.email(id="email", class="form-control") }}
+                    {{ form.email(id="email", class="form-control", type="email") }}
                     <ul>
                         {% for error in form.email.errors %}
                         <li class="text-danger fs-5 mb-4 mt-0 p-0">{{ error }}</li>

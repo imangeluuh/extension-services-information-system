@@ -203,33 +203,7 @@ def resetPassword(token):
             db.session.commit()
             flash('Your password has been reset.', category='success')
             return redirect(url_for('auth.login'))
+        if form.errors != {}: # If there are errors from the validations
+            for err_msg in form.errors.values():
+                flash(err_msg, category='error')
     return render_template('auth/reset_password.html', form=form)
-
-# def createUser(form, role):
-#     # Generate student/faculty/beneficiary number
-#     last_user = User.query.filter_by(RoleId=role).order_by(User.UserNumber.desc()).first()
-#     middle_digits = '00001'
-#     if last_user:
-#         last_user_number = last_user.UserNumber # Get the last student/faculty/beneficiary number
-#         middle_digits = int(last_user_number[5:10]) # Extract characters from index 5 to 9 (inclusive)
-#         middle_digits = str(middle_digits + 1).zfill(5) # Increment and zero-pad to 5 digits
-#     year = str(datetime.datetime.now().year ) # Get current year
-#     last_chars = "-CM-1"
-#     if role == 3:
-#         last_chars = "-CM-0"
-#     user_number = year+"-"+middle_digits+last_chars
-#     user_to_create = User(UserId=uuid.uuid4(),
-#                             UserNumber = user_number,
-#                             FirstName=form.first_name.data,
-#                             MiddleName=form.middle_name.data,
-#                             LastName=form.last_name.data,
-#                             Email=form.email.data,
-#                             password_hash=form.password1.data,
-#                             RoleId=role,
-#                             MobileNumber=form.contact_details.data,
-#                             DateOfBirth=form.birthdate.data,
-#                             PlaceOfBirth=form.birthplace.data,
-#                             Gender=form.gender.data,
-#                             ResidentialAddress=form.address.data)
-#     db.session.add(user_to_create)
-#     db.session.commit()
