@@ -37,6 +37,7 @@
             </thead>
             <tbody>
                 {% for activity in project.Activity %}
+                {% if activity.IsArchived == False %}
                 <tr>
                     <td>{{activity.ActivityName}}</td>
                     <td>
@@ -46,6 +47,7 @@
                         {% endif %}
                     </td>
                 </tr>
+                {% endif %}
                 {% endfor %}
             </tbody>
         </table>

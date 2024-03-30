@@ -109,10 +109,10 @@ def addEvaluation():
     activities = None # Initialize activities
     # If user is an admin, get all the activities
     if current_user.Role.RoleName == "Admin":
-        activities = Activity.query.all()
+        activities = Activity.query.filter_by(IsArchived=False).all()
     # If user is faculty, get only the activities for their project/s
     else:
-        activities = Activity.query.join(Project).filter(Project.LeadProponentId == current_user.UserId).all()
+        activities = Activity.query.join(Project).filter(Project.LeadProponentId == current_user.UserId, Activity.IsArchived==False).all()
 
     if request.method == "POST":
 

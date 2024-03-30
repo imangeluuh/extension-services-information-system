@@ -49,8 +49,7 @@ def getExpense():
 
     if filter_value:
         ext_program = ExtensionProgram.query.filter_by(ExtensionProgramId=filter_value, IsArchived=False).first()
-        projects = ext_program.Projects
-        print(projects)
+        projects = [project for project in ext_program.Projects if project.IsArchived == False]
         project_title = []
         project_budget = []
         project_expense = []
@@ -61,11 +60,6 @@ def getExpense():
             project_budget.append(float(project.totalBudget()))
             project_expense.append(float(project.totalExpense()))
             project_remaining.append(round(float(project.totalBudget())-float(project.totalExpense()),2))
-
-        print(project_title)
-        print(project_budget)
-        print(project_expense)
-        print(project_remaining)
 
     return render_template('reports/project_expense.html', ext_program=ext_program
                                                         , projects=projects

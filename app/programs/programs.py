@@ -293,7 +293,7 @@ def insertExtensionProgram():
 # @login_required(role=["Admin", "Faculty"])
 def updateExtensionProgram(id):
     form = ProgramForm()
-    extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id, IsArchived=False)
+    extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id, IsArchived=False).first()
     if form.validate_on_submit():
         if form.image.data is not None:
             # If extension program has previous image, remove it from imagekit
@@ -319,6 +319,7 @@ def updateExtensionProgram(id):
         extension_program.Rationale = form.rationale.data
         extension_program.AgendaId = int(form.agenda.data)
         extension_program.ProgramId = int(form.program.data)
+
         try:
             db.session.commit()
             flash('Extension progam is successfully updated.', category='success')
@@ -342,6 +343,10 @@ def deleteExtensionProgram(id):
     extension_program = ExtensionProgram.query.filter_by(ExtensionProgramId=id).first()
     try:
         extension_program.IsArchived = True
+        for project in extension_program.Projects:
+            project.IsArchived = True
+            for activity in project.Activity:
+                activity.IsArchived = True
         db.session.commit()
         flash('Extension program is successfully deleted.', category='success')
     except Exception as e:
@@ -606,6 +611,8 @@ def deleteProject(id):
     ext_program_id = project.ExtensionProgram.ExtensionProgramId
     try:
         project.IsArchived = True
+        for activity in project.Activity:
+            activity.IsArchived = True
         db.session.commit()
         flash('Extension project is successfully deleted.', category='success')
     except Exception as e:

@@ -16,12 +16,14 @@
         </thead>
         <tbody>
             {% for project in projects %}
+            {% if project.IsArchived == False %}
             <tr>
                 <td class="title">{{project.Title}}</td>
                 <td class="lead text-end pe-4">&#8369;{{ "{:,.2f}".format(project.totalBudget())}}</td>
                 <td class="agency text-end pe-4">&#8369;{{"{:,.2f}".format(project.totalExpense())}}</td>
                 <td class="time text-end pe-4">&#8369;{{"{:,.2f}".format(project.totalBudget() - project.totalExpense())}}</td>
             </tr>
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>
