@@ -50,9 +50,11 @@
                         <button type="button" data-bs-toggle="modal" data-bs-target="#edit-{{role.RoleId}}" class="btn btn-warning rounded-2 d-flex align-items-center me-2 py-1 px-2">
                             Edit
                         </button>
+                        {% if role.RoleId > 4 %}
                         <button type="button" data-bs-toggle="modal" data-bs-target="#delete-{{role.RoleId}}" class="btn btn-danger rounded-2 d-flex align-items-center  py-1 px-2">
                             Delete
                         </button>
+                        {% endif %}
                         {% endif %}
                     </td>
                 </tr>

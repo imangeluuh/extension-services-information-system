@@ -610,8 +610,12 @@ def addRole():
         access_to_add = RoleAccess(RoleId=role_id,
                                 ModuleId=int(module_id))
         db.session.add(access_to_add)
-
-    db.session.commit()
+    try:
+        db.session.commit()
+        flash("New role is successfully inserted.", category='success')
+    except Exception as e:
+        print(e)
+        flash("There was an issue inserting new role.", category='error')
     return redirect(request.referrer)
 
 @bp.route('/edit-role/<int:id>', methods=['POST'])
