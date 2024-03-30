@@ -20,9 +20,9 @@
                 <div class="bg-white p-3 rounded-3 shadow" style="width: 95%">
                     <form action="{{url_for('programs.calendar')}}"method="GET">
                         <select name="project_id" id="projectFilter" class="d-block w-100 p-2 form-select" onchange="this.form.submit()">
-                            <option value="">All Projects</option>
+                            <option value="All" {{ "selected" if selected_project_id == "All" }}>All Projects</option>
                             {% for project in projects %}
-                                <option value="{{ project.ProjectId }}">{{ project.Title }}</option>
+                                <option value="{{ project.ProjectId }}" {{ "selected" if selected_project_id|int == project.ProjectId }}>{{ project.Title }}</option>
                             {% endfor %}
                         </select>
                     </form>

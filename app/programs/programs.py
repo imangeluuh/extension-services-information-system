@@ -596,8 +596,9 @@ def updateProject(id):
         return redirect(url_for('programs.viewProject', id=extension_project.ProjectId))
 
     if form.errors != {}: # If there are errors from the validations
-        for err_msg in form.errors.values():
-            flash(err_msg, category='error')
+        for field, error in form.errors.items():
+            print(f"Field '{field}' has an error: {error}")
+            flash(error, category='error')
 
     return redirect(url_for('programs.viewProject', id=extension_project.ProjectId))
 
@@ -856,7 +857,7 @@ def calendar():
     else:
         projects = Project.query.filter_by(IsArchived=False, LeadProponentId=current_user.UserId).all()
 
-    selected_project_id = request.args.get('project_id', None)
+    selected_project_id = request.args.get('project_id', "All")
     # Get all activities
     if current_user.RoleId == 1:
         activities = Activity.query.filter_by(IsArchived=False).all()
@@ -867,7 +868,7 @@ def calendar():
                 if activity.IsArchived == False:
                     activities.append(activity)
     # Fetch activities based on the selected project
-    if selected_project_id:
+    if selected_project_id != "All":
         activities = Activity.query.filter_by(ProjectId=selected_project_id, IsArchived=False).order_by(Activity.Date.asc()).all()
 
     return render_template('programs/activity_calendar.html', projects=projects, events=activities, selected_project_id=selected_project_id)
