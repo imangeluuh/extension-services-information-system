@@ -23,4 +23,4 @@ class AnnouncementForm(FlaskForm):
         super().__init__(*args, **kwargs)
         
         with current_app.app_context():
-            self.project.choices = [(project.ProjectId, project.Title) for project in Project.query.all()]
+            self.project.choices = [(project.ProjectId, project.Title) for project in Project.query.filter_by(IsArchived=False).all()]

@@ -41,7 +41,7 @@ def project():
     ext_program = ExtensionProgram.query.filter_by(ExtensionProgramId=ext_program_id).first()
     projects = None
     if current_user.RoleId == 1:
-        projects = [project for project in ext_program.Projects]
+        projects = [project for project in ext_program.Projects if project.IsArchived == False]
     else:
         projects = [project for project in Project.query.filter_by(ExtensionProgramId=ext_program_id, LeadProponentId=current_user.UserId, IsArchived=False).all()]
     return render_template('announcement/project_options.html', projects=projects)
@@ -184,7 +184,7 @@ def createAnnouncement():
     faculty_projects = None
     # If current user is faculty, get their project only
     if current_user.RoleId == 4:
-        faculty_projects = [(project.ProjectId, project.Title) for project in Project.query.filter_by(LeadProponentId=current_user.UserId).all()]
+        faculty_projects = [(project.ProjectId, project.Title) for project in Project.query.filter_by(LeadProponentId=current_user.UserId, IsArchived=False).all()]
     if 'announcement_title' in session:
         form.title.data = session['announcement_title']
     if 'announcement_body' in session:
