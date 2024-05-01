@@ -78,21 +78,21 @@ def getDetails():
 
     if filter_value:
         ext_program = ExtensionProgram.query.filter_by(ExtensionProgramId=filter_value).first()
-        upcoming_projects = Project.query.filter(Project.StartDate > current_date, Project.ExtensionProgramId == filter_value).count()
-        ongoing_projects = Project.query.filter(Project.StartDate <= current_date, Project.EndDate >= current_date, Project.ExtensionProgramId == filter_value).count()
-        completed_projects = Project.query.filter(Project.EndDate < current_date, Project.ExtensionProgramId == filter_value).count()
+        upcoming_projects = Project.query.filter(Project.StartDate > current_date, Project.ExtensionProgramId == filter_value, Project.IsArchived == False).count()
+        ongoing_projects = Project.query.filter(Project.StartDate <= current_date, Project.EndDate >= current_date, Project.ExtensionProgramId == filter_value, Project.IsArchived == False).count()
+        completed_projects = Project.query.filter(Project.EndDate < current_date, Project.ExtensionProgramId == filter_value, Project.IsArchived == False).count()
 
-        upcoming_activities = Activity.query.join(Project).filter(Activity.Date > current_date, Project.ExtensionProgramId == filter_value).count()
-        ongoing_activities = Activity.query.join(Project).filter(Activity.Date <= current_date, Activity.Date >= current_date, Project.ExtensionProgramId == filter_value).count()
-        completed_activities = Activity.query.join(Project).filter(Activity.Date < current_date, Project.ExtensionProgramId == filter_value).count()
+        upcoming_activities = Activity.query.join(Project).filter(Activity.Date > current_date, Project.ExtensionProgramId == filter_value, Activity.IsArchived == False).count()
+        ongoing_activities = Activity.query.join(Project).filter(Activity.Date <= current_date, Activity.Date >= current_date, Project.ExtensionProgramId == filter_value, Activity.IsArchived == False).count()
+        completed_activities = Activity.query.join(Project).filter(Activity.Date < current_date, Project.ExtensionProgramId == filter_value, Activity.IsArchived == False).count()
     else:
-        upcoming_projects = Project.query.filter(Project.StartDate > current_date).count()
-        ongoing_projects = Project.query.filter(Project.StartDate <= current_date, Project.EndDate >= current_date).count()
-        completed_projects = Project.query.filter(Project.EndDate < current_date).count()
+        upcoming_projects = Project.query.filter(Project.StartDate > current_date,  Project.IsArchived == False).count()
+        ongoing_projects = Project.query.filter(Project.StartDate <= current_date, Project.EndDate >= current_date,  Project.IsArchived == False).count()
+        completed_projects = Project.query.filter(Project.EndDate < current_date,  Project.IsArchived == False).count()
 
-        upcoming_activities = Activity.query.filter(Activity.Date > current_date).count()
-        ongoing_activities = Activity.query.filter(Activity.Date <= current_date, Activity.Date >= current_date).count()
-        completed_activities = Activity.query.filter(Activity.Date < current_date).count()
+        upcoming_activities = Activity.query.filter(Activity.Date > current_date, Activity.IsArchived == False).count()
+        ongoing_activities = Activity.query.filter(Activity.Date <= current_date, Activity.Date >= current_date, Activity.IsArchived == False).count()
+        completed_activities = Activity.query.filter(Activity.Date < current_date, Activity.IsArchived == False).count()
 
     return render_template('reports/ext_program_details.html', upcoming_projects=upcoming_projects
                         , ongoing_projects=ongoing_projects
