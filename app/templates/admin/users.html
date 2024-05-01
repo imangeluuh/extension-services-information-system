@@ -45,15 +45,10 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% if current_url_path == url_for('admin.faculty') or current_url_path == url_for('admin.students') %}
                         {% for user in users %}
                         <tr>
-                            {% if user.RoleId == 2 %}
-                            <td>{{ user.Beneficiary.FirstName }}</td>
-                            <td>{{ user.Beneficiary.MiddleName if user.Beneficiary.MiddleName else 'N/A' }}</td>
-                            <td>{{ user.Beneficiary.LastName }}</td>
-                            <td>{{ user.Beneficiary.Email }}</td>
-                            <td><a href="{{ url_for('admin.viewBeneficiary', id=user.BeneficiaryId) }}" class="btn btn-primary">View</a></td>
-                            {% elif user.RoleId == 3 %}
+                            {% if user.RoleId == 3 %}
                             <td>{{ user.Student.FirstName }}</td>
                             <td>{{ user.Student.MiddleName if user.Student.MiddleName else 'N/A' }}</td>
                             <td>{{ user.Student.LastName }}</td>
@@ -78,6 +73,18 @@
                             {% endif %}
                         </tr>
                         {% endfor %}
+                        {% else %}
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.FirstName }}</td>
+                            <td>{{ user.MiddleName if user.MiddleName else 'N/A' }}</td>
+                            <td>{{ user.LastName }}</td>
+                            <td>{{ user.Email }}</td>
+                            <td><a href="{{ url_for('admin.viewBeneficiary', id=user.BeneficiaryId) }}" class="btn btn-primary">View</a></td>
+                        </tr> 
+                        {% endfor %}
+                        {% endif %}
+
                     </tbody>
                 </table>
             </div>

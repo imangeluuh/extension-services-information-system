@@ -81,9 +81,9 @@ def changeUserRole(id):
 @requires_module_access('User Management')
 # @login_required(role=["Admin"])
 def beneficiaries():
-    users = User.query.filter_by(RoleId=2).all()
+    users = Beneficiary.query.all()
     current_url_path = request.path
-    return render_template('admin/users.html', users=users,current_url_path=current_url_path)
+    return render_template('admin/users.html', users=users, current_url_path=current_url_path)
 
 @bp.route('/students')
 @login_required
