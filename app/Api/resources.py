@@ -115,11 +115,11 @@ class FinishedExtensionApi(Resource):
     @ns.marshal_list_with(extension_program_summary_model)
     def get(self):
         # Get all extension programs
-        extension_programs = ExtensionProgram.query.all()
+        extension_programs = ExtensionProgram.query.filter_by(IsArchived=False).all()
 
         # Create a new list for API response with filtered completed projects
         for program in extension_programs:
-            completed_projects = [project for project in program.Projects if project.EndDate > datetime.utcnow().date()]
+            completed_projects = [project for project in program.Projects if project.EndDate > datetime.utcnow().date() and project.IsArchived == False]
 
             # Create a dictionary with the program's attributes
             program_dict = {

@@ -90,7 +90,7 @@ extension_project_model = api.model("ExtensionProject", {
     "ProjectId": fields.Integer,
     "Title": fields.String,
     "Implementer": fields.String,
-    "ProjectTeam": fields.Raw,
+    # "ProjectTeam": fields.Raw,
     "TargetGroup": fields.String,
     "ProjectType": fields.String,
     "StartDate": fields.Date,
