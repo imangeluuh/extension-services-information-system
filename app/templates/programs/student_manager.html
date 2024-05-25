@@ -41,8 +41,9 @@
                 <tr>
                     <td>{{activity.ActivityName}}</td>
                     <td>
+                        {% if registration.IsAssigned and registration.Role == 'Monitor Attendance' %}
                         <a href="{{url_for('programs.manageAttendance', project_id=project.ProjectId, activity_id=activity.ActivityId)}}" class="btn btn-success">Record Attendance</a>
-                        {% if activity.Evaluation %}
+                        {% elif activity.Evaluation and registration.IsAssigned and registration.Role == 'Answer Evaluation' %}
                         <a href="{{url_for('evaluation.studentEvaluation', id=activity.Evaluation[0].EvaluationId)}}" class="btn btn-success">Take evaluation</a>
                         {% endif %}
                     </td>

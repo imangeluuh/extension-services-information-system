@@ -447,6 +447,7 @@ class Registration(db.Model):
     RegistrationId = db.Column(db.Integer, primary_key=True)
     RegistrationDate = db.Column(db.Date, default=datetime.utcnow, index=True, nullable=False)
     IsAssigned = db.Column(db.Boolean, default=False, nullable=False)
+    Role = db.Column(db.String(100), nullable=True)
     ProjectId = db.Column(db.Integer, db.ForeignKey('ESISProject.ProjectId', ondelete='CASCADE'), index=True, nullable=False)
     UserId = db.Column(db.String(36), db.ForeignKey('ESISUser.UserId', ondelete='CASCADE'), index=True, nullable=False)
     User = db.relationship('User', back_populates='Registration', passive_deletes=True)

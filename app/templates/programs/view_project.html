@@ -143,7 +143,7 @@ object-fit: cover;">
                 </div>
                 <div class="tab-pane" id="tabs-registered" role="tabpanel">
                     <div class="d-flex justify-content-between">
-                        <h4 class="pb-2">Registered Beneficiaries and Volunteers</h4>
+                        <h4 class="pb-2">Registered Beneficiaries and Students</h4>
                         {% if project.EndDate < current_date and not is_certificate_released %}
                         <a href="{{url_for('programs.cert', id=project.ProjectId)}}" type="button" class="btn btn-primary align-self-center ">Release Certificates</a>
                         {% elif project.EndDate < current_date and is_certificate_released %}
@@ -176,20 +176,19 @@ object-fit: cover;">
                                         {% endif %}
                                     </td>
                                     <td>{{ user.User.Beneficiary.LastName if user.User.RoleId == 2 else user.User.Student.LastName}}</td>
-                                    <td>{{ user.User.Role.RoleName }}</td>
+                                    <td>
+                                        {{ user.User.Role.RoleName }} 
+                                        {% if user.User.RoleId == 3 and user.Role %}
+                                        ({{ user.Role }})
+                                        {% endif %}
+                                    </td>
                                     <td class="d-flex">
                                         {% if user.User.RoleId == 3%}
                                             {% if current_user.RoleId == 1 %}
                                             <a href="{{ url_for('admin.viewStudent', id=user.User.Student.StudentNumber) }}" class="btn btn-primary me-2 px-2 py-1 rounded-2">View</a>
                                             {% endif %}
                                             {% if current_user.UserId == project.LeadProponentId %}
-                                            <form action="{{ url_for('programs.assignStudent')}}" method="post">
-                                                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                                                <input type="hidden" name="id" value="{{user.RegistrationId}}">
-                                                <input type="hidden" name="is_assigned" value="{{0 if user.IsAssigned else 1}}">
-                                                <input type="hidden" name="project_id" value="{{project.ProjectId}}">
-                                                <input type="submit" value="{{'Assign' if user.IsAssigned == 0 else 'Unassign' }}" class="btn {{'btn-danger' if user.IsAssigned else 'btn-success'}} me-2 px-2 py-1 rounded-2">
-                                            </form>
+                                            <button class="modal-btn btn {{'btn-danger' if user.IsAssigned else 'btn-success'}}" value="{{user.RegistrationId}}">{{'Assign' if user.IsAssigned == 0 else 'Unassign' }}</button>
                                             {% endif %}
                                         {% else %}
                                             {% if current_user.RoleId == 1 %}
@@ -255,6 +254,39 @@ object-fit: cover;">
     </div>
 </div>
 <!-- /Tabs -->
+
+<!-- Modal -->
+<div class="modal modal-blur fade" id="modal-assign" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form id="assignment-form" action="{{ url_for('programs.assignStudent')}}" method="post">
+            <div class="modal-body">
+                <div class="modal-title"></div>
+                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                <input type="hidden" name="id" value="">
+                <div id="assign-div" class="d-none">  
+                    <div class="mb-3">
+                        <div class="form-label">Role</div>
+                        <input type="hidden" name="project_id" value="{{project.ProjectId}}">
+                        <select name="role" class="form-select">
+                            <option value="Monitor Attendance">Monitor Attendance</option>
+                            <option value="Answer Evaluation">Answer Evaluation</option>
+                            <option value="Documentation">Documentation</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="unassign-div" class="d-none">
+                    <div>Are you sure you want to unassign this student?</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn submit-btn" data-bs-dismiss="modal"></button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 
@@ -329,6 +361,7 @@ object-fit: cover;">
     $('body').on('click', '.remove-item', function() {
         $(this).closest('.budget').remove();
     });
+
     const checkbox = document.getElementById("checkbox");
     const selectField = document.getElementById("research-title");
 
@@ -342,6 +375,51 @@ object-fit: cover;">
             checkbox.classList.add('bg-primary');
         }
     });
+
+    // Show assign modal
+    $('.modal-btn').on('click', function (event) {
+        // Get the value of the clicked button
+        var id = $(this).val();
+        // Set the value of the hidden input field in the modal
+        $('#assignment-form input[name="id"]').val(id);
+        console.log($(this).text());
+        // If button text is Assign
+        if ($(this).text() == 'Assign') {
+            // Show assign div
+            $('#assign-div').removeClass('d-none');
+            // Set the title of the modal
+            $('.modal-title').text('Assign Student');
+            // Set the text of the submit button
+            $('.submit-btn').text('Assign');
+            $('.submit-btn').addClass('btn-primary');
+        } else {
+            console.log('hello?')
+            // Show unassign div
+            $('#unassign-div').removeClass('d-none');
+            // Set the title of the modal
+            $('.modal-title').text('Unassign Student');
+            // Set the text of the submit button
+            $('.submit-btn').text('Unassign');
+            $('.submit-btn').addClass('btn-danger');
+        }
+
+        // Set attributes of modal
+        $('#modal-assign').addClass('show');
+        $('#modal-assign').attr('aria-hidden', 'false');
+        $('#modal-assign').attr('aria-modal', 'true');
+        $('#modal-assign').css('display', 'block');
+    });
+
+    // Hide assign modal
+    $('.btn-link').on('click', function (event) {
+        // Set attributes of modal
+        $('#modal-assign').removeClass('show');
+        $('#modal-assign').attr('aria-hidden', 'true');
+        $('#modal-assign').attr('aria-modal', 'false');
+        $('#modal-assign').css('display', 'none');
+    });
+
+
     });
 </script>
 {% endblock %}

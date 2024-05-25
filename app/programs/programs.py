@@ -1030,15 +1030,16 @@ def uploadReceipt(id):
 # @login_required(role=["Admin", "Faculty"])
 def assignStudent():
     student_registration = Registration.query.filter_by(RegistrationId=int(request.form.get('id'))).first()
-    bool_is_assigned = True if request.form.get('is_assigned') == '1' else False
-    student_registration.IsAssigned = bool_is_assigned
+    student_registration.IsAssigned = not student_registration.IsAssigned
 
     try:
-        db.session.commit()
-        if bool_is_assigned:
-            flash('Student is successfully assigned to manage attendance and evaluations', category='success')
+        if student_registration.IsAssigned:
+            student_registration.Role = request.form.get('role')
+            flash('Student is successfully assigned', category='success')
         else:
-            flash('Student is successfully unassigned from managing attendance and evaluations', category='success')
+            student_registration.Role = None
+            flash('Student is successfully unassigned', category='success')
+        db.session.commit()
     except:
         flash('There was an issue assigning the student', category='error')
 
@@ -1265,7 +1266,8 @@ def activity_map(id):
 # @login_required(role=["Student"])
 def studentProjectManage(id):
     project = Project.query.filter_by(ProjectId=id, IsArchived=False).first()
-    return render_template('programs/student_manager.html', project=project)
+    registration = Registration.query.filter_by(ProjectId=id, UserId=current_user.UserId).first()
+    return render_template('programs/student_manager.html', project=project, registration=registration)
 
 @bp.route('project/<int:project_id>/activity/<int:activity_id>/attendance')
 @login_required
