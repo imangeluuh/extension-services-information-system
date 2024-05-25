@@ -382,7 +382,6 @@ object-fit: cover;">
         var id = $(this).val();
         // Set the value of the hidden input field in the modal
         $('#assignment-form input[name="id"]').val(id);
-        console.log($(this).text());
         // If button text is Assign
         if ($(this).text() == 'Assign') {
             // Show assign div
@@ -393,7 +392,6 @@ object-fit: cover;">
             $('.submit-btn').text('Assign');
             $('.submit-btn').addClass('btn-primary');
         } else {
-            console.log('hello?')
             // Show unassign div
             $('#unassign-div').removeClass('d-none');
             // Set the title of the modal
