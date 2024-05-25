@@ -110,48 +110,6 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex justify-content-center mt-4">
-            <!--Container-->
-            <div class="bg-white p-3 w-100 ">
-                <table id="projects" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
-                    <thead>
-                        <tr>
-                            <th data-priority="1">Project Name</th>
-                            <th data-priority="2">Extension Program</th>
-                            <th data-priority="3">Status</th>
-                            <th data-priority="4">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if projects %}
-                            {% for project in projects %}
-                            <!-- project[0] = project, project[1] = certificate -->
-                            <tr>
-                                <td>{{ project[0].Title}}</td>
-                                <td>{{ project[0].ExtensionProgram.Name }}</td>
-                                <td>
-                                    {% if project[0].EndDate < current_date  %}
-                                    Finished
-                                    {% elif project[0].StartDate > current_date %}
-                                    Upcoming
-                                    {% else %}
-                                    Ongoing
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="{{url_for('programs.project', id=project[0].ProjectId) if current_user.RoleId in [2, 3] else url_for('programs.viewProject', id=project[0].ProjectId)}}" class="btn btn-primary">View</a>
-                                    {% if project[1] %}
-                                    <a href="{{project[1].CertificateUrl}}" class="btn btn-primary">Certificate</a>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% endif %}
-                    </tbody>
-                </table>   
-            </div>
-            <!--/container-->
-        </div>
     </div>
 </div>
 {% endblock %}

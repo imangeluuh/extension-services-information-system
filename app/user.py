@@ -1,7 +1,8 @@
 from flask import render_template, url_for, request, redirect, flash, current_app, Blueprint
 from flask_login import current_user, login_required
-from .models import Certificate, Registration, Project, Beneficiary
+from .models import Certificate, Registration, Project, Beneficiary, ExtensionProgram, Certificate, ProjectTeam, User, Faculty
 from datetime import datetime
+from sqlalchemy import func
 # from .decorators.decorators import login_required
 from app import db
 
@@ -10,30 +11,65 @@ bp = Blueprint('user', __name__, template_folder="templates", static_folder="sta
 @bp.route('/profile')
 @login_required
 def profile():
+    return render_template('user_profile.html')
+
+@bp.route('/my-projects')
+@login_required
+def myProjects():
+    projects = None
+    team_projects = None
+    current_date = datetime.now().date()
     # Get all projects current user are registered
     if current_user.RoleId in [2, 3]:
-        projects_id = [registration.ProjectId for registration in Registration.query.filter_by(UserId=current_user.UserId).all()]
-        user_projects = []
-        for project_id in projects_id:
-            project = Project.query.filter_by(ProjectId=project_id, IsArchived=False).first()
-            if project:
-                user_projects.append(project)
+        projects = db.session.query(
+                Registration.RegistrationId
+                , Project.ProjectId
+                , Project.Title
+                , Project.StartDate
+                , Project.EndDate
+                , ExtensionProgram.Name
+                , Certificate.CertificateUrl
+            ).join(Project, Registration.ProjectId == Project.ProjectId
+            ).join(ExtensionProgram, Project.ExtensionProgramId == ExtensionProgram.ExtensionProgramId
+            ).outerjoin(Certificate, Certificate.ProjectId == Project.ProjectId
+            ).filter(
+                Registration.UserId == current_user.UserId,
+                Project.IsArchived == False,
+                ExtensionProgram.IsArchived == False,
+            ).all()
     else: 
-        user_projects = Project.query.filter_by(LeadProponentId=current_user.UserId, IsArchived=False).all()
-    user_certificates = Certificate.query.filter_by(UserId=current_user.UserId).all()
-    current_date = datetime.utcnow().date()
-    
-    # Create a list of project and certificate
-    projects = []
-    for project in user_projects:
-        # Initialize project list
-        projects.append([project, None])
-        for certificate in user_certificates:
-            if project.ProjectId == certificate.ProjectId:
-                # Modify the last appended item
-                projects[-1][1] = certificate
-                break
-    return render_template('user_profile.html', projects=projects, current_date=current_date)
+        projects = db.session.query(
+                Project.ProjectId
+                , Project.Title
+                , Project.StartDate
+                , Project.EndDate
+                , ExtensionProgram.Name
+            ).join(ExtensionProgram, Project.ExtensionProgramId == ExtensionProgram.ExtensionProgramId
+            ).filter(
+                Project.LeadProponentId == current_user.UserId,
+                Project.IsArchived == False,
+                ExtensionProgram.IsArchived == False,
+            ).all()
+        
+        team_projects = db.session.query(
+                ProjectTeam.ProjectId
+                , Project.Title
+                , Project.StartDate
+                , Project.EndDate
+                , ExtensionProgram.Name
+                , func.concat(Faculty.FirstName, ' ', Faculty.LastName).label('LeadProponent')
+            ).join(Project, ProjectTeam.ProjectId == Project.ProjectId
+            ).join(ExtensionProgram, Project.ExtensionProgramId == ExtensionProgram.ExtensionProgramId
+            ).join(User, Project.LeadProponentId == User.UserId
+            ).join(Faculty, User.FacultyId == Faculty.FacultyId
+            ).filter(
+                ProjectTeam.FacultyId == current_user.FacultyId,
+                Project.LeadProponentId != current_user.UserId,
+                Project.IsArchived == False,
+                ExtensionProgram.IsArchived == False,
+            ).all()
+
+    return render_template('user_projects.html', projects=projects, team_projects=team_projects, current_date=current_date)
 
 @bp.route('/change-password', methods=["GET", "POST"])
 @login_required

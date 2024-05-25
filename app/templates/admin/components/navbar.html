@@ -19,6 +19,7 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                     <a href="{{url_for('user.profile')}}" class="dropdown-item">Profile</a>
+                    <a href="{{url_for('user.myProjects')}}" class="dropdown-item">My Projects</a>
                     <div class="dropdown-divider"></div>
                     <a href="{{url_for('admin.logout') if current_user.RoleId == 1 else url_for('auth.logout')}}" class="dropdown-item">Logout</a>
                 </div>

@@ -24,6 +24,7 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                     <a href="{{url_for('user.profile')}}" class="dropdown-item">Profile</a>
+                    <a href="{{url_for('user.myProjects')}}" class="dropdown-item">My Projects</a>
                     <div class="dropdown-divider"></div>
                     {% if current_user.RoleId == 2 %}
                     <a href="{{url_for('user.changePassword')}}" class="dropdown-item">Change Password</a>

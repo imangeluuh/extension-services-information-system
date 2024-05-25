@@ -1,0 +1,200 @@
+{% if current_user.RoleId in [2, 3] %}
+{% extends 'base.html' %}
+{% else %}
+{% extends 'admin/base.html' %}
+{% endif %}
+{% block head %}
+    <title>Profile - PUPQC-ESIS</title>
+    <!--Regular Datatables CSS-->
+    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+    <!--Responsive Extension Datatables CSS-->
+    <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table_style.css') }}">  
+{% endblock %}
+{% block content %}
+<div class="page-header d-print-none">
+    <div class="container-xl">
+    <div class="row g-2 align-items-center">
+        <div class="col">
+        <h2 class="page-title">
+            {{ 'My ' if current_user.RoleId in [2, 3] }}Projects
+        </h2>
+        </div>
+    </div>
+    </div>
+</div>
+<div class="page-body">
+    <div class="container-xl">
+        {% if current_user.RoleId in  [2, 3] %}
+        <!--Container-->
+        <div class="bg-white p-3 w-100 ">
+            <table id="projects" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                <thead>
+                    <tr>
+                        <th data-priority="1">Project Name</th>
+                        <th data-priority="2">Extension Program</th>
+                        <th data-priority="3">Status</th>
+                        <th data-priority="4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if projects %}
+                        {% for project in projects %}
+                        <tr>
+                            <td>{{ project.Title}}</td>
+                            <td>{{ project.Name }}</td>
+                            <td>
+                                {% if project.EndDate < current_date  %}
+                                Finished
+                                {% elif project.StartDate > current_date %}
+                                Upcoming
+                                {% else %}
+                                Ongoing
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{url_for('programs.project', id=project.ProjectId)}}" class="btn btn-primary">View</a>
+                                {% if project.CertificateUrl %}
+                                <a href="{{project.CertificateUrl}}" class="btn btn-primary">Certificate</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>   
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a href="#tabs-home-4" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">My Projects</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a href="#tabs-profile-4" class="nav-link" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab">Team Projects</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    <div class="tab-pane active show" id="tabs-home-4" role="tabpanel">
+                        <div>
+                            <table id="my-projects" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                                <thead>
+                                    <tr>
+                                        <th data-priority="1">Project Name</th>
+                                        <th data-priority="2">Extension Program</th>
+                                        <th data-priority="3">Status</th>
+                                        <th data-priority="4">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if projects %}
+                                        {% for project in projects %}
+                                        <tr>
+                                            <td>{{ project.Title}}</td>
+                                            <td>{{ project.Name }}</td>
+                                            <td>
+                                                {% if project.EndDate < current_date  %}
+                                                Finished
+                                                {% elif project.StartDate > current_date %}
+                                                Upcoming
+                                                {% else %}
+                                                Ongoing
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}" class="btn btn-primary">View</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>   
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tabs-profile-4" role="tabpanel">
+                        <div>
+                            <table id="team-projects" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                                <thead>
+                                    <tr>
+                                        <th data-priority="1">Project Name</th>
+                                        <th data-priority="2">Extension Program</th>
+                                        <th data-priority="3">Lead Proponent</th>
+                                        <th data-priority="4">Status</th>
+                                        <th data-priority="5">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if team_projects %}
+                                        {% for project in team_projects %}
+                                        <tr>
+                                            <td>{{ project.Title}}</td>
+                                            <td>{{ project.Name }}</td>
+                                            <td>{{ project.LeadProponent }}</td>
+                                            <td>
+                                                {% if project.EndDate < current_date  %}
+                                                Finished
+                                                {% elif project.StartDate > current_date %}
+                                                Upcoming
+                                                {% else %}
+                                                Ongoing
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{{url_for('programs.viewProject', id=project.ProjectId)}}" class="btn btn-primary">View</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>   
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <!--/container-->
+</div>
+{% endblock %}
+{% block script %}
+<!--Datatables -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var table = $('#projects').DataTable({
+                responsive: true,
+                "columns": [
+                    null,
+                    null,
+                    { "width": "10%" },
+                    { "width": "20%" },
+                ]
+        })
+        var table1 = $('#my-projects').DataTable({
+                responsive: true,
+                "columns": [
+                    null,
+                    null,
+                    { "width": "10%" },
+                    { "width": "20%" },
+                ]
+        })
+        var table2 = $('#team-projects').DataTable({
+                responsive: true,
+                "columns": [
+                    null,
+                    null,
+                    null,
+                    { "width": "10%" },
+                    { "width": "20%" },
+                ]
+        })
+    });
+</script>
+{% endblock %}
+
