@@ -1,7 +1,7 @@
 from app.programs import bp
 from flask import render_template, url_for, request, redirect, flash, current_app, session
 from flask_login import current_user, login_required
-from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, Certificate, Budget, Item, Attendance, Course, Speaker, ProjectTeam, Achievement
+from ..models import Project, ExtensionProgram, Registration, Agenda, ExtensionProgram, Activity, Response, Certificate, Budget, Item, Attendance, Course, Speaker, ProjectTeam, Achievement, User
 from .forms import ProgramForm, ProjectForm, ActivityForm, CombinedForm, ItemForm
 import calendar
 from datetime import datetime
@@ -842,7 +842,7 @@ def deleteActivity(id):
 def viewActivity(id):
     activity_form = ActivityForm()
     activity = Activity.query.filter_by(ActivityId=id, IsArchived=False).first()
-    attendance = Attendance.query.filter_by(ActivityId=id).all()
+    attendance = Attendance.query.join(User, Attendance.UserId == User.UserId).filter(User.RoleId == 2, Attendance.ActivityId == id).all()
     current_date = datetime.utcnow().date()
     return render_template('programs/view_activity.html', activity=activity, attendance=attendance, activity_form=activity_form, current_date=current_date)
 

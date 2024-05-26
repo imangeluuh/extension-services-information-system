@@ -200,9 +200,11 @@ object-fit: cover;">
 <script src="{{ url_for('static', filename='js/multiple-select.js')}}"></script>
 <script>
     $(document).ready(function() {
+        {% if activity.Project.LeadProponentId == current_user.UserId %}
         new MultipleSelect('#speaker', {
             placeholder: 'Select Speaker'
         })
+        {% endif %}
 
         $('#attendance').DataTable( {
             dom: 'Bfrtip',
