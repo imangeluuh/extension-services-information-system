@@ -343,6 +343,7 @@ class Collaborator(db.Model):
 
     CollaboratorId = db.Column(db.Integer, primary_key=True)
     Organization = db.Column(db.String(100), nullable=False)
+    Email = db.Column(db.String(50), unique=True, nullable=False)
     Location = db.Column(db.String(255), nullable=False)
     SignedMOAUrl = db.Column(db.Text, nullable=False)
     SignedMOAFileId = db.Column(db.Text, nullable=False)

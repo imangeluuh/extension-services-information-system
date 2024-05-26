@@ -2,7 +2,7 @@ from app.announcement import bp
 from flask import render_template, url_for, request, redirect, flash, session, current_app
 from flask_login import current_user, login_required
 from ..decorators.decorators import requires_module_access
-from ..models import Project, ExtensionProgram,  Announcement, Registration, User, Course, Beneficiary, Student
+from ..models import Project, ExtensionProgram,  Announcement, Registration, User, Course, Beneficiary, Student, Collaborator
 from .forms import AnnouncementForm
 from ..email import sendEmail
 import string, os
@@ -174,6 +174,14 @@ def createAnnouncement():
 
                     student_emails = db.session.execute(query).scalars().all()
                     emails += student_emails
+                if '6' in form.recipient.data: # Agency Partner email
+                    partner = db.session.query(
+                        Collaborator.Email
+                    ).join(Project, Collaborator.CollaboratorId == Project.CollaboratorId
+                    ).filter(
+                        Project.ProjectId == form.project.data,
+                    ).first()
+                    emails += [partner.Email]
                 sendEmail(form.title.data, emails, form.content.data, form.content.data)
                 flash('Announcement is successfully sent to email', category='success')
             flash('Announcement is successfully inserted.', category='success')
